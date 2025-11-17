@@ -16,7 +16,51 @@ export interface Translations {
   tabs: {
     home: string;
     downloads: string;
+    ai: string;
     settings: string;
+  };
+  auth: {
+    signIn: string;
+    signUp: string;
+    signOut: string;
+    email: string;
+    password: string;
+    name: string;
+    welcomeBack: string;
+    createAccount: string;
+    alreadyHaveAccount: string;
+    noAccount: string;
+    signInSuccess: string;
+    signOutSuccess: string;
+  };
+  subscription: {
+    free: string;
+    premium: string;
+    upgradeToPremium: string;
+    upgradeRequired: string;
+    upgradeMessage: string;
+    premiumFeatures: string;
+    unlimitedDownloads: string;
+    aiAssistant: string;
+    offlineAccess: string;
+    subscribeNow: string;
+    yourPlan: string;
+    activeUntil: string;
+  };
+  ai: {
+    title: string;
+    subtitle: string;
+    placeholder: string;
+    send: string;
+    thinking: string;
+    premiumOnly: string;
+    askAnything: string;
+    exampleQuestion: string;
+    clearChat: string;
+    apiKeyRequired: string;
+    apiKeyDesc: string;
+    saveApiKey: string;
+    apiKeySaved: string;
   };
   settings: {
     title: string;
@@ -37,6 +81,10 @@ export interface Translations {
     confirmClearDownloads: string;
     confirmClearAll: string;
     cleared: string;
+    account: string;
+    accountDesc: string;
+    openAiApiKey: string;
+    openAiApiKeyDesc: string;
   };
   downloads: {
     title: string;
@@ -80,7 +128,51 @@ export const translations: Record<Language, Translations> = {
     tabs: {
       home: 'Home',
       downloads: 'Downloads',
+      ai: 'AI Assistant',
       settings: 'Settings',
+    },
+    auth: {
+      signIn: 'Sign In',
+      signUp: 'Sign Up',
+      signOut: 'Sign Out',
+      email: 'Email',
+      password: 'Password',
+      name: 'Name',
+      welcomeBack: 'Welcome back',
+      createAccount: 'Create your account',
+      alreadyHaveAccount: 'Already have an account?',
+      noAccount: "Don't have an account?",
+      signInSuccess: 'Signed in successfully',
+      signOutSuccess: 'Signed out successfully',
+    },
+    subscription: {
+      free: 'Free',
+      premium: 'Premium',
+      upgradeToPremium: 'Upgrade to Premium',
+      upgradeRequired: 'Premium Required',
+      upgradeMessage: 'Upgrade to Premium to access unlimited downloads and AI assistant.',
+      premiumFeatures: 'Premium Features',
+      unlimitedDownloads: 'Unlimited offline downloads',
+      aiAssistant: 'AI survival assistant',
+      offlineAccess: 'Full offline access',
+      subscribeNow: 'Subscribe Now',
+      yourPlan: 'Your Plan',
+      activeUntil: 'Active until',
+    },
+    ai: {
+      title: 'AI Survival Assistant',
+      subtitle: 'Get expert survival advice powered by AI',
+      placeholder: 'Ask a survival question...',
+      send: 'Send',
+      thinking: 'Thinking...',
+      premiumOnly: 'AI Assistant is a Premium feature',
+      askAnything: 'Ask anything about survival',
+      exampleQuestion: 'How do I purify water in the wilderness?',
+      clearChat: 'Clear chat',
+      apiKeyRequired: 'OpenAI API Key Required',
+      apiKeyDesc: 'Enter your OpenAI API key in Settings to use the AI assistant.',
+      saveApiKey: 'Save API Key',
+      apiKeySaved: 'API key saved successfully',
     },
     settings: {
       title: 'Settings',
@@ -101,6 +193,10 @@ export const translations: Record<Language, Translations> = {
       confirmClearDownloads: 'This will remove all downloaded techniques.',
       confirmClearAll: 'This will remove all your data including bookmarks and downloads.',
       cleared: 'Cleared successfully',
+      account: 'Account',
+      accountDesc: 'Manage your account and subscription',
+      openAiApiKey: 'OpenAI API Key',
+      openAiApiKeyDesc: 'Your API key for AI assistant features',
     },
     downloads: {
       title: 'Downloaded Techniques',
@@ -142,7 +238,51 @@ export const translations: Record<Language, Translations> = {
     tabs: {
       home: 'Accueil',
       downloads: 'Téléchargements',
+      ai: 'Assistant IA',
       settings: 'Paramètres',
+    },
+    auth: {
+      signIn: 'Se connecter',
+      signUp: "S'inscrire",
+      signOut: 'Se déconnecter',
+      email: 'Email',
+      password: 'Mot de passe',
+      name: 'Nom',
+      welcomeBack: 'Bon retour',
+      createAccount: 'Créer votre compte',
+      alreadyHaveAccount: 'Vous avez déjà un compte ?',
+      noAccount: "Vous n'avez pas de compte ?",
+      signInSuccess: 'Connexion réussie',
+      signOutSuccess: 'Déconnexion réussie',
+    },
+    subscription: {
+      free: 'Gratuit',
+      premium: 'Premium',
+      upgradeToPremium: 'Passer à Premium',
+      upgradeRequired: 'Premium Requis',
+      upgradeMessage: 'Passez à Premium pour accéder aux téléchargements illimités et à l\'assistant IA.',
+      premiumFeatures: 'Fonctionnalités Premium',
+      unlimitedDownloads: 'Téléchargements hors ligne illimités',
+      aiAssistant: 'Assistant IA de survie',
+      offlineAccess: 'Accès hors ligne complet',
+      subscribeNow: "S'abonner maintenant",
+      yourPlan: 'Votre abonnement',
+      activeUntil: 'Actif jusqu\'au',
+    },
+    ai: {
+      title: 'Assistant IA de Survie',
+      subtitle: 'Obtenez des conseils de survie experts grâce à l\'IA',
+      placeholder: 'Posez une question de survie...',
+      send: 'Envoyer',
+      thinking: 'Réflexion...',
+      premiumOnly: 'L\'assistant IA est une fonctionnalité Premium',
+      askAnything: 'Posez n\'importe quelle question sur la survie',
+      exampleQuestion: 'Comment purifier l\'eau en pleine nature ?',
+      clearChat: 'Effacer la conversation',
+      apiKeyRequired: 'Clé API OpenAI requise',
+      apiKeyDesc: 'Entrez votre clé API OpenAI dans les paramètres pour utiliser l\'assistant IA.',
+      saveApiKey: 'Enregistrer la clé API',
+      apiKeySaved: 'Clé API enregistrée avec succès',
     },
     settings: {
       title: 'Paramètres',
@@ -163,6 +303,10 @@ export const translations: Record<Language, Translations> = {
       confirmClearDownloads: 'Cela supprimera tous les téléchargements.',
       confirmClearAll: 'Cela supprimera toutes vos données.',
       cleared: 'Effacé avec succès',
+      account: 'Compte',
+      accountDesc: 'Gérez votre compte et abonnement',
+      openAiApiKey: 'Clé API OpenAI',
+      openAiApiKeyDesc: 'Votre clé API pour les fonctionnalités IA',
     },
     downloads: {
       title: 'Techniques téléchargées',
@@ -204,7 +348,51 @@ export const translations: Record<Language, Translations> = {
     tabs: {
       home: 'Inicio',
       downloads: 'Descargas',
+      ai: 'Asistente IA',
       settings: 'Ajustes',
+    },
+    auth: {
+      signIn: 'Iniciar sesión',
+      signUp: 'Registrarse',
+      signOut: 'Cerrar sesión',
+      email: 'Correo',
+      password: 'Contraseña',
+      name: 'Nombre',
+      welcomeBack: 'Bienvenido de nuevo',
+      createAccount: 'Crea tu cuenta',
+      alreadyHaveAccount: '¿Ya tienes una cuenta?',
+      noAccount: '¿No tienes una cuenta?',
+      signInSuccess: 'Sesión iniciada correctamente',
+      signOutSuccess: 'Sesión cerrada correctamente',
+    },
+    subscription: {
+      free: 'Gratis',
+      premium: 'Premium',
+      upgradeToPremium: 'Actualizar a Premium',
+      upgradeRequired: 'Premium Requerido',
+      upgradeMessage: 'Actualiza a Premium para acceder a descargas ilimitadas y asistente IA.',
+      premiumFeatures: 'Características Premium',
+      unlimitedDownloads: 'Descargas sin conexión ilimitadas',
+      aiAssistant: 'Asistente IA de supervivencia',
+      offlineAccess: 'Acceso completo sin conexión',
+      subscribeNow: 'Suscribirse ahora',
+      yourPlan: 'Tu plan',
+      activeUntil: 'Activo hasta',
+    },
+    ai: {
+      title: 'Asistente IA de Supervivencia',
+      subtitle: 'Obtén consejos expertos de supervivencia con IA',
+      placeholder: 'Haz una pregunta sobre supervivencia...',
+      send: 'Enviar',
+      thinking: 'Pensando...',
+      premiumOnly: 'El Asistente IA es una función Premium',
+      askAnything: 'Pregunta cualquier cosa sobre supervivencia',
+      exampleQuestion: '¿Cómo purifico el agua en la naturaleza?',
+      clearChat: 'Limpiar chat',
+      apiKeyRequired: 'Se requiere clave API de OpenAI',
+      apiKeyDesc: 'Ingresa tu clave API de OpenAI en Ajustes para usar el asistente IA.',
+      saveApiKey: 'Guardar clave API',
+      apiKeySaved: 'Clave API guardada correctamente',
     },
     settings: {
       title: 'Ajustes',
@@ -225,6 +413,10 @@ export const translations: Record<Language, Translations> = {
       confirmClearDownloads: 'Esto eliminará todas las descargas.',
       confirmClearAll: 'Esto eliminará todos tus datos.',
       cleared: 'Borrado exitoso',
+      account: 'Cuenta',
+      accountDesc: 'Administra tu cuenta y suscripción',
+      openAiApiKey: 'Clave API de OpenAI',
+      openAiApiKeyDesc: 'Tu clave API para funciones de IA',
     },
     downloads: {
       title: 'Técnicas descargadas',
@@ -266,7 +458,51 @@ export const translations: Record<Language, Translations> = {
     tabs: {
       home: 'Startseite',
       downloads: 'Downloads',
+      ai: 'KI-Assistent',
       settings: 'Einstellungen',
+    },
+    auth: {
+      signIn: 'Anmelden',
+      signUp: 'Registrieren',
+      signOut: 'Abmelden',
+      email: 'E-Mail',
+      password: 'Passwort',
+      name: 'Name',
+      welcomeBack: 'Willkommen zurück',
+      createAccount: 'Konto erstellen',
+      alreadyHaveAccount: 'Haben Sie bereits ein Konto?',
+      noAccount: 'Noch kein Konto?',
+      signInSuccess: 'Erfolgreich angemeldet',
+      signOutSuccess: 'Erfolgreich abgemeldet',
+    },
+    subscription: {
+      free: 'Kostenlos',
+      premium: 'Premium',
+      upgradeToPremium: 'Auf Premium upgraden',
+      upgradeRequired: 'Premium erforderlich',
+      upgradeMessage: 'Upgraden Sie auf Premium für unbegrenzte Downloads und KI-Assistenten.',
+      premiumFeatures: 'Premium-Funktionen',
+      unlimitedDownloads: 'Unbegrenzte Offline-Downloads',
+      aiAssistant: 'KI-Überlebensassistent',
+      offlineAccess: 'Vollständiger Offline-Zugriff',
+      subscribeNow: 'Jetzt abonnieren',
+      yourPlan: 'Ihr Plan',
+      activeUntil: 'Aktiv bis',
+    },
+    ai: {
+      title: 'KI-Überlebensassistent',
+      subtitle: 'Erhalten Sie KI-gestützte Überlebensratschläge',
+      placeholder: 'Stellen Sie eine Überlebensfrage...',
+      send: 'Senden',
+      thinking: 'Denke nach...',
+      premiumOnly: 'KI-Assistent ist eine Premium-Funktion',
+      askAnything: 'Fragen Sie alles über Überleben',
+      exampleQuestion: 'Wie reinige ich Wasser in der Wildnis?',
+      clearChat: 'Chat löschen',
+      apiKeyRequired: 'OpenAI-API-Schlüssel erforderlich',
+      apiKeyDesc: 'Geben Sie Ihren OpenAI-API-Schlüssel in den Einstellungen ein.',
+      saveApiKey: 'API-Schlüssel speichern',
+      apiKeySaved: 'API-Schlüssel erfolgreich gespeichert',
     },
     settings: {
       title: 'Einstellungen',
@@ -287,6 +523,10 @@ export const translations: Record<Language, Translations> = {
       confirmClearDownloads: 'Dies entfernt alle Downloads.',
       confirmClearAll: 'Dies entfernt alle Ihre Daten.',
       cleared: 'Erfolgreich gelöscht',
+      account: 'Konto',
+      accountDesc: 'Verwalten Sie Ihr Konto und Abonnement',
+      openAiApiKey: 'OpenAI-API-Schlüssel',
+      openAiApiKeyDesc: 'Ihr API-Schlüssel für KI-Funktionen',
     },
     downloads: {
       title: 'Heruntergeladene Techniken',
@@ -328,7 +568,51 @@ export const translations: Record<Language, Translations> = {
     tabs: {
       home: 'Home',
       downloads: 'Download',
+      ai: 'Assistente IA',
       settings: 'Impostazioni',
+    },
+    auth: {
+      signIn: 'Accedi',
+      signUp: 'Registrati',
+      signOut: 'Esci',
+      email: 'Email',
+      password: 'Password',
+      name: 'Nome',
+      welcomeBack: 'Bentornato',
+      createAccount: 'Crea il tuo account',
+      alreadyHaveAccount: 'Hai già un account?',
+      noAccount: 'Non hai un account?',
+      signInSuccess: 'Accesso effettuato',
+      signOutSuccess: 'Disconnesso con successo',
+    },
+    subscription: {
+      free: 'Gratuito',
+      premium: 'Premium',
+      upgradeToPremium: 'Passa a Premium',
+      upgradeRequired: 'Premium Richiesto',
+      upgradeMessage: 'Passa a Premium per download illimitati e assistente IA.',
+      premiumFeatures: 'Funzionalità Premium',
+      unlimitedDownloads: 'Download offline illimitati',
+      aiAssistant: 'Assistente IA di sopravvivenza',
+      offlineAccess: 'Accesso offline completo',
+      subscribeNow: 'Abbonati ora',
+      yourPlan: 'Il tuo piano',
+      activeUntil: 'Attivo fino al',
+    },
+    ai: {
+      title: 'Assistente IA di Sopravvivenza',
+      subtitle: 'Ottieni consigli esperti di sopravvivenza con IA',
+      placeholder: 'Fai una domanda sulla sopravvivenza...',
+      send: 'Invia',
+      thinking: 'Pensando...',
+      premiumOnly: 'L\'Assistente IA è una funzione Premium',
+      askAnything: 'Chiedi qualsiasi cosa sulla sopravvivenza',
+      exampleQuestion: 'Come purifico l\'acqua in natura?',
+      clearChat: 'Cancella chat',
+      apiKeyRequired: 'Chiave API OpenAI richiesta',
+      apiKeyDesc: 'Inserisci la tua chiave API OpenAI nelle Impostazioni.',
+      saveApiKey: 'Salva chiave API',
+      apiKeySaved: 'Chiave API salvata con successo',
     },
     settings: {
       title: 'Impostazioni',
@@ -349,6 +633,10 @@ export const translations: Record<Language, Translations> = {
       confirmClearDownloads: 'Questo rimuoverà tutti i download.',
       confirmClearAll: 'Questo rimuoverà tutti i tuoi dati.',
       cleared: 'Cancellato con successo',
+      account: 'Account',
+      accountDesc: 'Gestisci il tuo account e abbonamento',
+      openAiApiKey: 'Chiave API OpenAI',
+      openAiApiKeyDesc: 'La tua chiave API per funzioni IA',
     },
     downloads: {
       title: 'Tecniche scaricate',

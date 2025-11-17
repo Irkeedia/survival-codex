@@ -1,7 +1,7 @@
-import { House, DownloadSimple, Gear } from '@phosphor-icons/react';
+import { House, DownloadSimple, Sparkle, Gear } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 
-type TabType = 'home' | 'downloads' | 'settings';
+type TabType = 'home' | 'downloads' | 'ai' | 'settings';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -13,6 +13,7 @@ export function BottomNav({ activeTab, onTabChange, t }: BottomNavProps) {
   const tabs = [
     { id: 'home' as TabType, label: t.tabs.home, icon: House },
     { id: 'downloads' as TabType, label: t.tabs.downloads, icon: DownloadSimple },
+    { id: 'ai' as TabType, label: t.tabs.ai, icon: Sparkle },
     { id: 'settings' as TabType, label: t.tabs.settings, icon: Gear },
   ];
 

@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { Language, languageNames } from '@/lib/translations';
-import { Globe, Trash, Database } from '@phosphor-icons/react';
+import { Globe, Trash, Database, Crown, User, Key, SignOut } from '@phosphor-icons/react';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { User as UserType } from '@/lib/types';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -22,10 +27,15 @@ interface SettingsTabProps {
   t: any;
   bookmarksCount: number;
   downloadsCount: number;
+  user: UserType | null;
   onLanguageChange: (lang: Language) => void;
   onClearBookmarks: () => void;
   onClearDownloads: () => void;
   onClearAllData: () => void;
+  onSignOut: () => void;
+  onUpgradeClick: () => void;
+  apiKey: string;
+  onApiKeyChange: (key: string) => void;
 }
 
 export function SettingsTab({ 
@@ -33,11 +43,18 @@ export function SettingsTab({
   t, 
   bookmarksCount,
   downloadsCount,
+  user,
   onLanguageChange,
   onClearBookmarks,
   onClearDownloads,
-  onClearAllData
+  onClearAllData,
+  onSignOut,
+  onUpgradeClick,
+  apiKey,
+  onApiKeyChange,
 }: SettingsTabProps) {
+  const [apiKeyInput, setApiKeyInput] = useState(apiKey);
+
   const handleClearBookmarks = () => {
     onClearBookmarks();
     toast.success(t.settings.cleared);
@@ -53,12 +70,90 @@ export function SettingsTab({
     toast.success(t.settings.cleared);
   };
 
+  const handleSaveApiKey = () => {
+    onApiKeyChange(apiKeyInput);
+    toast.success(t.ai.apiKeySaved);
+  };
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
         <h2 className="text-2xl font-bold mb-2">{t.settings.title}</h2>
         <p className="text-muted-foreground">{t.settings.subtitle}</p>
       </div>
+
+      {user && (
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-primary" />
+              <CardTitle>{t.settings.account}</CardTitle>
+            </div>
+            <CardDescription>{t.settings.accountDesc}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">{user.name}</p>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={onSignOut} className="gap-2">
+                <SignOut className="w-4 h-4" />
+                {t.auth.signOut}
+              </Button>
+            </div>
+
+            <Separator className="bg-border/50" />
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">{t.subscription.yourPlan}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.subscriptionTier === 'premium' ? t.subscription.premium : t.subscription.free}
+                </p>
+              </div>
+              {user.subscriptionTier === 'premium' ? (
+                <Badge className="bg-accent text-accent-foreground gap-1">
+                  <Crown className="w-3 h-3" weight="fill" />
+                  {t.subscription.premium}
+                </Badge>
+              ) : (
+                <Button variant="outline" size="sm" onClick={onUpgradeClick} className="gap-2">
+                  <Crown className="w-4 h-4" />
+                  {t.subscription.upgradeToPremium}
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {user?.subscriptionTier === 'premium' && (
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Key className="w-5 h-5 text-primary" />
+              <CardTitle>{t.settings.openAiApiKey}</CardTitle>
+            </div>
+            <CardDescription>{t.settings.openAiApiKeyDesc}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="api-key">API Key</Label>
+              <Input
+                id="api-key"
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="sk-..."
+              />
+            </div>
+            <Button onClick={handleSaveApiKey} className="w-full">
+              {t.ai.saveApiKey}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>

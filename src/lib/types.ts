@@ -18,3 +18,20 @@ export interface SurvivalTechnique {
   tips?: string[];
   timeRequired?: string;
 }
+
+export type SubscriptionTier = 'free' | 'premium';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  subscriptionTier: SubscriptionTier;
+  subscriptionExpiryDate?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}

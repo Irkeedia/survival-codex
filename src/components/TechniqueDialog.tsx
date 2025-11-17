@@ -1,4 +1,4 @@
-import { SurvivalTechnique } from '@/lib/types';
+import { SurvivalTechnique, User } from '@/lib/types';
 import { Language, translations } from '@/lib/translations';
 import { techniqueTranslations } from '@/lib/techniqueTranslations';
 import {
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, Warning, Lightbulb, DownloadSimple } from '@phosphor-icons/react';
+import { Clock, Warning, Lightbulb, DownloadSimple, Crown } from '@phosphor-icons/react';
 import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -24,9 +24,20 @@ interface TechniqueDialogProps {
   onOpenChange: (open: boolean) => void;
   isDownloaded?: boolean;
   onToggleDownload?: (id: string) => void;
+  user: User | null;
+  onUpgradeClick: () => void;
 }
 
-export function TechniqueDialog({ technique, language, open, onOpenChange, isDownloaded = false, onToggleDownload }: TechniqueDialogProps) {
+export function TechniqueDialog({ 
+  technique, 
+  language, 
+  open, 
+  onOpenChange, 
+  isDownloaded = false, 
+  onToggleDownload,
+  user,
+  onUpgradeClick,
+}: TechniqueDialogProps) {
   if (!technique) return null;
 
   const t = translations[language];
@@ -38,7 +49,22 @@ export function TechniqueDialog({ technique, language, open, onOpenChange, isDow
   const warnings = translation?.warnings || technique.warnings;
   const tips = translation?.tips || technique.tips;
 
+  const canDownload = user?.subscriptionTier === 'premium';
+
   const handleToggleDownload = () => {
+    if (!user) {
+      toast.error(t.auth.signIn);
+      return;
+    }
+
+    if (!canDownload) {
+      toast.error(t.subscription.upgradeRequired, {
+        description: t.subscription.upgradeMessage,
+      });
+      onUpgradeClick();
+      return;
+    }
+
     if (onToggleDownload) {
       onToggleDownload(technique.id);
       if (isDownloaded) {
@@ -78,14 +104,26 @@ export function TechniqueDialog({ technique, language, open, onOpenChange, isDow
               <Button
                 variant={isDownloaded ? 'secondary' : 'default'}
                 size="sm"
-                className="gap-2 flex-shrink-0"
+                className={cn(
+                  "gap-2 flex-shrink-0",
+                  !canDownload && "bg-accent text-accent-foreground hover:bg-accent/90"
+                )}
                 onClick={handleToggleDownload}
               >
-                <DownloadSimple 
-                  className="w-4 h-4" 
-                  weight={isDownloaded ? 'fill' : 'regular'} 
-                />
-                {isDownloaded ? t.downloads.removeDownload : t.downloads.downloadTechnique}
+                {!canDownload ? (
+                  <>
+                    <Crown className="w-4 h-4" weight="fill" />
+                    {t.subscription.premium}
+                  </>
+                ) : (
+                  <>
+                    <DownloadSimple 
+                      className="w-4 h-4" 
+                      weight={isDownloaded ? 'fill' : 'regular'} 
+                    />
+                    {isDownloaded ? t.downloads.removeDownload : t.downloads.downloadTechnique}
+                  </>
+                )}
               </Button>
             )}
           </div>

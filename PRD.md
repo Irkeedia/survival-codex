@@ -1,16 +1,30 @@
 # Planning Guide
 
-A multi-language survival guide mobile application optimized for Google Play and App Store, providing essential wilderness survival techniques with offline access capabilities through downloadable content and intuitive bottom navigation.
+A multi-language survival guide mobile application optimized for Google Play and App Store, providing essential wilderness survival techniques with offline access capabilities (premium feature), user authentication system, freemium subscription model, and AI-powered survival assistant for premium members.
 
 **Experience Qualities**: 
-1. **Educational** - Clear, structured information that teaches survival principles progressively in multiple languages
-2. **Mobile-First** - Native-feeling app experience optimized for smartphones with bottom navigation
-3. **Accessible Offline** - Download techniques for offline access in emergency situations
+1. **Educational** - Clear, structured information that teaches survival principles progressively in multiple languages with AI-powered assistance for premium users
+2. **Mobile-First** - Native-feeling app experience optimized for smartphones with bottom navigation and seamless authentication
+3. **Value-Driven** - Free tier for browsing and bookmarking, premium tier unlocks downloads and AI assistance
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Multiple categorized survival guides with filtering, search, bookmark functionality, downloads, multi-language support, and mobile-optimized navigation
+  - Multiple categorized survival guides with filtering, search, bookmark functionality, user authentication, freemium subscription model, premium-gated downloads, AI assistant, multi-language support, and mobile-optimized navigation
 
 ## Essential Features
+
+### User Authentication
+- **Functionality**: Simple email/password sign-in and sign-up system with persistent session
+- **Purpose**: Enable personalized experience and subscription management
+- **Trigger**: User clicks sign-in button in header or attempts to access premium features
+- **Progression**: Click sign-in → Enter credentials → Account created/logged in → Access unlocked
+- **Success criteria**: User session persists across app restarts, smooth authentication flow
+
+### Freemium Subscription Model
+- **Functionality**: Free tier allows browsing and bookmarking, Premium tier unlocks downloads and AI assistant
+- **Purpose**: Monetization while providing value to free users and exceptional value to premium subscribers
+- **Trigger**: User attempts to download content or access AI assistant without premium
+- **Progression**: Free user → Clicks restricted feature → Upgrade dialog → Subscribe → Premium access granted
+- **Success criteria**: Clear distinction between free/premium features, seamless upgrade flow
 
 ### Multi-Language Support
 - **Functionality**: Full app translation support for English, French, Spanish, German, and Italian
@@ -20,7 +34,7 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: All UI elements and technique content translate correctly and persist across sessions
 
 ### Bottom Navigation Tabs
-- **Functionality**: Three main tabs - Home, Downloads, Settings - accessible via persistent bottom navigation
+- **Functionality**: Four main tabs - Home, Downloads, AI Assistant, Settings - accessible via persistent bottom navigation
 - **Purpose**: Provide mobile app-style navigation optimized for thumb access
 - **Trigger**: User taps navigation items at bottom of screen
 - **Progression**: Tap tab → View transitions → Content loads → Navigation state persists
@@ -28,38 +42,49 @@ A multi-language survival guide mobile application optimized for Google Play and
 
 ### Home Tab
 - **Functionality**: Browse, search, and filter survival techniques with category badges
-- **Purpose**: Main discovery interface for survival knowledge
+- **Purpose**: Main discovery interface for survival knowledge (available to all users)
 - **Trigger**: Default tab on app launch
 - **Progression**: View categories → Search/filter → Select technique → View details
 - **Success criteria**: All techniques are browsable, searchable, and filterable with bookmarking
 
-### Downloads Tab
+### Downloads Tab (Premium Feature)
 - **Functionality**: View and manage downloaded techniques for offline access
-- **Purpose**: Enable offline access to critical survival information
+- **Purpose**: Enable offline access to critical survival information for premium users
 - **Trigger**: User navigates to Downloads tab
 - **Progression**: View downloads → Select technique → Read offline → Remove if needed
-- **Success criteria**: Downloaded techniques persist and are accessible without network
+- **Success criteria**: Downloaded techniques persist and are accessible, free users see upgrade prompt
+
+### AI Assistant Tab (Premium Feature)
+- **Functionality**: Chat with AI survival expert powered by OpenAI for personalized survival advice
+- **Purpose**: Provide interactive, contextual survival guidance beyond static content
+- **Trigger**: User navigates to AI Assistant tab
+- **Progression**: Open AI tab → Ask question → Receive expert advice → Continue conversation
+- **Success criteria**: AI provides relevant survival advice, chat history persists, free users see upgrade prompt
 
 ### Settings Tab
-- **Functionality**: Manage language, view storage statistics, clear data
-- **Purpose**: User preference management and data control
+- **Functionality**: Manage language, account, subscription, API key, view storage statistics, clear data
+- **Purpose**: User preference and account management
 - **Trigger**: User navigates to Settings tab
-- **Progression**: View settings → Change language or clear data → Confirm → Updates apply
-- **Success criteria**: Settings persist, data clearing works correctly with confirmation dialogs
+- **Progression**: View settings → Change preferences → Manage subscription → Sign out if needed
+- **Success criteria**: Settings persist, account management works, subscription status visible
 
-### Download Techniques
+### Download Techniques (Premium Only)
 - **Functionality**: Download individual techniques for offline access from detail dialog
 - **Purpose**: Prepare critical survival information for emergency offline use
 - **Trigger**: User clicks download button in technique dialog
-- **Progression**: View technique → Click download → Confirm → Technique saved → Accessible in Downloads tab
-- **Success criteria**: Downloaded content persists in Downloads tab and remains accessible offline
+- **Progression**: View technique → Click download → Premium check → Technique saved → Accessible in Downloads tab
+- **Success criteria**: Free users see upgrade prompt, premium users can download unlimited content
 
 ## Edge Case Handling
-- **Empty Downloads**: Display helpful message encouraging users to download techniques
+- **Empty Downloads**: Display helpful message encouraging premium users to download, free users to upgrade
 - **Empty Search Results**: Display helpful message suggesting to try different keywords
 - **No Bookmarks Yet**: Show empty state encouraging users to bookmark useful techniques
+- **Unauthenticated Access**: Redirect to sign-in when attempting premium features
+- **Free Tier Limitations**: Clear upgrade prompts when accessing premium-only features
+- **AI Without API Key**: Premium users prompted to add OpenAI API key in settings
 - **Safe Area Support**: Handle iPhone notches and Android gesture bars with proper padding
 - **Data Clearing**: Confirmation dialogs prevent accidental data loss
+- **Session Persistence**: User remains logged in across app restarts
 
 ## Design Direction
 The design should feel like a modern mobile application with a tech-focused dark theme featuring purple gradients, optimized for one-handed use with bottom navigation and clear visual hierarchy - a minimal interface that prioritizes readability and quick information access.
@@ -98,45 +123,58 @@ Smooth, app-like transitions that feel native to mobile platforms - purposeful m
 ## Component Selection
 - **Components**: 
   - Card (technique display with glassmorphic backdrop)
-  - Dialog (full technique details with download action)
-  - Input (search with clear button)
-  - Badge (category and difficulty tags)
-  - Button (actions optimized for mobile touch)
+  - Dialog (authentication, upgrade prompts, full technique details)
+  - Input (search, email/password, API key, chat messages)
+  - Badge (category, difficulty, subscription tier tags)
+  - Button (actions optimized for mobile touch, sign-in, upgrade CTA)
   - AlertDialog (data clearing confirmations)
-  - ScrollArea (scrollable content areas)
+  - ScrollArea (scrollable content areas, chat history)
   - Select/Dropdown (language selector)
   
 - **Customizations**: 
-  - Bottom navigation bar with safe area support
+  - Bottom navigation bar with safe area support (4 tabs including AI)
   - Glassmorphic card backgrounds with backdrop blur
   - Mobile-optimized touch targets (minimum 44px)
-  - Download button in technique dialogs
+  - Download button with premium gating in technique dialogs
+  - Crown icon for premium badge and upgrade CTAs
+  - Chat interface for AI assistant with message bubbles
+  - Authentication modal with sign-in/sign-up toggle
   
 - **States**: 
   - Navigation tabs: inactive, active (filled icon + primary color)
   - Cards: default, pressed (slight scale), bookmarked
-  - Buttons: default, hover, pressed, disabled
-  - Download status: not downloaded, downloading, downloaded
+  - Buttons: default, hover, pressed, disabled, premium (accent color)
+  - Download status: not downloaded (premium required), downloading, downloaded
+  - User status: signed out, free tier, premium tier
+  - AI chat: idle, thinking, error
   
 - **Icon Selection**: 
   - House for Home tab
   - DownloadSimple for Downloads tab
+  - Sparkle for AI Assistant tab
   - Gear for Settings tab
   - BookmarkSimple for favorites
   - MagnifyingGlass for search
   - Globe for language
   - Trash for data clearing
   - Database for storage
+  - Crown for premium features and upgrade
+  - SignIn for authentication
+  - User for account management
+  - Key for API key settings
+  - PaperPlaneRight for sending messages
   
 - **Spacing**: 
   - Bottom nav height: 64px with safe area padding
   - Container padding: p-4 mobile
   - Card gaps: gap-6 for grid
   - Bottom page padding: pb-20 to account for fixed navigation
+  - Chat message spacing: gap-4 with proper alignment
   
 - **Mobile**: 
-  - Bottom navigation fixed to viewport bottom with safe area support
+  - Bottom navigation fixed to viewport bottom with safe area support (4 tabs)
   - Viewport-fit=cover for edge-to-edge design
   - Single column layout on mobile (1 column), expanding to 2-3 on larger screens
   - Full-height dialogs with proper scroll handling
   - Touch-optimized 44px minimum tap targets throughout
+  - Responsive chat interface with proper keyboard handling
