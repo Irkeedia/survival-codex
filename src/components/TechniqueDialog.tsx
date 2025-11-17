@@ -7,13 +7,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, Warning, Lightbulb, DownloadSimple, Crown, X } from '@phosphor-icons/react';
+import { Clock, Warning, Lightbulb, DownloadSimple, Crown } from '@phosphor-icons/react';
 import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -78,13 +77,8 @@ export function TechniqueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50 p-0">
-        <DialogClose className="absolute left-4 top-4 rounded-full p-2 bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors z-10 touch-manipulation">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
-        
-        <div className="p-4 sm:p-6 pt-14 sm:pt-6">
+      <DialogContent className="w-screen h-screen max-w-full max-h-full bg-card/95 backdrop-blur-xl border-0 p-0 rounded-none">
+        <div className="p-4 sm:p-6">
           <DialogHeader>
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3">
               <div className="flex items-start gap-1.5 sm:gap-2 flex-wrap">
@@ -141,7 +135,7 @@ export function TechniqueDialog({
           </DialogHeader>
         </div>
 
-        <ScrollArea className="max-h-[calc(90vh-240px)] sm:max-h-[calc(85vh-220px)] px-4 sm:px-6 pb-4 sm:pb-6">
+        <ScrollArea className="h-[calc(100vh-200px)] px-4 sm:px-6 pb-4 sm:pb-6">
           <div className="space-y-5 sm:space-y-6 pr-2 sm:pr-4">
             <div>
               <h3 className="font-semibold text-base sm:text-lg mb-3">{t.steps}</h3>
