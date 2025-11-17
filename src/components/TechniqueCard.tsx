@@ -25,13 +25,13 @@ export function TechniqueCard({ technique, language, isBookmarked, onToggleBookm
   
   return (
     <Card 
-      className="relative cursor-pointer transition-all hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 group bg-card/50 backdrop-blur-sm border-border/50"
+      className="relative cursor-pointer transition-all active:scale-[0.98] hover:shadow-xl hover:shadow-primary/10 sm:hover:-translate-y-1 group bg-card/50 backdrop-blur-sm border-border/50 touch-manipulation"
       onClick={onClick}
     >
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity h-9 w-9 touch-manipulation"
         onClick={(e) => {
           e.stopPropagation();
           onToggleBookmark();
@@ -46,8 +46,8 @@ export function TechniqueCard({ technique, language, isBookmarked, onToggleBookm
         />
       </Button>
 
-      <CardHeader>
-        <div className="flex items-start gap-2 mb-2">
+      <CardHeader className="pb-3 sm:pb-4">
+        <div className="flex items-start gap-1.5 sm:gap-2 mb-2 flex-wrap">
           <Badge 
             variant="outline" 
             className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
@@ -61,17 +61,17 @@ export function TechniqueCard({ technique, language, isBookmarked, onToggleBookm
             {t.difficulty[technique.difficulty]}
           </Badge>
         </div>
-        <CardTitle className="text-lg leading-tight">{title}</CardTitle>
+        <CardTitle className="text-base sm:text-lg leading-tight pr-8 sm:pr-0">{title}</CardTitle>
         {technique.timeRequired && (
-          <CardDescription className="flex items-center gap-1 text-xs mt-2">
-            <Clock className="w-3 h-3" />
-            {technique.timeRequired}
+          <CardDescription className="flex items-center gap-1 text-xs mt-1.5 sm:mt-2">
+            <Clock className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{technique.timeRequired}</span>
           </CardDescription>
         )}
       </CardHeader>
 
-      <CardContent>
-        <p className="text-sm text-muted-foreground line-clamp-3">
+      <CardContent className="pt-0">
+        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
           {description}
         </p>
       </CardContent>

@@ -118,31 +118,33 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-10 shadow-lg shadow-primary/5">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+    <div className="min-h-screen pb-20 safe-area-inset-bottom">
+      <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-10 shadow-lg shadow-primary/5 safe-area-inset-top">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent truncate">
                 {t.appTitle}
               </h1>
-              <p className="text-muted-foreground text-sm md:text-base">
+              <p className="text-muted-foreground text-xs sm:text-sm md:text-base">
                 {t.appSubtitle}
               </p>
             </div>
-            <ProfileMenu
-              user={user || null}
-              t={t}
-              onSettingsClick={handleSettingsClick}
-              onPlansClick={handlePlansClick}
-              onSignInClick={() => setAuthDialogOpen(true)}
-              onSignOut={handleSignOut}
-            />
+            <div className="flex-shrink-0">
+              <ProfileMenu
+                user={user || null}
+                t={t}
+                onSettingsClick={handleSettingsClick}
+                onPlansClick={handlePlansClick}
+                onSignInClick={() => setAuthDialogOpen(true)}
+                onSignOut={handleSignOut}
+              />
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {activeTab === 'home' && (
           <HomeTab
             language={language || 'en'}

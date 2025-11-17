@@ -60,12 +60,12 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md mx-4">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
+          <DialogTitle className="text-xl sm:text-2xl">
             {isSignUp ? t.auth.createAccount : t.auth.welcomeBack}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             {isSignUp ? t.auth.noAccount : t.auth.alreadyHaveAccount}
           </DialogDescription>
         </DialogHeader>
@@ -75,11 +75,11 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
             type="button"
             variant="outline"
             size="lg"
-            className="w-full gap-3"
+            className="w-full gap-3 h-11 touch-manipulation"
             onClick={handleGoogleSignIn}
           >
-            <GoogleLogo size={20} weight="bold" />
-            {t.auth.continueWithGoogle}
+            <GoogleLogo size={20} weight="bold" className="flex-shrink-0" />
+            <span className="truncate text-sm sm:text-base">{t.auth.continueWithGoogle}</span>
           </Button>
 
           <div className="relative">
@@ -94,7 +94,7 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="name">{t.auth.name}</Label>
+                <Label htmlFor="name" className="text-sm">{t.auth.name}</Label>
                 <Input
                   id="name"
                   type="text"
@@ -102,12 +102,13 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
                   onChange={(e) => setName(e.target.value)}
                   required={isSignUp}
                   placeholder={t.auth.name}
+                  className="h-11 text-base"
                 />
               </div>
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">{t.auth.email}</Label>
+              <Label htmlFor="email" className="text-sm">{t.auth.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -115,11 +116,12 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder={t.auth.email}
+                className="h-11 text-base"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">{t.auth.password}</Label>
+              <Label htmlFor="password" className="text-sm">{t.auth.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -127,17 +129,18 @@ export function AuthDialog({ open, onOpenChange, onSignIn, t }: AuthDialogProps)
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder={t.auth.password}
+                className="h-11 text-base"
               />
             </div>
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full h-11 touch-manipulation text-sm sm:text-base">
               {isSignUp ? t.auth.signUp : t.auth.signIn}
             </Button>
             
             <Button
               type="button"
               variant="ghost"
-              className="w-full"
+              className="w-full h-10 touch-manipulation text-sm"
               onClick={() => setIsSignUp(!isSignUp)}
             >
               {isSignUp ? t.auth.alreadyHaveAccount : t.auth.noAccount}

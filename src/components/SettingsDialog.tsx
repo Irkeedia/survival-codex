@@ -50,26 +50,30 @@ export function SettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
-            {activeTab === 'settings' ? t.tabs.settings : t.subscription.choosePlan}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-[calc(100vw-1rem)] sm:max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto p-0">
+        <div className="p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl sm:text-2xl font-bold">
+              {activeTab === 'settings' ? t.tabs.settings : t.subscription.choosePlan}
+            </DialogTitle>
+          </DialogHeader>
+        </div>
         
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'settings' | 'plans')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Gear className="w-4 h-4" />
-              {t.tabs.settings}
-            </TabsTrigger>
-            <TabsTrigger value="plans" className="flex items-center gap-2">
-              <Crown className="w-4 h-4" />
-              Plans
-            </TabsTrigger>
-          </TabsList>
+          <div className="px-4 sm:px-6">
+            <TabsList className="grid w-full grid-cols-2 h-11">
+              <TabsTrigger value="settings" className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
+                <Gear className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{t.tabs.settings}</span>
+              </TabsTrigger>
+              <TabsTrigger value="plans" className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
+                <Crown className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">Plans</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
-          <TabsContent value="settings" className="mt-6">
+          <TabsContent value="settings" className="mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
             <SettingsTab
               language={language}
               t={t}
@@ -87,7 +91,7 @@ export function SettingsDialog({
             />
           </TabsContent>
           
-          <TabsContent value="plans" className="mt-6">
+          <TabsContent value="plans" className="mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
             <PlansTab
               t={t}
               user={user}

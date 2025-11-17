@@ -65,21 +65,21 @@ export function HomeTab({
   const categories: Array<SurvivalCategory | 'all'> = ['all', 'shelter', 'water', 'fire', 'food', 'navigation', 'first-aid', 'signaling'];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="relative flex-1">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder={t.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-card/50 backdrop-blur-sm border-border/50"
+            className="pl-9 pr-10 bg-card/50 backdrop-blur-sm border-border/50 h-11 text-base"
           />
           {searchQuery && (
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
               onClick={() => setSearchQuery('')}
             >
               <X className="w-4 h-4" />
@@ -90,10 +90,10 @@ export function HomeTab({
         <Button
           variant={showBookmarksOnly ? 'default' : 'outline'}
           onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
-          className="gap-2 bg-card/50 backdrop-blur-sm border-border/50"
+          className="gap-2 bg-card/50 backdrop-blur-sm border-border/50 h-11 px-4 flex-shrink-0"
         >
-          <BookmarkSimple weight={showBookmarksOnly ? 'fill' : 'regular'} className="w-4 h-4" />
-          {t.bookmarks} {bookmarkedIds.length > 0 && `(${bookmarkedIds.length})`}
+          <BookmarkSimple weight={showBookmarksOnly ? 'fill' : 'regular'} className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="whitespace-nowrap text-sm sm:text-base">{t.bookmarks} {bookmarkedIds.length > 0 && `(${bookmarkedIds.length})`}</span>
         </Button>
       </div>
 
@@ -103,7 +103,7 @@ export function HomeTab({
             key={category}
             variant={selectedCategory === category ? 'default' : 'outline'}
             className={cn(
-              "cursor-pointer transition-all hover:scale-105 capitalize backdrop-blur-sm",
+              "cursor-pointer transition-all active:scale-95 hover:scale-105 capitalize backdrop-blur-sm text-xs sm:text-sm px-3 py-1.5 touch-manipulation",
               selectedCategory === category && "shadow-lg shadow-primary/20"
             )}
             onClick={() => setSelectedCategory(category)}
@@ -114,15 +114,15 @@ export function HomeTab({
       </div>
 
       {filteredTechniques.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted/50 backdrop-blur-sm mb-4 border border-border/50">
+        <div className="text-center py-12 sm:py-16 px-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-muted/50 backdrop-blur-sm mb-3 sm:mb-4 border border-border/50">
             {showBookmarksOnly ? (
-              <BookmarkSimple className="w-8 h-8 text-muted-foreground" />
+              <BookmarkSimple className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground" />
             ) : (
-              <MagnifyingGlass className="w-8 h-8 text-muted-foreground" />
+              <MagnifyingGlass className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground" />
             )}
           </div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">
             {showBookmarksOnly ? t.noBookmarksTitle : t.noResultsTitle}
           </h3>
           <p className="text-muted-foreground text-sm max-w-md mx-auto">
@@ -130,7 +130,7 @@ export function HomeTab({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredTechniques.map((technique) => (
             <TechniqueCard
               key={technique.id}

@@ -77,73 +77,75 @@ export function TechniqueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50">
-        <DialogHeader>
-          <div className="flex items-start justify-between gap-4 mb-2">
-            <div className="flex items-start gap-2 flex-wrap">
-              <Badge 
-                variant="outline" 
-                className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
-              >
-                {t.categories[technique.category]}
-              </Badge>
-              <Badge 
-                variant="secondary" 
-                className="text-xs capitalize backdrop-blur-sm"
-              >
-                {t.difficulty[technique.difficulty]}
-              </Badge>
-              {technique.timeRequired && (
-                <Badge variant="outline" className="text-xs flex items-center gap-1 backdrop-blur-sm">
-                  <Clock className="w-3 h-3" />
-                  {technique.timeRequired}
+      <DialogContent className="max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50 p-0">
+        <div className="p-4 sm:p-6">
+          <DialogHeader>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3">
+              <div className="flex items-start gap-1.5 sm:gap-2 flex-wrap">
+                <Badge 
+                  variant="outline" 
+                  className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
+                >
+                  {t.categories[technique.category]}
                 </Badge>
+                <Badge 
+                  variant="secondary" 
+                  className="text-xs capitalize backdrop-blur-sm"
+                >
+                  {t.difficulty[technique.difficulty]}
+                </Badge>
+                {technique.timeRequired && (
+                  <Badge variant="outline" className="text-xs flex items-center gap-1 backdrop-blur-sm">
+                    <Clock className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{technique.timeRequired}</span>
+                  </Badge>
+                )}
+              </div>
+              {onToggleDownload && (
+                <Button
+                  variant={isDownloaded ? 'secondary' : 'default'}
+                  size="sm"
+                  className={cn(
+                    "gap-2 flex-shrink-0 w-full sm:w-auto touch-manipulation h-9 sm:h-8",
+                    !canDownload && "bg-accent text-accent-foreground hover:bg-accent/90"
+                  )}
+                  onClick={handleToggleDownload}
+                >
+                  {!canDownload ? (
+                    <>
+                      <Crown className="w-4 h-4 flex-shrink-0" weight="fill" />
+                      <span className="text-sm">{t.subscription.premium}</span>
+                    </>
+                  ) : (
+                    <>
+                      <DownloadSimple 
+                        className="w-4 h-4 flex-shrink-0" 
+                        weight={isDownloaded ? 'fill' : 'regular'} 
+                      />
+                      <span className="text-sm truncate">{isDownloaded ? t.downloads.removeDownload : t.downloads.downloadTechnique}</span>
+                    </>
+                  )}
+                </Button>
               )}
             </div>
-            {onToggleDownload && (
-              <Button
-                variant={isDownloaded ? 'secondary' : 'default'}
-                size="sm"
-                className={cn(
-                  "gap-2 flex-shrink-0",
-                  !canDownload && "bg-accent text-accent-foreground hover:bg-accent/90"
-                )}
-                onClick={handleToggleDownload}
-              >
-                {!canDownload ? (
-                  <>
-                    <Crown className="w-4 h-4" weight="fill" />
-                    {t.subscription.premium}
-                  </>
-                ) : (
-                  <>
-                    <DownloadSimple 
-                      className="w-4 h-4" 
-                      weight={isDownloaded ? 'fill' : 'regular'} 
-                    />
-                    {isDownloaded ? t.downloads.removeDownload : t.downloads.downloadTechnique}
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-          <DialogTitle className="text-2xl">{title}</DialogTitle>
-          <DialogDescription className="text-base">
-            {description}
-          </DialogDescription>
-        </DialogHeader>
+            <DialogTitle className="text-xl sm:text-2xl leading-tight pr-8 sm:pr-0">{title}</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base leading-relaxed">
+              {description}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <ScrollArea className="max-h-[calc(85vh-220px)] pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="max-h-[calc(90vh-240px)] sm:max-h-[calc(85vh-220px)] px-4 sm:px-6 pb-4 sm:pb-6">
+          <div className="space-y-5 sm:space-y-6 pr-2 sm:pr-4">
             <div>
-              <h3 className="font-semibold text-lg mb-3">{t.steps}</h3>
-              <ol className="space-y-3">
+              <h3 className="font-semibold text-base sm:text-lg mb-3">{t.steps}</h3>
+              <ol className="space-y-3 sm:space-y-4">
                 {steps.map((step, index) => (
-                  <li key={index} className="flex gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center">
+                  <li key={index} className="flex gap-2.5 sm:gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center mt-0.5">
                       {index + 1}
                     </span>
-                    <span className="text-sm leading-relaxed pt-0.5">{step}</span>
+                    <span className="text-sm sm:text-base leading-relaxed pt-0.5">{step}</span>
                   </li>
                 ))}
               </ol>
@@ -154,14 +156,14 @@ export function TechniqueDialog({
                 <Separator className="bg-border/50" />
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Warning className="w-5 h-5 text-destructive" weight="fill" />
-                    <h3 className="font-semibold text-lg">{t.warnings}</h3>
+                    <Warning className="w-5 h-5 text-destructive flex-shrink-0" weight="fill" />
+                    <h3 className="font-semibold text-base sm:text-lg">{t.warnings}</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 sm:space-y-2.5">
                     {warnings.map((warning, index) => (
-                      <li key={index} className="flex gap-2">
-                        <span className="text-destructive mt-1">•</span>
-                        <span className="text-sm leading-relaxed">{warning}</span>
+                      <li key={index} className="flex gap-2 sm:gap-2.5">
+                        <span className="text-destructive mt-1 flex-shrink-0">•</span>
+                        <span className="text-sm sm:text-base leading-relaxed">{warning}</span>
                       </li>
                     ))}
                   </ul>
@@ -174,14 +176,14 @@ export function TechniqueDialog({
                 <Separator className="bg-border/50" />
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Lightbulb className="w-5 h-5 text-accent" weight="fill" />
-                    <h3 className="font-semibold text-lg">{t.tips}</h3>
+                    <Lightbulb className="w-5 h-5 text-accent flex-shrink-0" weight="fill" />
+                    <h3 className="font-semibold text-base sm:text-lg">{t.tips}</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 sm:space-y-2.5">
                     {tips.map((tip, index) => (
-                      <li key={index} className="flex gap-2">
-                        <span className="text-accent mt-1">•</span>
-                        <span className="text-sm leading-relaxed">{tip}</span>
+                      <li key={index} className="flex gap-2 sm:gap-2.5">
+                        <span className="text-accent mt-1 flex-shrink-0">•</span>
+                        <span className="text-sm sm:text-base leading-relaxed">{tip}</span>
                       </li>
                     ))}
                   </ul>
