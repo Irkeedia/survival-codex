@@ -3,6 +3,7 @@ import { useKV } from '@github/spark/hooks';
 import { HomeTab } from '@/components/HomeTab';
 import { DownloadsTab } from '@/components/DownloadsTab';
 import { AITab } from '@/components/AITab';
+import { PlansTab } from '@/components/PlansTab';
 import { SettingsTab } from '@/components/SettingsTab';
 import { BottomNav } from '@/components/BottomNav';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
@@ -14,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { SignIn, Crown } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
-type TabType = 'home' | 'downloads' | 'ai' | 'settings';
+type TabType = 'home' | 'downloads' | 'ai' | 'plans' | 'settings';
 
 function App() {
   const [bookmarkedIds, setBookmarkedIds] = useKV<string[]>('bookmarked-techniques', []);
@@ -49,7 +50,7 @@ function App() {
     }
 
     if (user.subscriptionTier !== 'premium') {
-      setUpgradeDialogOpen(true);
+      setActiveTab('plans');
       return;
     }
 
@@ -98,15 +99,14 @@ function App() {
         subscriptionExpiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       };
       setUser(upgradedUser);
-      toast.success(t.subscription.premium);
+      toast.success(t.subscription.paymentSuccess);
     }
   };
 
   const handleUpgradeClick = () => {
-    if (!user) {
-      setAuthDialogOpen(true);
-    } else {
-      setUpgradeDialogOpen(true);
+    setActiveTab('plans');
+    if (upgradeDialogOpen) {
+      setUpgradeDialogOpen(false);
     }
   };
 
@@ -175,6 +175,15 @@ function App() {
             t={t}
             user={user || null}
             onUpgradeClick={handleUpgradeClick}
+          />
+        )}
+
+        {activeTab === 'plans' && (
+          <PlansTab
+            t={t}
+            user={user || null}
+            onSignUpClick={() => setAuthDialogOpen(true)}
+            onUpgradeToPremium={handleUpgrade}
           />
         )}
 

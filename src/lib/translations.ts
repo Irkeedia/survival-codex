@@ -32,6 +32,8 @@ export interface Translations {
     noAccount: string;
     signInSuccess: string;
     signOutSuccess: string;
+    continueWithGoogle: string;
+    orContinueWith: string;
   };
   subscription: {
     free: string;
@@ -46,6 +48,27 @@ export interface Translations {
     subscribeNow: string;
     yourPlan: string;
     activeUntil: string;
+    viewPlans: string;
+    choosePlan: string;
+    freePlan: string;
+    premiumPlan: string;
+    monthly: string;
+    yearly: string;
+    perMonth: string;
+    perYear: string;
+    currentPlan: string;
+    popularPlan: string;
+    freePlanFeatures: string;
+    limitedDownloads: string;
+    basicContent: string;
+    communitySupport: string;
+    paymentMethod: string;
+    payWithCard: string;
+    payWithPaypal: string;
+    payWithGoogle: string;
+    completePayment: string;
+    processingPayment: string;
+    paymentSuccess: string;
   };
   ai: {
     title: string;
@@ -144,6 +167,8 @@ export const translations: Record<Language, Translations> = {
       noAccount: "Don't have an account?",
       signInSuccess: 'Signed in successfully',
       signOutSuccess: 'Signed out successfully',
+      continueWithGoogle: 'Continue with Google',
+      orContinueWith: 'Or continue with email',
     },
     subscription: {
       free: 'Free',
@@ -158,6 +183,27 @@ export const translations: Record<Language, Translations> = {
       subscribeNow: 'Subscribe Now',
       yourPlan: 'Your Plan',
       activeUntil: 'Active until',
+      viewPlans: 'View Plans',
+      choosePlan: 'Choose Your Plan',
+      freePlan: 'Free Plan',
+      premiumPlan: 'Premium Plan',
+      monthly: 'Monthly',
+      yearly: 'Yearly',
+      perMonth: '/month',
+      perYear: '/year',
+      currentPlan: 'Current Plan',
+      popularPlan: 'Most Popular',
+      freePlanFeatures: 'Free Plan Features',
+      limitedDownloads: 'Limited downloads (5/month)',
+      basicContent: 'Access to basic survival techniques',
+      communitySupport: 'Community support',
+      paymentMethod: 'Payment Method',
+      payWithCard: 'Pay with Card',
+      payWithPaypal: 'Pay with PayPal',
+      payWithGoogle: 'Pay with Google Play',
+      completePayment: 'Complete Payment',
+      processingPayment: 'Processing payment...',
+      paymentSuccess: 'Payment successful! Welcome to Premium',
     },
     ai: {
       title: 'AI Survival Assistant',
@@ -254,6 +300,8 @@ export const translations: Record<Language, Translations> = {
       noAccount: "Vous n'avez pas de compte ?",
       signInSuccess: 'Connexion réussie',
       signOutSuccess: 'Déconnexion réussie',
+      continueWithGoogle: 'Continuer avec Google',
+      orContinueWith: 'Ou continuer avec email',
     },
     subscription: {
       free: 'Gratuit',
@@ -268,6 +316,27 @@ export const translations: Record<Language, Translations> = {
       subscribeNow: "S'abonner maintenant",
       yourPlan: 'Votre abonnement',
       activeUntil: 'Actif jusqu\'au',
+      viewPlans: 'Voir les plans',
+      choosePlan: 'Choisissez votre plan',
+      freePlan: 'Plan Gratuit',
+      premiumPlan: 'Plan Premium',
+      monthly: 'Mensuel',
+      yearly: 'Annuel',
+      perMonth: '/mois',
+      perYear: '/an',
+      currentPlan: 'Plan actuel',
+      popularPlan: 'Le plus populaire',
+      freePlanFeatures: 'Fonctionnalités gratuites',
+      limitedDownloads: 'Téléchargements limités (5/mois)',
+      basicContent: 'Accès aux techniques de base',
+      communitySupport: 'Support communautaire',
+      paymentMethod: 'Méthode de paiement',
+      payWithCard: 'Payer par carte',
+      payWithPaypal: 'Payer avec PayPal',
+      payWithGoogle: 'Payer avec Google Play',
+      completePayment: 'Finaliser le paiement',
+      processingPayment: 'Traitement du paiement...',
+      paymentSuccess: 'Paiement réussi! Bienvenue à Premium',
     },
     ai: {
       title: 'Assistant IA de Survie',
@@ -364,6 +433,8 @@ export const translations: Record<Language, Translations> = {
       noAccount: '¿No tienes una cuenta?',
       signInSuccess: 'Sesión iniciada correctamente',
       signOutSuccess: 'Sesión cerrada correctamente',
+      continueWithGoogle: 'Continuar con Google',
+      orContinueWith: 'O continuar con email',
     },
     subscription: {
       free: 'Gratis',
@@ -378,6 +449,27 @@ export const translations: Record<Language, Translations> = {
       subscribeNow: 'Suscribirse ahora',
       yourPlan: 'Tu plan',
       activeUntil: 'Activo hasta',
+      viewPlans: 'Ver planes',
+      choosePlan: 'Elige tu plan',
+      freePlan: 'Plan Gratuito',
+      premiumPlan: 'Plan Premium',
+      monthly: 'Mensual',
+      yearly: 'Anual',
+      perMonth: '/mes',
+      perYear: '/año',
+      currentPlan: 'Plan actual',
+      popularPlan: 'Más popular',
+      freePlanFeatures: 'Características gratuitas',
+      limitedDownloads: 'Descargas limitadas (5/mes)',
+      basicContent: 'Acceso a técnicas básicas',
+      communitySupport: 'Soporte comunitario',
+      paymentMethod: 'Método de pago',
+      payWithCard: 'Pagar con tarjeta',
+      payWithPaypal: 'Pagar con PayPal',
+      payWithGoogle: 'Pagar con Google Play',
+      completePayment: 'Completar pago',
+      processingPayment: 'Procesando pago...',
+      paymentSuccess: '¡Pago exitoso! Bienvenido a Premium',
     },
     ai: {
       title: 'Asistente IA de Supervivencia',
@@ -474,6 +566,8 @@ export const translations: Record<Language, Translations> = {
       noAccount: 'Noch kein Konto?',
       signInSuccess: 'Erfolgreich angemeldet',
       signOutSuccess: 'Erfolgreich abgemeldet',
+      continueWithGoogle: 'Mit Google fortfahren',
+      orContinueWith: 'Oder mit E-Mail fortfahren',
     },
     subscription: {
       free: 'Kostenlos',
@@ -488,6 +582,27 @@ export const translations: Record<Language, Translations> = {
       subscribeNow: 'Jetzt abonnieren',
       yourPlan: 'Ihr Plan',
       activeUntil: 'Aktiv bis',
+      viewPlans: 'Pläne ansehen',
+      choosePlan: 'Wählen Sie Ihren Plan',
+      freePlan: 'Kostenloser Plan',
+      premiumPlan: 'Premium-Plan',
+      monthly: 'Monatlich',
+      yearly: 'Jährlich',
+      perMonth: '/Monat',
+      perYear: '/Jahr',
+      currentPlan: 'Aktueller Plan',
+      popularPlan: 'Am beliebtesten',
+      freePlanFeatures: 'Kostenlose Funktionen',
+      limitedDownloads: 'Begrenzte Downloads (5/Monat)',
+      basicContent: 'Zugriff auf Basistechniken',
+      communitySupport: 'Community-Support',
+      paymentMethod: 'Zahlungsmethode',
+      payWithCard: 'Mit Karte bezahlen',
+      payWithPaypal: 'Mit PayPal bezahlen',
+      payWithGoogle: 'Mit Google Play bezahlen',
+      completePayment: 'Zahlung abschließen',
+      processingPayment: 'Zahlung wird verarbeitet...',
+      paymentSuccess: 'Zahlung erfolgreich! Willkommen bei Premium',
     },
     ai: {
       title: 'KI-Überlebensassistent',
@@ -584,6 +699,8 @@ export const translations: Record<Language, Translations> = {
       noAccount: 'Non hai un account?',
       signInSuccess: 'Accesso effettuato',
       signOutSuccess: 'Disconnesso con successo',
+      continueWithGoogle: 'Continua con Google',
+      orContinueWith: 'O continua con email',
     },
     subscription: {
       free: 'Gratuito',
@@ -598,6 +715,27 @@ export const translations: Record<Language, Translations> = {
       subscribeNow: 'Abbonati ora',
       yourPlan: 'Il tuo piano',
       activeUntil: 'Attivo fino al',
+      viewPlans: 'Visualizza piani',
+      choosePlan: 'Scegli il tuo piano',
+      freePlan: 'Piano Gratuito',
+      premiumPlan: 'Piano Premium',
+      monthly: 'Mensile',
+      yearly: 'Annuale',
+      perMonth: '/mese',
+      perYear: '/anno',
+      currentPlan: 'Piano attuale',
+      popularPlan: 'Più popolare',
+      freePlanFeatures: 'Funzionalità gratuite',
+      limitedDownloads: 'Download limitati (5/mese)',
+      basicContent: 'Accesso alle tecniche di base',
+      communitySupport: 'Supporto della community',
+      paymentMethod: 'Metodo di pagamento',
+      payWithCard: 'Paga con carta',
+      payWithPaypal: 'Paga con PayPal',
+      payWithGoogle: 'Paga con Google Play',
+      completePayment: 'Completa pagamento',
+      processingPayment: 'Elaborazione pagamento...',
+      paymentSuccess: 'Pagamento riuscito! Benvenuto in Premium',
     },
     ai: {
       title: 'Assistente IA di Sopravvivenza',

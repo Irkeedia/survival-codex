@@ -13,18 +13,18 @@ A multi-language survival guide mobile application optimized for Google Play and
 ## Essential Features
 
 ### User Authentication
-- **Functionality**: Simple email/password sign-in and sign-up system with persistent session
-- **Purpose**: Enable personalized experience and subscription management
+- **Functionality**: Free sign-up via Google Play, Google OAuth, or email/password with persistent session
+- **Purpose**: Enable personalized experience and subscription management with multiple convenient sign-up options
 - **Trigger**: User clicks sign-in button in header or attempts to access premium features
-- **Progression**: Click sign-in → Enter credentials → Account created/logged in → Access unlocked
-- **Success criteria**: User session persists across app restarts, smooth authentication flow
+- **Progression**: Click sign-in → Choose Google/email option → Enter credentials (if email) → Account created with free tier → Access unlocked
+- **Success criteria**: User session persists across app restarts, smooth authentication flow with multiple sign-in methods
 
-### Freemium Subscription Model
-- **Functionality**: Free tier allows browsing and bookmarking, Premium tier unlocks downloads and AI assistant
-- **Purpose**: Monetization while providing value to free users and exceptional value to premium subscribers
-- **Trigger**: User attempts to download content or access AI assistant without premium
-- **Progression**: Free user → Clicks restricted feature → Upgrade dialog → Subscribe → Premium access granted
-- **Success criteria**: Clear distinction between free/premium features, seamless upgrade flow
+### Freemium Subscription Model with Plans Page
+- **Functionality**: Dedicated Plans tab showing Free and Premium tiers side-by-side with clear feature comparison and payment options (Card, PayPal, Google Play)
+- **Purpose**: Transparent monetization with clear value proposition and multiple payment methods for user convenience
+- **Trigger**: User clicks Plans tab in navigation or any "Premium" button throughout the app
+- **Progression**: Navigate to Plans → Compare free vs premium → Select payment method → Complete payment → Premium access granted
+- **Success criteria**: Clear feature comparison, all premium buttons redirect to Plans page, seamless payment flow with 3 payment options
 
 ### Multi-Language Support
 - **Functionality**: Full app translation support for English, French, Spanish, German, and Italian
@@ -34,11 +34,11 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: All UI elements and technique content translate correctly and persist across sessions
 
 ### Bottom Navigation Tabs
-- **Functionality**: Four main tabs - Home, Downloads, AI Assistant, Settings - accessible via persistent bottom navigation
-- **Purpose**: Provide mobile app-style navigation optimized for thumb access
+- **Functionality**: Five main tabs - Home, Downloads, AI Assistant, Plans, Settings - accessible via persistent bottom navigation
+- **Purpose**: Provide mobile app-style navigation optimized for thumb access with prominent Plans access
 - **Trigger**: User taps navigation items at bottom of screen
 - **Progression**: Tap tab → View transitions → Content loads → Navigation state persists
-- **Success criteria**: Navigation remains accessible, shows active state, and works seamlessly on all screen sizes
+- **Success criteria**: Navigation remains accessible, shows active state, Plans tab clearly accessible for upgrades
 
 ### Home Tab
 - **Functionality**: Browse, search, and filter survival techniques with category badges
@@ -61,6 +61,13 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Progression**: Open AI tab → Ask question → Receive expert advice → Continue conversation
 - **Success criteria**: AI provides relevant survival advice, chat history persists, free users see upgrade prompt
 
+### Plans Tab
+- **Functionality**: Dedicated subscription plans page with side-by-side Free and Premium plan comparison, featuring detailed feature lists and multiple payment options
+- **Purpose**: Central hub for subscription management with transparent pricing and convenient payment methods
+- **Trigger**: User clicks Plans tab in bottom nav or any "Premium"/"Upgrade" button in the app
+- **Progression**: View plans → Compare features → Sign up (if not logged in) → Select payment method (Card/PayPal/Google Play) → Complete payment → Premium activated
+- **Success criteria**: All premium buttons throughout app redirect here, clear value proposition, free users can sign up, premium payment seamless
+
 ### Settings Tab
 - **Functionality**: Manage language, account, subscription, API key, view storage statistics, clear data
 - **Purpose**: User preference and account management
@@ -69,18 +76,20 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: Settings persist, account management works, subscription status visible
 
 ### Download Techniques (Premium Only)
-- **Functionality**: Download individual techniques for offline access from detail dialog
+- **Functionality**: Download individual techniques for offline access from detail dialog, with premium check redirecting to Plans page
 - **Purpose**: Prepare critical survival information for emergency offline use
 - **Trigger**: User clicks download button in technique dialog
-- **Progression**: View technique → Click download → Premium check → Technique saved → Accessible in Downloads tab
-- **Success criteria**: Free users see upgrade prompt, premium users can download unlimited content
+- **Progression**: View technique → Click download → Premium check → Free users redirected to Plans tab → Premium users download saved → Accessible in Downloads tab
+- **Success criteria**: Free users automatically navigate to Plans page, premium users can download unlimited content
 
 ## Edge Case Handling
-- **Empty Downloads**: Display helpful message encouraging premium users to download, free users to upgrade
+- **Empty Downloads**: Display helpful message encouraging premium users to download, free users automatically navigate to Plans
 - **Empty Search Results**: Display helpful message suggesting to try different keywords
 - **No Bookmarks Yet**: Show empty state encouraging users to bookmark useful techniques
-- **Unauthenticated Access**: Redirect to sign-in when attempting premium features
-- **Free Tier Limitations**: Clear upgrade prompts when accessing premium-only features
+- **Unauthenticated Access**: Redirect to sign-in when attempting premium features or accessing Plans for payment
+- **Free Tier Limitations**: All premium buttons redirect to Plans page for seamless upgrade flow
+- **Multiple Sign-In Methods**: Support Google OAuth and email/password with consistent user experience
+- **Payment Method Selection**: Require payment method selection before completing premium purchase
 - **AI Without API Key**: Premium users prompted to add OpenAI API key in settings
 - **Safe Area Support**: Handle iPhone notches and Android gesture bars with proper padding
 - **Data Clearing**: Confirmation dialogs prevent accidental data loss
@@ -122,59 +131,73 @@ Smooth, app-like transitions that feel native to mobile platforms - purposeful m
 
 ## Component Selection
 - **Components**: 
-  - Card (technique display with glassmorphic backdrop)
-  - Dialog (authentication, upgrade prompts, full technique details)
+  - Card (technique display with glassmorphic backdrop, plan comparison cards)
+  - Dialog (authentication with Google/email options, upgrade prompts, full technique details)
   - Input (search, email/password, API key, chat messages)
-  - Badge (category, difficulty, subscription tier tags)
-  - Button (actions optimized for mobile touch, sign-in, upgrade CTA)
+  - Badge (category, difficulty, subscription tier tags, "Most Popular" plan badge)
+  - Button (actions optimized for mobile touch, sign-in with Google, payment method selection, upgrade CTA)
   - AlertDialog (data clearing confirmations)
   - ScrollArea (scrollable content areas, chat history)
   - Select/Dropdown (language selector)
+  - Separator (dividing plans features, auth methods)
   
 - **Customizations**: 
-  - Bottom navigation bar with safe area support (4 tabs including AI)
+  - Bottom navigation bar with safe area support (5 tabs including Plans)
+  - Plans page with side-by-side free/premium comparison
+  - Payment method buttons (Card, PayPal, Google Play icons)
+  - Google sign-in button with Google logo
   - Glassmorphic card backgrounds with backdrop blur
   - Mobile-optimized touch targets (minimum 44px)
-  - Download button with premium gating in technique dialogs
-  - Crown icon for premium badge and upgrade CTAs
+  - Download button with premium gating redirecting to Plans
+  - Crown icon for premium badge, Plans tab, and upgrade CTAs
   - Chat interface for AI assistant with message bubbles
-  - Authentication modal with sign-in/sign-up toggle
+  - Authentication modal with Google OAuth and email options
   
 - **States**: 
-  - Navigation tabs: inactive, active (filled icon + primary color)
+  - Navigation tabs: inactive, active (filled icon + primary color) - 5 tabs total
+  - Plans cards: current plan (disabled button), upgradeable (active payment selection)
+  - Payment methods: unselected (outline), selected (filled)
+  - Payment button: idle, processing (spinner), disabled (no method selected)
   - Cards: default, pressed (slight scale), bookmarked
   - Buttons: default, hover, pressed, disabled, premium (accent color)
-  - Download status: not downloaded (premium required), downloading, downloaded
-  - User status: signed out, free tier, premium tier
+  - Download status: not downloaded (redirects to Plans), downloading, downloaded
+  - User status: signed out, free tier, premium tier with expiry date
   - AI chat: idle, thinking, error
   
 - **Icon Selection**: 
   - House for Home tab
   - DownloadSimple for Downloads tab
   - Sparkle for AI Assistant tab
+  - Crown for Plans tab and premium features
   - Gear for Settings tab
   - BookmarkSimple for favorites
   - MagnifyingGlass for search
   - Globe for language
   - Trash for data clearing
   - Database for storage
-  - Crown for premium features and upgrade
   - SignIn for authentication
+  - GoogleLogo for Google sign-in and Google Play payment
+  - CreditCard for card payment
+  - PayPal logo (custom SVG) for PayPal payment
   - User for account management
   - Key for API key settings
   - PaperPlaneRight for sending messages
+  - Check for feature lists in plans
   
 - **Spacing**: 
-  - Bottom nav height: 64px with safe area padding
+  - Bottom nav height: 64px with safe area padding (5 tabs)
   - Container padding: p-4 mobile
-  - Card gaps: gap-6 for grid
+  - Card gaps: gap-6 for grid, gap-8 for plans comparison
   - Bottom page padding: pb-20 to account for fixed navigation
   - Chat message spacing: gap-4 with proper alignment
+  - Plans feature lists: gap-4 between items
+  - Payment method buttons: gap-2 in grid
   
 - **Mobile**: 
-  - Bottom navigation fixed to viewport bottom with safe area support (4 tabs)
+  - Bottom navigation fixed to viewport bottom with safe area support (5 tabs)
   - Viewport-fit=cover for edge-to-edge design
-  - Single column layout on mobile (1 column), expanding to 2-3 on larger screens
+  - Single column layout on mobile (1 column), expanding to 2 columns for plans comparison on tablet/desktop
   - Full-height dialogs with proper scroll handling
   - Touch-optimized 44px minimum tap targets throughout
   - Responsive chat interface with proper keyboard handling
+  - Plans page: stacked cards on mobile, side-by-side on larger screens
