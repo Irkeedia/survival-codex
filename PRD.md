@@ -34,11 +34,11 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: All UI elements and technique content translate correctly and persist across sessions
 
 ### Bottom Navigation Tabs
-- **Functionality**: Five main tabs - Home, Downloads, AI Assistant, Plans, Settings - accessible via persistent bottom navigation
-- **Purpose**: Provide mobile app-style navigation optimized for thumb access with prominent Plans access
-- **Trigger**: User taps navigation items at bottom of screen
-- **Progression**: Tap tab → View transitions → Content loads → Navigation state persists
-- **Success criteria**: Navigation remains accessible, shows active state, Plans tab clearly accessible for upgrades
+- **Functionality**: Three main tabs - AI Assistant (left), Home (center), Downloads (right) - accessible via persistent bottom navigation. Settings and Plans accessible via profile menu in header.
+- **Purpose**: Provide mobile app-style navigation optimized for thumb access with streamlined 3-tab layout
+- **Trigger**: User taps navigation items at bottom of screen or clicks profile avatar in header
+- **Progression**: Tap tab → View transitions → Content loads → Navigation state persists; Click profile → Open dropdown → Select Settings or Plans
+- **Success criteria**: Navigation remains accessible, shows active state, Plans and Settings accessible from profile menu
 
 ### Home Tab
 - **Functionality**: Browse, search, and filter survival techniques with category badges
@@ -68,12 +68,19 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Progression**: View plans → Compare features → Sign up (if not logged in) → Select payment method (Card/PayPal/Google Play) → Complete payment → Premium activated
 - **Success criteria**: All premium buttons throughout app redirect here, clear value proposition, free users can sign up, premium payment seamless
 
+### Profile Menu
+- **Functionality**: User avatar button in header that opens dropdown menu with access to Plans and Settings, showing user name, email, and avatar image
+- **Purpose**: Centralized access to account management and settings without cluttering bottom navigation
+- **Trigger**: User clicks profile avatar in top right corner of header
+- **Progression**: Click avatar → Dropdown opens → See user info → Click Settings or Plans → Navigate to selected section
+- **Success criteria**: Avatar displays user's custom image or initials, dropdown shows all account info, seamless navigation to Settings/Plans
+
 ### Settings Tab
-- **Functionality**: Manage language, account, subscription, API key, view storage statistics, clear data
-- **Purpose**: User preference and account management
-- **Trigger**: User navigates to Settings tab
-- **Progression**: View settings → Change preferences → Manage subscription → Sign out if needed
-- **Success criteria**: Settings persist, account management works, subscription status visible
+- **Functionality**: Manage language, account, avatar image, subscription, API key, view storage statistics, clear data
+- **Purpose**: User preference and account management with avatar customization
+- **Trigger**: User navigates to Settings via profile menu dropdown
+- **Progression**: View settings → Change avatar URL → Change preferences → Manage subscription → Sign out if needed
+- **Success criteria**: Settings persist, avatar updates reflect in profile menu, account management works, subscription status visible
 
 ### Download Techniques (Premium Only)
 - **Functionality**: Download individual techniques for offline access from detail dialog, with premium check redirecting to Plans page

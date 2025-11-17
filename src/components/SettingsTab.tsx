@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Language, languageNames } from '@/lib/translations';
-import { Globe, Trash, Database, Crown, User, Key, SignOut } from '@phosphor-icons/react';
+import { Globe, Trash, Database, Crown, User, Key, SignOut, Camera } from '@phosphor-icons/react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { User as UserType } from '@/lib/types';
 import { toast } from 'sonner';
+import { useKV } from '@github/spark/hooks';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,6 +56,8 @@ export function SettingsTab({
   onApiKeyChange,
 }: SettingsTabProps) {
   const [apiKeyInput, setApiKeyInput] = useState(apiKey);
+  const [avatarUrl, setAvatarUrl] = useKV<string>('user-avatar-url', '');
+  const [avatarUrlInput, setAvatarUrlInput] = useState(avatarUrl || '');
 
   const handleClearBookmarks = () => {
     onClearBookmarks();
@@ -75,6 +79,20 @@ export function SettingsTab({
     toast.success(t.ai.apiKeySaved);
   };
 
+  const handleSaveAvatar = () => {
+    setAvatarUrl(avatarUrlInput);
+    toast.success(t.settings.avatarUpdated || 'Avatar updated successfully');
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -92,6 +110,36 @@ export function SettingsTab({
             <CardDescription>{t.settings.accountDesc}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-20 h-20 border-2 border-primary/20">
+                <AvatarImage src={avatarUrl || undefined} alt={user.name} />
+                <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xl">
+                  {getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="avatar-url" className="text-sm font-medium flex items-center gap-2">
+                  <Camera className="w-4 h-4" />
+                  {t.settings.avatarUrl || 'Avatar URL'}
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="avatar-url"
+                    type="url"
+                    value={avatarUrlInput}
+                    onChange={(e) => setAvatarUrlInput(e.target.value)}
+                    placeholder="https://example.com/avatar.jpg"
+                    className="flex-1"
+                  />
+                  <Button onClick={handleSaveAvatar} size="sm">
+                    {t.settings.save || 'Save'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="bg-border/50" />
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{user.name}</p>

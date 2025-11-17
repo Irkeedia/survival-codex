@@ -6,13 +6,12 @@ import { AITab } from '@/components/AITab';
 import { PlansTab } from '@/components/PlansTab';
 import { SettingsTab } from '@/components/SettingsTab';
 import { BottomNav } from '@/components/BottomNav';
+import { ProfileMenu } from '@/components/ProfileMenu';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
 import { AuthDialog } from '@/components/AuthDialog';
 import { UpgradeDialog } from '@/components/UpgradeDialog';
 import { SurvivalTechnique, User } from '@/lib/types';
 import { translations, Language } from '@/lib/translations';
-import { Button } from '@/components/ui/button';
-import { SignIn, Crown } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
 type TabType = 'home' | 'downloads' | 'ai' | 'plans' | 'settings';
@@ -123,26 +122,14 @@ function App() {
                 {t.appSubtitle}
               </p>
             </div>
-            <div className="flex gap-2">
-              {user ? (
-                user.subscriptionTier === 'premium' ? (
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Crown className="w-4 h-4 text-accent" weight="fill" />
-                    {t.subscription.premium}
-                  </Button>
-                ) : (
-                  <Button variant="outline" size="sm" onClick={handleUpgradeClick} className="gap-2">
-                    <Crown className="w-4 h-4" />
-                    {t.subscription.upgradeToPremium}
-                  </Button>
-                )
-              ) : (
-                <Button variant="outline" size="sm" onClick={() => setAuthDialogOpen(true)} className="gap-2">
-                  <SignIn className="w-4 h-4" />
-                  {t.auth.signIn}
-                </Button>
-              )}
-            </div>
+            <ProfileMenu
+              user={user || null}
+              t={t}
+              onSettingsClick={() => setActiveTab('settings')}
+              onPlansClick={() => setActiveTab('plans')}
+              onSignInClick={() => setAuthDialogOpen(true)}
+              onSignOut={handleSignOut}
+            />
           </div>
         </div>
       </header>

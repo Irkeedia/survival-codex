@@ -108,6 +108,9 @@ export interface Translations {
     accountDesc: string;
     openAiApiKey: string;
     openAiApiKeyDesc: string;
+    avatarUrl: string;
+    avatarUpdated: string;
+    save: string;
   };
   downloads: {
     title: string;
@@ -243,6 +246,9 @@ export const translations: Record<Language, Translations> = {
       accountDesc: 'Manage your account and subscription',
       openAiApiKey: 'OpenAI API Key',
       openAiApiKeyDesc: 'Your API key for AI assistant features',
+      avatarUrl: 'Avatar URL',
+      avatarUpdated: 'Avatar updated successfully',
+      save: 'Save',
     },
     downloads: {
       title: 'Downloaded Techniques',
@@ -376,6 +382,9 @@ export const translations: Record<Language, Translations> = {
       accountDesc: 'Gérez votre compte et abonnement',
       openAiApiKey: 'Clé API OpenAI',
       openAiApiKeyDesc: 'Votre clé API pour les fonctionnalités IA',
+      avatarUrl: 'URL de l\'avatar',
+      avatarUpdated: 'Avatar mis à jour avec succès',
+      save: 'Enregistrer',
     },
     downloads: {
       title: 'Techniques téléchargées',
@@ -509,6 +518,9 @@ export const translations: Record<Language, Translations> = {
       accountDesc: 'Administra tu cuenta y suscripción',
       openAiApiKey: 'Clave API de OpenAI',
       openAiApiKeyDesc: 'Tu clave API para funciones de IA',
+      avatarUrl: 'URL del avatar',
+      avatarUpdated: 'Avatar actualizado correctamente',
+      save: 'Guardar',
     },
     downloads: {
       title: 'Técnicas descargadas',
@@ -642,6 +654,9 @@ export const translations: Record<Language, Translations> = {
       accountDesc: 'Verwalten Sie Ihr Konto und Abonnement',
       openAiApiKey: 'OpenAI-API-Schlüssel',
       openAiApiKeyDesc: 'Ihr API-Schlüssel für KI-Funktionen',
+      avatarUrl: 'Avatar-URL',
+      avatarUpdated: 'Avatar erfolgreich aktualisiert',
+      save: 'Speichern',
     },
     downloads: {
       title: 'Heruntergeladene Techniken',
@@ -775,6 +790,9 @@ export const translations: Record<Language, Translations> = {
       accountDesc: 'Gestisci il tuo account e abbonamento',
       openAiApiKey: 'Chiave API OpenAI',
       openAiApiKeyDesc: 'La tua chiave API per funzioni IA',
+      avatarUrl: 'URL avatar',
+      avatarUpdated: 'Avatar aggiornato con successo',
+      save: 'Salva',
     },
     downloads: {
       title: 'Tecniche scaricate',
