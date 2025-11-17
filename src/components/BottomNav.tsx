@@ -1,7 +1,7 @@
 import { House, DownloadSimple, Sparkle } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 
-type TabType = 'home' | 'downloads' | 'ai' | 'plans' | 'settings';
+type TabType = 'home' | 'downloads' | 'ai';
 
 interface BottomNavProps {
   activeTab: TabType;

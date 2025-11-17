@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Language, languageNames } from '@/lib/translations';
-import { Globe, Trash, Database, Crown, User, Key, SignOut, Camera } from '@phosphor-icons/react';
+import { Globe, Trash, Database, Crown, User, SignOut, Camera } from '@phosphor-icons/react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { User as UserType } from '@/lib/types';
 import { toast } from 'sonner';
@@ -52,10 +52,7 @@ export function SettingsTab({
   onClearAllData,
   onSignOut,
   onUpgradeClick,
-  apiKey,
-  onApiKeyChange,
 }: SettingsTabProps) {
-  const [apiKeyInput, setApiKeyInput] = useState(apiKey);
   const [avatarUrl, setAvatarUrl] = useKV<string>('user-avatar-url', '');
   const [avatarUrlInput, setAvatarUrlInput] = useState(avatarUrl || '');
 
@@ -72,11 +69,6 @@ export function SettingsTab({
   const handleClearAllData = () => {
     onClearAllData();
     toast.success(t.settings.cleared);
-  };
-
-  const handleSaveApiKey = () => {
-    onApiKeyChange(apiKeyInput);
-    toast.success(t.ai.apiKeySaved);
   };
 
   const handleSaveAvatar = () => {
@@ -172,33 +164,6 @@ export function SettingsTab({
                 </Button>
               )}
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {user?.subscriptionTier === 'premium' && (
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Key className="w-5 h-5 text-primary" />
-              <CardTitle>{t.settings.openAiApiKey}</CardTitle>
-            </div>
-            <CardDescription>{t.settings.openAiApiKeyDesc}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="api-key">API Key</Label>
-              <Input
-                id="api-key"
-                type="password"
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                placeholder="sk-..."
-              />
-            </div>
-            <Button onClick={handleSaveApiKey} className="w-full">
-              {t.ai.saveApiKey}
-            </Button>
           </CardContent>
         </Card>
       )}

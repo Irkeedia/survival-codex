@@ -3,18 +3,16 @@ import { useKV } from '@github/spark/hooks';
 import { HomeTab } from '@/components/HomeTab';
 import { DownloadsTab } from '@/components/DownloadsTab';
 import { AITab } from '@/components/AITab';
-import { PlansTab } from '@/components/PlansTab';
-import { SettingsTab } from '@/components/SettingsTab';
 import { BottomNav } from '@/components/BottomNav';
 import { ProfileMenu } from '@/components/ProfileMenu';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
 import { AuthDialog } from '@/components/AuthDialog';
-import { UpgradeDialog } from '@/components/UpgradeDialog';
+import { SettingsDialog } from '@/components/SettingsDialog';
 import { SurvivalTechnique, User } from '@/lib/types';
 import { translations, Language } from '@/lib/translations';
 import { toast } from 'sonner';
 
-type TabType = 'home' | 'downloads' | 'ai' | 'plans' | 'settings';
+type TabType = 'home' | 'downloads' | 'ai';
 
 function App() {
   const [bookmarkedIds, setBookmarkedIds] = useKV<string[]>('bookmarked-techniques', []);
@@ -26,7 +24,8 @@ function App() {
   const [selectedTechnique, setSelectedTechnique] = useState<SurvivalTechnique | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [settingsDefaultTab, setSettingsDefaultTab] = useState<'settings' | 'plans'>('settings');
 
   const t = translations[language || 'en'];
 
@@ -49,7 +48,8 @@ function App() {
     }
 
     if (user.subscriptionTier !== 'premium') {
-      setActiveTab('plans');
+      setSettingsDefaultTab('plans');
+      setSettingsDialogOpen(true);
       return;
     }
 
@@ -103,10 +103,18 @@ function App() {
   };
 
   const handleUpgradeClick = () => {
-    setActiveTab('plans');
-    if (upgradeDialogOpen) {
-      setUpgradeDialogOpen(false);
-    }
+    setSettingsDefaultTab('plans');
+    setSettingsDialogOpen(true);
+  };
+
+  const handleSettingsClick = () => {
+    setSettingsDefaultTab('settings');
+    setSettingsDialogOpen(true);
+  };
+
+  const handlePlansClick = () => {
+    setSettingsDefaultTab('plans');
+    setSettingsDialogOpen(true);
   };
 
   return (
@@ -125,8 +133,8 @@ function App() {
             <ProfileMenu
               user={user || null}
               t={t}
-              onSettingsClick={() => setActiveTab('settings')}
-              onPlansClick={() => setActiveTab('plans')}
+              onSettingsClick={handleSettingsClick}
+              onPlansClick={handlePlansClick}
               onSignInClick={() => setAuthDialogOpen(true)}
               onSignOut={handleSignOut}
             />
@@ -164,33 +172,6 @@ function App() {
             onUpgradeClick={handleUpgradeClick}
           />
         )}
-
-        {activeTab === 'plans' && (
-          <PlansTab
-            t={t}
-            user={user || null}
-            onSignUpClick={() => setAuthDialogOpen(true)}
-            onUpgradeToPremium={handleUpgrade}
-          />
-        )}
-
-        {activeTab === 'settings' && (
-          <SettingsTab
-            language={language || 'en'}
-            t={t}
-            bookmarksCount={bookmarkedIds?.length || 0}
-            downloadsCount={downloadedIds?.length || 0}
-            user={user || null}
-            onLanguageChange={setLanguage}
-            onClearBookmarks={handleClearBookmarks}
-            onClearDownloads={handleClearDownloads}
-            onClearAllData={handleClearAllData}
-            onSignOut={handleSignOut}
-            onUpgradeClick={handleUpgradeClick}
-            apiKey={apiKey || ''}
-            onApiKeyChange={setApiKey}
-          />
-        )}
       </main>
 
       <BottomNav 
@@ -217,11 +198,24 @@ function App() {
         t={t}
       />
 
-      <UpgradeDialog
-        open={upgradeDialogOpen}
-        onOpenChange={setUpgradeDialogOpen}
-        onUpgrade={handleUpgrade}
+      <SettingsDialog
+        open={settingsDialogOpen}
+        onOpenChange={setSettingsDialogOpen}
+        defaultTab={settingsDefaultTab}
+        language={language || 'en'}
         t={t}
+        bookmarksCount={bookmarkedIds?.length || 0}
+        downloadsCount={downloadedIds?.length || 0}
+        user={user || null}
+        onLanguageChange={setLanguage}
+        onClearBookmarks={handleClearBookmarks}
+        onClearDownloads={handleClearDownloads}
+        onClearAllData={handleClearAllData}
+        onSignOut={handleSignOut}
+        onUpgradeToPremium={handleUpgrade}
+        onSignUpClick={() => setAuthDialogOpen(true)}
+        apiKey={apiKey || ''}
+        onApiKeyChange={setApiKey}
       />
     </div>
   );

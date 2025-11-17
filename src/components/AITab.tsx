@@ -9,6 +9,8 @@ import { ChatMessage, User } from '@/lib/types';
 import { PaperPlaneRight, Sparkle, Trash, Crown } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
+const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
+
 interface AITabProps {
   t: Translations;
   user: User | null;
@@ -17,7 +19,6 @@ interface AITabProps {
 
 export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   const [messages, setMessages] = useKV<ChatMessage[]>('ai-chat-messages', []);
-  const [apiKey, ] = useKV<string>('openai-api-key', '');
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -31,7 +32,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    if (!apiKey) {
+    if (!CREATOR_API_KEY) {
       toast.error(t.ai.apiKeyRequired, {
         description: t.ai.apiKeyDesc,
       });
@@ -51,7 +52,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
     try {
       const questionText = inputValue;
-      const prompt = `You are a wilderness survival expert. Answer this question concisely and practically: ${questionText}`;
+      const prompt = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
       const response = await window.spark.llm(prompt);
 
       const assistantMessage: ChatMessage = {
@@ -63,7 +64,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
       setMessages((current) => [...(current || []), assistantMessage]);
     } catch (error) {
-      toast.error('Failed to get AI response');
+      toast.error('Impossible d\'obtenir une réponse de Charlie');
       console.error(error);
     } finally {
       setIsLoading(false);

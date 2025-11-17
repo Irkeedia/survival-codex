@@ -1,14 +1,14 @@
 # Planning Guide
 
-A multi-language survival guide mobile application optimized for Google Play and App Store, providing essential wilderness survival techniques with offline access capabilities (premium feature), user authentication system, freemium subscription model, and AI-powered survival assistant for premium members.
+A multi-language survival guide mobile application called Charlie Codex, featuring Charlie - an AI survival assistant. The app provides essential wilderness survival techniques with offline access capabilities (premium feature), user authentication system, freemium subscription model, and AI-powered survival assistant (Charlie) for premium members. The AI is configured by the creator, not the users.
 
 **Experience Qualities**: 
-1. **Educational** - Clear, structured information that teaches survival principles progressively in multiple languages with AI-powered assistance for premium users
-2. **Mobile-First** - Native-feeling app experience optimized for smartphones with bottom navigation and seamless authentication
-3. **Value-Driven** - Free tier for browsing and bookmarking, premium tier unlocks downloads and AI assistance
+1. **Educational** - Clear, structured information that teaches survival principles progressively in multiple languages with Charlie's AI-powered assistance for premium users
+2. **Mobile-First** - Native-feeling app experience optimized for smartphones with streamlined 3-tab bottom navigation and profile-based settings access
+3. **Value-Driven** - Free tier for browsing and bookmarking, premium tier unlocks downloads and Charlie AI assistance
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Multiple categorized survival guides with filtering, search, bookmark functionality, user authentication, freemium subscription model, premium-gated downloads, AI assistant, multi-language support, and mobile-optimized navigation
+  - Multiple categorized survival guides with filtering, search, bookmark functionality, user authentication, freemium subscription model, premium-gated downloads, Charlie AI assistant (creator-configured), multi-language support, and mobile-optimized 3-tab navigation with settings/plans accessible via profile menu
 
 ## Essential Features
 
@@ -34,11 +34,11 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: All UI elements and technique content translate correctly and persist across sessions
 
 ### Bottom Navigation Tabs
-- **Functionality**: Three main tabs - AI Assistant (left), Home (center), Downloads (right) - accessible via persistent bottom navigation. Settings and Plans accessible via profile menu in header.
-- **Purpose**: Provide mobile app-style navigation optimized for thumb access with streamlined 3-tab layout
+- **Functionality**: Three main tabs - Charlie AI (left), Accueil/Home (center), Téléchargements/Downloads (right) - accessible via persistent bottom navigation. Settings and Plans accessible via profile avatar dropdown in header.
+- **Purpose**: Provide mobile app-style navigation optimized for thumb access with streamlined 3-tab layout focused on core features
 - **Trigger**: User taps navigation items at bottom of screen or clicks profile avatar in header
-- **Progression**: Tap tab → View transitions → Content loads → Navigation state persists; Click profile → Open dropdown → Select Settings or Plans
-- **Success criteria**: Navigation remains accessible, shows active state, Plans and Settings accessible from profile menu
+- **Progression**: Tap tab → View transitions → Content loads → Navigation state persists; Click profile avatar → Open dropdown → Select Settings or Plans → Dialog opens
+- **Success criteria**: Navigation remains accessible, shows active state, Plans and Settings accessible from profile dropdown dialog
 
 ### Home Tab
 - **Functionality**: Browse, search, and filter survival techniques with category badges
@@ -55,11 +55,11 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: Downloaded techniques persist and are accessible, free users see upgrade prompt
 
 ### AI Assistant Tab (Premium Feature)
-- **Functionality**: Chat with AI survival expert powered by OpenAI for personalized survival advice
-- **Purpose**: Provide interactive, contextual survival guidance beyond static content
-- **Trigger**: User navigates to AI Assistant tab
-- **Progression**: Open AI tab → Ask question → Receive expert advice → Continue conversation
-- **Success criteria**: AI provides relevant survival advice, chat history persists, free users see upgrade prompt
+- **Functionality**: Chat with Charlie, the AI survival expert, for personalized survival advice. The AI API key is configured by the app creator via environment variables, not by users.
+- **Purpose**: Provide interactive, contextual survival guidance beyond static content through conversational AI
+- **Trigger**: User navigates to Charlie tab (leftmost in navigation)
+- **Progression**: Open Charlie tab → Ask question in French or other languages → Receive expert advice from Charlie → Continue conversation
+- **Success criteria**: Charlie provides relevant survival advice in the user's language, chat history persists, free users see upgrade prompt, no API key management needed from users
 
 ### Plans Tab
 - **Functionality**: Dedicated subscription plans page with side-by-side Free and Premium plan comparison, featuring detailed feature lists and multiple payment options
@@ -69,18 +69,25 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Success criteria**: All premium buttons throughout app redirect here, clear value proposition, free users can sign up, premium payment seamless
 
 ### Profile Menu
-- **Functionality**: User avatar button in header that opens dropdown menu with access to Plans and Settings, showing user name, email, and avatar image
-- **Purpose**: Centralized access to account management and settings without cluttering bottom navigation
+- **Functionality**: User avatar button in header that opens dropdown menu with user info (avatar, name, email), subscription status badge, and navigation to Settings and Plans dialogs
+- **Purpose**: Centralized access to account management and settings without cluttering bottom navigation (only 3 tabs)
 - **Trigger**: User clicks profile avatar in top right corner of header
-- **Progression**: Click avatar → Dropdown opens → See user info → Click Settings or Plans → Navigate to selected section
-- **Success criteria**: Avatar displays user's custom image or initials, dropdown shows all account info, seamless navigation to Settings/Plans
+- **Progression**: Click avatar → Dropdown opens → See user info and subscription → Click Settings or Plans → Dialog opens with tabs → Make changes → Close dialog
+- **Success criteria**: Avatar displays user's custom image or initials, dropdown shows all account info, Settings/Plans open in a unified dialog with tabs, seamless navigation between Settings and Plans tabs within dialog
+
+### Settings & Plans Dialog
+- **Functionality**: Combined dialog with two tabs - Settings and Plans - accessible from profile dropdown, containing all account management, app preferences, and subscription options
+- **Purpose**: Consolidated settings and subscription management in one place without requiring dedicated bottom nav tabs
+- **Trigger**: User clicks Settings or Plans in profile dropdown menu
+- **Progression**: Profile dropdown → Click Settings/Plans → Dialog opens on selected tab → Switch between tabs → Make changes → Close dialog
+- **Success criteria**: Dialog opens with correct default tab, can switch between Settings and Plans tabs, changes persist, closing dialog returns to previous view
 
 ### Settings Tab
-- **Functionality**: Manage language, account, avatar image, subscription, API key, view storage statistics, clear data
-- **Purpose**: User preference and account management with avatar customization
-- **Trigger**: User navigates to Settings via profile menu dropdown
-- **Progression**: View settings → Change avatar URL → Change preferences → Manage subscription → Sign out if needed
-- **Success criteria**: Settings persist, avatar updates reflect in profile menu, account management works, subscription status visible
+- **Functionality**: Manage language, account, avatar image, subscription status, view storage statistics, clear data (within Settings dialog)
+- **Purpose**: User preference and account management with avatar customization, no API key management (handled by creator)
+- **Trigger**: User navigates to Settings via profile menu dropdown, opens in dialog
+- **Progression**: Profile dropdown → Click Settings → Dialog opens on Settings tab → Change avatar URL → Change language → View subscription → Switch to Plans tab if needed → Sign out if needed
+- **Success criteria**: Settings persist, avatar updates reflect in profile menu and dropdown, account management works, subscription status visible, can navigate to Plans tab, no API key field for users
 
 ### Download Techniques (Premium Only)
 - **Functionality**: Download individual techniques for offline access from detail dialog, with premium check redirecting to Plans page
@@ -94,10 +101,10 @@ A multi-language survival guide mobile application optimized for Google Play and
 - **Empty Search Results**: Display helpful message suggesting to try different keywords
 - **No Bookmarks Yet**: Show empty state encouraging users to bookmark useful techniques
 - **Unauthenticated Access**: Redirect to sign-in when attempting premium features or accessing Plans for payment
-- **Free Tier Limitations**: All premium buttons redirect to Plans page for seamless upgrade flow
+- **Free Tier Limitations**: All premium buttons redirect to Settings/Plans dialog for seamless upgrade flow
 - **Multiple Sign-In Methods**: Support Google OAuth and email/password with consistent user experience
 - **Payment Method Selection**: Require payment method selection before completing premium purchase
-- **AI Without API Key**: Premium users prompted to add OpenAI API key in settings
+- **Charlie AI Without Creator Key**: Show appropriate error if creator hasn't configured VITE_AI_API_KEY environment variable
 - **Safe Area Support**: Handle iPhone notches and Android gesture bars with proper padding
 - **Data Clearing**: Confirmation dialogs prevent accidental data loss
 - **Session Persistence**: User remains logged in across app restarts
@@ -139,72 +146,82 @@ Smooth, app-like transitions that feel native to mobile platforms - purposeful m
 ## Component Selection
 - **Components**: 
   - Card (technique display with glassmorphic backdrop, plan comparison cards)
-  - Dialog (authentication with Google/email options, upgrade prompts, full technique details)
-  - Input (search, email/password, API key, chat messages)
+  - Dialog (authentication with Google/email options, Settings/Plans unified dialog with tabs, technique details)
+  - Input (search, email/password, chat messages with Charlie)
   - Badge (category, difficulty, subscription tier tags, "Most Popular" plan badge)
   - Button (actions optimized for mobile touch, sign-in with Google, payment method selection, upgrade CTA)
   - AlertDialog (data clearing confirmations)
-  - ScrollArea (scrollable content areas, chat history)
-  - Select/Dropdown (language selector)
-  - Separator (dividing plans features, auth methods)
+  - ScrollArea (scrollable content areas, chat history with Charlie)
+  - Select/Dropdown (language selector in Settings)
+  - Separator (dividing plan features, auth methods)
+  - Tabs (Settings and Plans tabs within unified dialog)
+  - Avatar (user profile picture with initials fallback in header dropdown)
   
 - **Customizations**: 
-  - Bottom navigation bar with safe area support (5 tabs including Plans)
-  - Plans page with side-by-side free/premium comparison
+  - Bottom navigation bar with safe area support (3 tabs: Charlie, Accueil, Téléchargements)
+  - Profile avatar dropdown menu with user info and navigation to Settings/Plans
+  - Unified Settings/Plans dialog with tabbed interface
+  - Plans comparison within dialog tab (side-by-side free/premium)
   - Payment method buttons (Card, PayPal, Google Play icons)
   - Google sign-in button with Google logo
   - Glassmorphic card backgrounds with backdrop blur
   - Mobile-optimized touch targets (minimum 44px)
-  - Download button with premium gating redirecting to Plans
-  - Crown icon for premium badge, Plans tab, and upgrade CTAs
-  - Chat interface for AI assistant with message bubbles
+  - Download button with premium gating redirecting to Plans tab in dialog
+  - Crown icon for premium badge and upgrade CTAs
+  - Chat interface for Charlie with message bubbles
   - Authentication modal with Google OAuth and email options
+  - Profile dropdown showing avatar, name, email, subscription tier
   
 - **States**: 
-  - Navigation tabs: inactive, active (filled icon + primary color) - 5 tabs total
+  - Navigation tabs: inactive, active (filled icon + primary color) - 3 tabs only
+  - Profile avatar: default, hover (subtle scale), active dropdown
+  - Settings/Plans dialog: closed, open on Settings tab, open on Plans tab
   - Plans cards: current plan (disabled button), upgradeable (active payment selection)
   - Payment methods: unselected (outline), selected (filled)
   - Payment button: idle, processing (spinner), disabled (no method selected)
   - Cards: default, pressed (slight scale), bookmarked
   - Buttons: default, hover, pressed, disabled, premium (accent color)
-  - Download status: not downloaded (redirects to Plans), downloading, downloaded
-  - User status: signed out, free tier, premium tier with expiry date
-  - AI chat: idle, thinking, error
+  - Download status: not downloaded (redirects to Plans in dialog), downloading, downloaded
+  - User status: signed out (shows Sign In button), free tier, premium tier with expiry date
+  - Charlie chat: idle, thinking, error
   
 - **Icon Selection**: 
-  - House for Home tab
-  - DownloadSimple for Downloads tab
-  - Sparkle for AI Assistant tab
-  - Crown for Plans tab and premium features
-  - Gear for Settings tab
+  - Sparkle for Charlie AI tab (leftmost)
+  - House for Accueil/Home tab (center)
+  - DownloadSimple for Téléchargements/Downloads tab (rightmost)
+  - User for profile avatar placeholder and account section
+  - Crown for Plans, premium features, and upgrade CTAs
+  - Gear for Settings
   - BookmarkSimple for favorites
   - MagnifyingGlass for search
   - Globe for language
   - Trash for data clearing
   - Database for storage
-  - SignIn for authentication
+  - SignIn/SignOut for authentication
   - GoogleLogo for Google sign-in and Google Play payment
   - CreditCard for card payment
   - PayPal logo (custom SVG) for PayPal payment
-  - User for account management
-  - Key for API key settings
-  - PaperPlaneRight for sending messages
+  - Camera for avatar URL update
+  - PaperPlaneRight for sending messages to Charlie
   - Check for feature lists in plans
   
 - **Spacing**: 
-  - Bottom nav height: 64px with safe area padding (5 tabs)
+  - Bottom nav height: 64px with safe area padding (3 tabs only)
   - Container padding: p-4 mobile
   - Card gaps: gap-6 for grid, gap-8 for plans comparison
   - Bottom page padding: pb-20 to account for fixed navigation
-  - Chat message spacing: gap-4 with proper alignment
+  - Charlie chat message spacing: gap-4 with proper alignment
   - Plans feature lists: gap-4 between items
   - Payment method buttons: gap-2 in grid
+  - Dialog content: proper padding for tabbed interface
   
 - **Mobile**: 
-  - Bottom navigation fixed to viewport bottom with safe area support (5 tabs)
+  - Bottom navigation fixed to viewport bottom with safe area support (3 tabs: Charlie, Accueil, Téléchargements)
+  - Profile avatar button in header opening dropdown menu
+  - Settings/Plans in unified dialog (not separate pages/tabs in navigation)
   - Viewport-fit=cover for edge-to-edge design
-  - Single column layout on mobile (1 column), expanding to 2 columns for plans comparison on tablet/desktop
+  - Single column layout on mobile (1 column), expanding to 2 columns for plans comparison on tablet/desktop within dialog
   - Full-height dialogs with proper scroll handling
   - Touch-optimized 44px minimum tap targets throughout
-  - Responsive chat interface with proper keyboard handling
-  - Plans page: stacked cards on mobile, side-by-side on larger screens
+  - Responsive Charlie chat interface with proper keyboard handling
+  - Plans: stacked cards on mobile, side-by-side on larger screens (within dialog)
