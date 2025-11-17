@@ -4,10 +4,12 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Translations } from '@/lib/translations';
-import { ChatMessage, User } from '@/lib/types';
-import { PaperPlaneRight, Sparkle, Trash, Crown } from '@phosphor-icons/react';
+import { ChatMessage, ChatConversation, User } from '@/lib/types';
+import { PaperPlaneRight, Sparkle, Trash, Crown, ClockCounterClockwise, Plus, ChatCircleText } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
 
@@ -18,16 +20,43 @@ interface AITabProps {
 }
 
 export function AITab({ t, user, onUpgradeClick }: AITabProps) {
-  const [messages, setMessages] = useKV<ChatMessage[]>('ai-chat-messages', []);
+  const [conversations, setConversations] = useKV<ChatConversation[]>('ai-conversations', []);
+  const [currentConversationId, setCurrentConversationId] = useKV<string | null>('current-conversation-id', null);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const currentConversation = conversations?.find(c => c.id === currentConversationId);
+  const messages = currentConversation?.messages || [];
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const createNewConversation = () => {
+    const newConversation: ChatConversation = {
+      id: Date.now().toString(),
+      title: t.ai.newConversation,
+      messages: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    
+    setConversations((current) => [newConversation, ...(current || [])]);
+    setCurrentConversationId(newConversation.id);
+    setSheetOpen(false);
+  };
+
+  const deleteConversation = (id: string) => {
+    setConversations((current) => (current || []).filter(c => c.id !== id));
+    if (currentConversationId === id) {
+      setCurrentConversationId(null);
+    }
+    toast.success(t.ai.deleteConversation);
+  };
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -39,6 +68,21 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
       return;
     }
 
+    let conversationId = currentConversationId;
+    
+    if (!conversationId) {
+      const newConv: ChatConversation = {
+        id: Date.now().toString(),
+        title: inputValue.trim().substring(0, 50),
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      setConversations((current) => [newConv, ...(current || [])]);
+      conversationId = newConv.id;
+      setCurrentConversationId(conversationId);
+    }
+
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -46,14 +90,26 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
       timestamp: Date.now(),
     };
 
-    setMessages((current) => [...(current || []), userMessage]);
+    setConversations((current) => 
+      (current || []).map(conv => 
+        conv.id === conversationId 
+          ? { 
+              ...conv, 
+              messages: [...conv.messages, userMessage],
+              updatedAt: Date.now(),
+              title: conv.messages.length === 0 ? inputValue.trim().substring(0, 50) : conv.title
+            }
+          : conv
+      )
+    );
+    
     setInputValue('');
     setIsLoading(true);
 
     try {
-      const questionText = inputValue;
-      const prompt = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
-      const response = await window.spark.llm(prompt);
+      const questionText = userMessage.content;
+      const promptText = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
+      const response = await window.spark.llm(promptText);
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -62,7 +118,17 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
         timestamp: Date.now(),
       };
 
-      setMessages((current) => [...(current || []), assistantMessage]);
+      setConversations((current) => 
+        (current || []).map(conv => 
+          conv.id === conversationId 
+            ? { 
+                ...conv, 
+                messages: [...conv.messages, assistantMessage],
+                updatedAt: Date.now()
+              }
+            : conv
+        )
+      );
     } catch (error) {
       toast.error('Impossible d\'obtenir une réponse de Charlie');
       console.error(error);
@@ -72,8 +138,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   };
 
   const handleClearChat = () => {
-    setMessages([]);
-    toast.success(t.ai.clearChat);
+    if (!currentConversationId) return;
+    deleteConversation(currentConversationId);
   };
 
   if (!user) {
@@ -107,16 +173,87 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   return (
     <div className="flex flex-col h-[calc(100vh-14rem)] sm:h-[calc(100vh-12rem)]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 sm:gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h2 className="text-xl sm:text-2xl font-bold truncate">{t.ai.title}</h2>
           <p className="text-xs sm:text-sm text-muted-foreground">{t.ai.subtitle}</p>
         </div>
-        {messages && messages.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={handleClearChat} className="gap-2 self-start sm:self-auto touch-manipulation h-9 sm:h-10">
-            <Trash size={16} className="sm:w-[18px] sm:h-[18px]" />
-            <span className="text-sm">{t.ai.clearChat}</span>
+        <div className="flex gap-2 items-center">
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2 touch-manipulation h-9 sm:h-10">
+                <ClockCounterClockwise size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-sm hidden sm:inline">{t.ai.conversationHistory}</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px] flex flex-col">
+              <SheetHeader>
+                <SheetTitle className="flex items-center justify-between">
+                  <span>{t.ai.conversationHistory}</span>
+                  <Button size="sm" onClick={createNewConversation} className="gap-1.5 h-8 px-3">
+                    <Plus size={16} />
+                    <span className="text-xs">{t.ai.newConversation}</span>
+                  </Button>
+                </SheetTitle>
+              </SheetHeader>
+              <ScrollArea className="flex-1 -mx-6 px-6 mt-4">
+                {(!conversations || conversations.length === 0) ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
+                    <ChatCircleText size={48} className="text-muted-foreground/50" weight="duotone" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{t.ai.noConversations}</p>
+                      <p className="text-xs text-muted-foreground">{t.ai.noConversationsDesc}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {conversations.map((conv) => (
+                      <div
+                        key={conv.id}
+                        className={cn(
+                          "group flex items-start gap-2 p-3 rounded-lg border cursor-pointer transition-colors hover:bg-muted/50",
+                          currentConversationId === conv.id ? "bg-muted border-primary" : "bg-card"
+                        )}
+                        onClick={() => {
+                          setCurrentConversationId(conv.id);
+                          setSheetOpen(false);
+                        }}
+                      >
+                        <ChatCircleText size={20} className="flex-shrink-0 mt-0.5" weight={currentConversationId === conv.id ? 'fill' : 'regular'} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{conv.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {conv.messages.length} {conv.messages.length === 1 ? 'message' : 'messages'}
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(conv.id);
+                          }}
+                        >
+                          <Trash size={16} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+          <Button variant="outline" size="sm" onClick={createNewConversation} className="gap-2 touch-manipulation h-9 sm:h-10">
+            <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <span className="text-sm hidden sm:inline">{t.ai.newConversation}</span>
           </Button>
-        )}
+          {messages && messages.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={handleClearChat} className="gap-2 touch-manipulation h-9 sm:h-10">
+              <Trash size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-sm hidden sm:inline">{t.ai.clearChat}</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card className="flex-1 flex flex-col overflow-hidden">

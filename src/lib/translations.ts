@@ -84,6 +84,12 @@ export interface Translations {
     apiKeyDesc: string;
     saveApiKey: string;
     apiKeySaved: string;
+    conversationHistory: string;
+    newConversation: string;
+    deleteConversation: string;
+    noConversations: string;
+    noConversationsDesc: string;
+    conversation: string;
   };
   settings: {
     title: string;
@@ -209,19 +215,25 @@ export const translations: Record<Language, Translations> = {
       paymentSuccess: 'Payment successful! Welcome to Premium',
     },
     ai: {
-      title: 'Charlie - Assistant IA',
-      subtitle: 'Obtenez des conseils de survie d\'experts avec Charlie',
-      placeholder: 'Posez une question à Charlie...',
-      send: 'Envoyer',
-      thinking: 'Charlie réfléchit...',
-      premiumOnly: 'Charlie est une fonctionnalité Premium',
-      askAnything: 'Demandez n\'importe quoi à Charlie sur la survie',
-      exampleQuestion: 'Comment purifier l\'eau dans la nature ?',
-      clearChat: 'Effacer la conversation',
-      apiKeyRequired: 'Clé API requise',
-      apiKeyDesc: 'La clé API est configurée par l\'administrateur.',
-      saveApiKey: 'Enregistrer la clé API',
-      apiKeySaved: 'Clé API enregistrée avec succès',
+      title: 'Charlie - AI Assistant',
+      subtitle: 'Get expert survival advice with Charlie',
+      placeholder: 'Ask Charlie a question...',
+      send: 'Send',
+      thinking: 'Charlie is thinking...',
+      premiumOnly: 'Charlie is a Premium feature',
+      askAnything: 'Ask Charlie anything about survival',
+      exampleQuestion: 'How to purify water in the wild?',
+      clearChat: 'Clear conversation',
+      apiKeyRequired: 'API key required',
+      apiKeyDesc: 'The API key is configured by the administrator.',
+      saveApiKey: 'Save API key',
+      apiKeySaved: 'API key saved successfully',
+      conversationHistory: 'History',
+      newConversation: 'New conversation',
+      deleteConversation: 'Delete',
+      noConversations: 'No conversations',
+      noConversationsDesc: 'Start a new conversation',
+      conversation: 'Conversation',
     },
     settings: {
       title: 'Settings',
@@ -358,6 +370,12 @@ export const translations: Record<Language, Translations> = {
       apiKeyDesc: 'Entrez votre clé API OpenAI dans les paramètres pour utiliser l\'assistant IA.',
       saveApiKey: 'Enregistrer la clé API',
       apiKeySaved: 'Clé API enregistrée avec succès',
+      conversationHistory: 'Historique',
+      newConversation: 'Nouvelle conversation',
+      deleteConversation: 'Supprimer',
+      noConversations: 'Aucune conversation',
+      noConversationsDesc: 'Commencez une nouvelle conversation',
+      conversation: 'Conversation',
     },
     settings: {
       title: 'Paramètres',
@@ -494,6 +512,12 @@ export const translations: Record<Language, Translations> = {
       apiKeyDesc: 'Ingresa tu clave API de OpenAI en Ajustes para usar el asistente IA.',
       saveApiKey: 'Guardar clave API',
       apiKeySaved: 'Clave API guardada correctamente',
+      conversationHistory: 'Historial',
+      newConversation: 'Nueva conversación',
+      deleteConversation: 'Eliminar',
+      noConversations: 'Sin conversaciones',
+      noConversationsDesc: 'Inicia una nueva conversación',
+      conversation: 'Conversación',
     },
     settings: {
       title: 'Ajustes',
@@ -630,6 +654,12 @@ export const translations: Record<Language, Translations> = {
       apiKeyDesc: 'Geben Sie Ihren OpenAI-API-Schlüssel in den Einstellungen ein.',
       saveApiKey: 'API-Schlüssel speichern',
       apiKeySaved: 'API-Schlüssel erfolgreich gespeichert',
+      conversationHistory: 'Verlauf',
+      newConversation: 'Neues Gespräch',
+      deleteConversation: 'Löschen',
+      noConversations: 'Keine Gespräche',
+      noConversationsDesc: 'Starten Sie ein neues Gespräch',
+      conversation: 'Gespräch',
     },
     settings: {
       title: 'Einstellungen',
@@ -766,6 +796,12 @@ export const translations: Record<Language, Translations> = {
       apiKeyDesc: 'Inserisci la tua chiave API OpenAI nelle Impostazioni.',
       saveApiKey: 'Salva chiave API',
       apiKeySaved: 'Chiave API salvata con successo',
+      conversationHistory: 'Cronologia',
+      newConversation: 'Nuova conversazione',
+      deleteConversation: 'Elimina',
+      noConversations: 'Nessuna conversazione',
+      noConversationsDesc: 'Inizia una nuova conversazione',
+      conversation: 'Conversazione',
     },
     settings: {
       title: 'Impostazioni',

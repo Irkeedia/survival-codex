@@ -7,12 +7,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, Warning, Lightbulb, DownloadSimple, Crown } from '@phosphor-icons/react';
+import { Clock, Warning, Lightbulb, DownloadSimple, Crown, X } from '@phosphor-icons/react';
 import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -78,7 +79,12 @@ export function TechniqueDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50 p-0">
-        <div className="p-4 sm:p-6">
+        <DialogClose className="absolute left-4 top-4 rounded-full p-2 bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors z-10 touch-manipulation">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        
+        <div className="p-4 sm:p-6 pt-14 sm:pt-6">
           <DialogHeader>
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3">
               <div className="flex items-start gap-1.5 sm:gap-2 flex-wrap">
@@ -128,7 +134,7 @@ export function TechniqueDialog({
                 </Button>
               )}
             </div>
-            <DialogTitle className="text-xl sm:text-2xl leading-tight pr-8 sm:pr-0">{title}</DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl leading-tight">{title}</DialogTitle>
             <DialogDescription className="text-sm sm:text-base leading-relaxed">
               {description}
             </DialogDescription>
