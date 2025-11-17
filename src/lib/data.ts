@@ -333,13 +333,13 @@ export const survivalTechniques: SurvivalTechnique[] = [
 ];
 
 export const categoryColors: Record<string, string> = {
-  shelter: 'bg-amber-100 text-amber-800 border-amber-300',
-  water: 'bg-blue-100 text-blue-800 border-blue-300',
-  fire: 'bg-orange-100 text-orange-800 border-orange-300',
-  food: 'bg-green-100 text-green-800 border-green-300',
-  navigation: 'bg-purple-100 text-purple-800 border-purple-300',
-  'first-aid': 'bg-red-100 text-red-800 border-red-300',
-  signaling: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+  shelter: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
+  water: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
+  fire: 'bg-orange-500/20 text-orange-300 border-orange-500/50',
+  food: 'bg-green-500/20 text-green-300 border-green-500/50',
+  navigation: 'bg-purple-500/20 text-purple-300 border-purple-500/50',
+  'first-aid': 'bg-red-500/20 text-red-300 border-red-500/50',
+  signaling: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50',
 };
 
 export const categoryLabels: Record<string, string> = {

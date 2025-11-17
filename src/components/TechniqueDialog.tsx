@@ -1,4 +1,6 @@
 import { SurvivalTechnique } from '@/lib/types';
+import { Language, translations } from '@/lib/translations';
+import { techniqueTranslations } from '@/lib/techniqueTranslations';
 import {
   Dialog,
   DialogContent,
@@ -10,54 +12,64 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, Warning, Lightbulb } from '@phosphor-icons/react';
-import { categoryColors, categoryLabels } from '@/lib/data';
+import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
 
 interface TechniqueDialogProps {
   technique: SurvivalTechnique | null;
+  language: Language;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function TechniqueDialog({ technique, open, onOpenChange }: TechniqueDialogProps) {
+export function TechniqueDialog({ technique, language, open, onOpenChange }: TechniqueDialogProps) {
   if (!technique) return null;
+
+  const t = translations[language];
+  const translation = techniqueTranslations[technique.id]?.[language];
+  
+  const title = translation?.title || technique.title;
+  const description = translation?.description || technique.description;
+  const steps = translation?.steps || technique.steps;
+  const warnings = translation?.warnings || technique.warnings;
+  const tips = translation?.tips || technique.tips;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh]">
+      <DialogContent className="max-w-2xl max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50">
         <DialogHeader>
           <div className="flex items-start gap-2 mb-2">
             <Badge 
               variant="outline" 
-              className={cn("text-xs", categoryColors[technique.category])}
+              className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
             >
-              {categoryLabels[technique.category]}
+              {t.categories[technique.category]}
             </Badge>
             <Badge 
               variant="secondary" 
-              className="text-xs capitalize"
+              className="text-xs capitalize backdrop-blur-sm"
             >
-              {technique.difficulty}
+              {t.difficulty[technique.difficulty]}
             </Badge>
             {technique.timeRequired && (
-              <Badge variant="outline" className="text-xs flex items-center gap-1">
+              <Badge variant="outline" className="text-xs flex items-center gap-1 backdrop-blur-sm">
                 <Clock className="w-3 h-3" />
                 {technique.timeRequired}
               </Badge>
             )}
           </div>
-          <DialogTitle className="text-2xl">{technique.title}</DialogTitle>
+          <DialogTitle className="text-2xl">{title}</DialogTitle>
           <DialogDescription className="text-base">
-            {technique.description}
+            {description}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(85vh-180px)] pr-4">
           <div className="space-y-6">
             <div>
-              <h3 className="font-semibold text-lg mb-3">Steps</h3>
+              <h3 className="font-semibold text-lg mb-3">{t.steps}</h3>
               <ol className="space-y-3">
-                {technique.steps.map((step, index) => (
+                {steps.map((step, index) => (
                   <li key={index} className="flex gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center">
                       {index + 1}
@@ -68,16 +80,16 @@ export function TechniqueDialog({ technique, open, onOpenChange }: TechniqueDial
               </ol>
             </div>
 
-            {technique.warnings && technique.warnings.length > 0 && (
+            {warnings && warnings.length > 0 && (
               <>
-                <Separator />
+                <Separator className="bg-border/50" />
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Warning className="w-5 h-5 text-destructive" weight="fill" />
-                    <h3 className="font-semibold text-lg">Warnings</h3>
+                    <h3 className="font-semibold text-lg">{t.warnings}</h3>
                   </div>
                   <ul className="space-y-2">
-                    {technique.warnings.map((warning, index) => (
+                    {warnings.map((warning, index) => (
                       <li key={index} className="flex gap-2">
                         <span className="text-destructive mt-1">•</span>
                         <span className="text-sm leading-relaxed">{warning}</span>
@@ -88,16 +100,16 @@ export function TechniqueDialog({ technique, open, onOpenChange }: TechniqueDial
               </>
             )}
 
-            {technique.tips && technique.tips.length > 0 && (
+            {tips && tips.length > 0 && (
               <>
-                <Separator />
+                <Separator className="bg-border/50" />
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Lightbulb className="w-5 h-5 text-accent" weight="fill" />
-                    <h3 className="font-semibold text-lg">Tips</h3>
+                    <h3 className="font-semibold text-lg">{t.tips}</h3>
                   </div>
                   <ul className="space-y-2">
-                    {technique.tips.map((tip, index) => (
+                    {tips.map((tip, index) => (
                       <li key={index} className="flex gap-2">
                         <span className="text-accent mt-1">•</span>
                         <span className="text-sm leading-relaxed">{tip}</span>

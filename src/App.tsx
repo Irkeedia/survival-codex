@@ -6,17 +6,23 @@ import { Badge } from '@/components/ui/badge';
 import { MagnifyingGlass, BookmarkSimple, X } from '@phosphor-icons/react';
 import { TechniqueCard } from '@/components/TechniqueCard';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
-import { survivalTechniques, categoryLabels } from '@/lib/data';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { survivalTechniques } from '@/lib/data';
 import { SurvivalTechnique, SurvivalCategory } from '@/lib/types';
+import { translations, Language } from '@/lib/translations';
+import { techniqueTranslations } from '@/lib/techniqueTranslations';
 import { cn } from '@/lib/utils';
 
 function App() {
   const [bookmarkedIds, setBookmarkedIds] = useKV<string[]>('bookmarked-techniques', []);
+  const [language, setLanguage] = useKV<Language>('app-language', 'en');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SurvivalCategory | 'all'>('all');
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
   const [selectedTechnique, setSelectedTechnique] = useState<SurvivalTechnique | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const t = translations[language || 'en'];
 
   const toggleBookmark = (id: string) => {
     setBookmarkedIds((current) => {
@@ -43,15 +49,25 @@ function App() {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(t => 
-        t.title.toLowerCase().includes(query) ||
-        t.description.toLowerCase().includes(query) ||
-        t.category.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter(technique => {
+        const translation = techniqueTranslations[technique.id]?.[language || 'en'];
+        if (translation) {
+          return (
+            translation.title.toLowerCase().includes(query) ||
+            translation.description.toLowerCase().includes(query) ||
+            t.categories[technique.category].toLowerCase().includes(query)
+          );
+        }
+        return (
+          technique.title.toLowerCase().includes(query) ||
+          technique.description.toLowerCase().includes(query) ||
+          technique.category.toLowerCase().includes(query)
+        );
+      });
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory, showBookmarksOnly, bookmarkedIds]);
+  }, [searchQuery, selectedCategory, showBookmarksOnly, bookmarkedIds, language, t.categories]);
 
   const handleTechniqueClick = (technique: SurvivalTechnique) => {
     setSelectedTechnique(technique);
@@ -61,15 +77,23 @@ function App() {
   const categories: Array<SurvivalCategory | 'all'> = ['all', 'shelter', 'water', 'fire', 'food', 'navigation', 'first-aid', 'signaling'];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen">
+      <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-10 shadow-lg shadow-primary/5">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
-            Survival Codex
-          </h1>
-          <p className="text-muted-foreground text-sm md:text-base">
-            Essential wilderness survival techniques and knowledge
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                {t.appTitle}
+              </h1>
+              <p className="text-muted-foreground text-sm md:text-base">
+                {t.appSubtitle}
+              </p>
+            </div>
+            <LanguageSelector 
+              language={language || 'en'} 
+              onLanguageChange={(lang) => setLanguage(lang)} 
+            />
+          </div>
         </div>
       </header>
 
@@ -79,10 +103,10 @@ function App() {
             <div className="relative flex-1">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search techniques..."
+                placeholder={t.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                className="pl-9 bg-card/50 backdrop-blur-sm border-border/50"
               />
               {searchQuery && (
                 <Button
@@ -99,10 +123,10 @@ function App() {
             <Button
               variant={showBookmarksOnly ? 'default' : 'outline'}
               onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
-              className="gap-2"
+              className="gap-2 bg-card/50 backdrop-blur-sm border-border/50"
             >
               <BookmarkSimple weight={showBookmarksOnly ? 'fill' : 'regular'} className="w-4 h-4" />
-              Bookmarks {(bookmarkedIds?.length || 0) > 0 && `(${bookmarkedIds?.length || 0})`}
+              {t.bookmarks} {(bookmarkedIds?.length || 0) > 0 && `(${bookmarkedIds?.length || 0})`}
             </Button>
           </div>
 
@@ -112,19 +136,19 @@ function App() {
                 key={category}
                 variant={selectedCategory === category ? 'default' : 'outline'}
                 className={cn(
-                  "cursor-pointer transition-all hover:scale-105 capitalize",
-                  selectedCategory === category && "shadow-sm"
+                  "cursor-pointer transition-all hover:scale-105 capitalize backdrop-blur-sm",
+                  selectedCategory === category && "shadow-lg shadow-primary/20"
                 )}
                 onClick={() => setSelectedCategory(category)}
               >
-                {category === 'all' ? 'All Categories' : categoryLabels[category]}
+                {category === 'all' ? t.allCategories : t.categories[category]}
               </Badge>
             ))}
           </div>
 
           {filteredTechniques.length === 0 ? (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted/50 backdrop-blur-sm mb-4 border border-border/50">
                 {showBookmarksOnly ? (
                   <BookmarkSimple className="w-8 h-8 text-muted-foreground" />
                 ) : (
@@ -132,13 +156,10 @@ function App() {
                 )}
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                {showBookmarksOnly ? 'No bookmarks yet' : 'No techniques found'}
+                {showBookmarksOnly ? t.noBookmarksTitle : t.noResultsTitle}
               </h3>
               <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                {showBookmarksOnly 
-                  ? 'Start bookmarking techniques to save them for quick access later.'
-                  : 'Try adjusting your search or filters to find what you\'re looking for.'
-                }
+                {showBookmarksOnly ? t.noBookmarksDesc : t.noResultsDesc}
               </p>
             </div>
           ) : (
@@ -147,6 +168,7 @@ function App() {
                 <TechniqueCard
                   key={technique.id}
                   technique={technique}
+                  language={language || 'en'}
                   isBookmarked={bookmarkedIds?.includes(technique.id) || false}
                   onToggleBookmark={() => toggleBookmark(technique.id)}
                   onClick={() => handleTechniqueClick(technique)}
@@ -159,6 +181,7 @@ function App() {
 
       <TechniqueDialog
         technique={selectedTechnique}
+        language={language || 'en'}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
