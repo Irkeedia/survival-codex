@@ -50,8 +50,8 @@ export function SettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[calc(100vw-1rem)] sm:max-w-4xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto p-0">
-        <div className="p-4 sm:p-6">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-4xl h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 gap-0">
+        <div className="flex-shrink-0 p-4 sm:p-6 border-b border-border/50">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl font-bold">
               {activeTab === 'settings' ? t.tabs.settings : t.subscription.choosePlan}
@@ -59,8 +59,8 @@ export function SettingsDialog({
           </DialogHeader>
         </div>
         
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'settings' | 'plans')} className="w-full">
-          <div className="px-4 sm:px-6">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'settings' | 'plans')} className="flex flex-col flex-1 min-h-0">
+          <div className="flex-shrink-0 px-4 sm:px-6 pt-4">
             <TabsList className="grid w-full grid-cols-2 h-11">
               <TabsTrigger value="settings" className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
                 <Gear className="w-4 h-4 flex-shrink-0" />
@@ -73,7 +73,7 @@ export function SettingsDialog({
             </TabsList>
           </div>
           
-          <TabsContent value="settings" className="mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+          <TabsContent value="settings" className="flex-1 overflow-y-auto mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
             <SettingsTab
               language={language}
               t={t}
@@ -91,7 +91,7 @@ export function SettingsDialog({
             />
           </TabsContent>
           
-          <TabsContent value="plans" className="mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+          <TabsContent value="plans" className="flex-1 overflow-y-auto mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
             <PlansTab
               t={t}
               user={user}

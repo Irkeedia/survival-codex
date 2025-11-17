@@ -86,10 +86,10 @@ export function SettingsTab({
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-4 sm:space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold mb-2">{t.settings.title}</h2>
-        <p className="text-muted-foreground">{t.settings.subtitle}</p>
+        <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">{t.settings.title}</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">{t.settings.subtitle}</p>
       </div>
 
       {user && (
@@ -102,19 +102,19 @@ export function SettingsTab({
             <CardDescription>{t.settings.accountDesc}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="w-20 h-20 border-2 border-primary/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-primary/20 flex-shrink-0">
                 <AvatarImage src={avatarUrl || undefined} alt={user.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xl">
+                <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-lg sm:text-xl">
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 w-full space-y-2">
                 <Label htmlFor="avatar-url" className="text-sm font-medium flex items-center gap-2">
                   <Camera className="w-4 h-4" />
                   {t.settings.avatarUrl || 'Avatar URL'}
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     id="avatar-url"
                     type="url"
@@ -123,7 +123,7 @@ export function SettingsTab({
                     placeholder="https://example.com/avatar.jpg"
                     className="flex-1"
                   />
-                  <Button onClick={handleSaveAvatar} size="sm">
+                  <Button onClick={handleSaveAvatar} size="sm" className="w-full sm:w-auto">
                     {t.settings.save || 'Save'}
                   </Button>
                 </div>
@@ -132,12 +132,12 @@ export function SettingsTab({
 
             <Separator className="bg-border/50" />
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <p className="font-medium">{user.name}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-sm text-muted-foreground break-all">{user.email}</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={onSignOut} className="gap-2">
+              <Button variant="ghost" size="sm" onClick={onSignOut} className="gap-2 w-full sm:w-auto">
                 <SignOut className="w-4 h-4" />
                 {t.auth.signOut}
               </Button>
@@ -145,7 +145,7 @@ export function SettingsTab({
 
             <Separator className="bg-border/50" />
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <p className="font-medium">{t.subscription.yourPlan}</p>
                 <p className="text-sm text-muted-foreground">
@@ -153,12 +153,12 @@ export function SettingsTab({
                 </p>
               </div>
               {user.subscriptionTier === 'premium' ? (
-                <Badge className="bg-accent text-accent-foreground gap-1">
+                <Badge className="bg-accent text-accent-foreground gap-1 w-fit">
                   <Crown className="w-3 h-3" weight="fill" />
                   {t.subscription.premium}
                 </Badge>
               ) : (
-                <Button variant="outline" size="sm" onClick={onUpgradeClick} className="gap-2">
+                <Button variant="outline" size="sm" onClick={onUpgradeClick} className="gap-2 w-full sm:w-auto">
                   <Crown className="w-4 h-4" />
                   {t.subscription.upgradeToPremium}
                 </Button>
@@ -193,8 +193,8 @@ export function SettingsTab({
           <CardDescription>{t.settings.storageDesc}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex-1">
               <p className="font-medium">{t.bookmarks}</p>
               <p className="text-sm text-muted-foreground">
                 {bookmarksCount} {t.settings.bookmarksCount}
@@ -205,14 +205,14 @@ export function SettingsTab({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2"
+                  className="gap-2 w-full sm:w-auto"
                   disabled={bookmarksCount === 0}
                 >
                   <Trash className="w-4 h-4" />
                   {t.settings.clearBookmarks}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-[calc(100vw-2rem)] sm:max-w-lg">
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t.settings.confirmClear}</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -231,8 +231,8 @@ export function SettingsTab({
 
           <Separator className="bg-border/50" />
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex-1">
               <p className="font-medium">{t.downloads.title}</p>
               <p className="text-sm text-muted-foreground">
                 {downloadsCount} {t.settings.downloadsCount}
@@ -243,14 +243,14 @@ export function SettingsTab({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2"
+                  className="gap-2 w-full sm:w-auto"
                   disabled={downloadsCount === 0}
                 >
                   <Trash className="w-4 h-4" />
                   {t.settings.clearDownloads}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50">
+              <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-[calc(100vw-2rem)] sm:max-w-lg">
                 <AlertDialogHeader>
                   <AlertDialogTitle>{t.settings.confirmClear}</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -280,7 +280,7 @@ export function SettingsTab({
                 {t.settings.clearAllData}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50">
+            <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/50 max-w-[calc(100vw-2rem)] sm:max-w-lg">
               <AlertDialogHeader>
                 <AlertDialogTitle>{t.settings.confirmClear}</AlertDialogTitle>
                 <AlertDialogDescription>
