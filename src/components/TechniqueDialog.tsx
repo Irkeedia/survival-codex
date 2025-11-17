@@ -9,20 +9,24 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, Warning, Lightbulb } from '@phosphor-icons/react';
+import { Clock, Warning, Lightbulb, DownloadSimple } from '@phosphor-icons/react';
 import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface TechniqueDialogProps {
   technique: SurvivalTechnique | null;
   language: Language;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isDownloaded?: boolean;
+  onToggleDownload?: (id: string) => void;
 }
 
-export function TechniqueDialog({ technique, language, open, onOpenChange }: TechniqueDialogProps) {
+export function TechniqueDialog({ technique, language, open, onOpenChange, isDownloaded = false, onToggleDownload }: TechniqueDialogProps) {
   if (!technique) return null;
 
   const t = translations[language];
@@ -34,28 +38,55 @@ export function TechniqueDialog({ technique, language, open, onOpenChange }: Tec
   const warnings = translation?.warnings || technique.warnings;
   const tips = translation?.tips || technique.tips;
 
+  const handleToggleDownload = () => {
+    if (onToggleDownload) {
+      onToggleDownload(technique.id);
+      if (isDownloaded) {
+        toast.success(t.downloads.removeDownload);
+      } else {
+        toast.success(t.downloads.downloaded);
+      }
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] bg-card/95 backdrop-blur-xl border-border/50">
         <DialogHeader>
-          <div className="flex items-start gap-2 mb-2">
-            <Badge 
-              variant="outline" 
-              className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
-            >
-              {t.categories[technique.category]}
-            </Badge>
-            <Badge 
-              variant="secondary" 
-              className="text-xs capitalize backdrop-blur-sm"
-            >
-              {t.difficulty[technique.difficulty]}
-            </Badge>
-            {technique.timeRequired && (
-              <Badge variant="outline" className="text-xs flex items-center gap-1 backdrop-blur-sm">
-                <Clock className="w-3 h-3" />
-                {technique.timeRequired}
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <div className="flex items-start gap-2 flex-wrap">
+              <Badge 
+                variant="outline" 
+                className={cn("text-xs backdrop-blur-sm", categoryColors[technique.category])}
+              >
+                {t.categories[technique.category]}
               </Badge>
+              <Badge 
+                variant="secondary" 
+                className="text-xs capitalize backdrop-blur-sm"
+              >
+                {t.difficulty[technique.difficulty]}
+              </Badge>
+              {technique.timeRequired && (
+                <Badge variant="outline" className="text-xs flex items-center gap-1 backdrop-blur-sm">
+                  <Clock className="w-3 h-3" />
+                  {technique.timeRequired}
+                </Badge>
+              )}
+            </div>
+            {onToggleDownload && (
+              <Button
+                variant={isDownloaded ? 'secondary' : 'default'}
+                size="sm"
+                className="gap-2 flex-shrink-0"
+                onClick={handleToggleDownload}
+              >
+                <DownloadSimple 
+                  className="w-4 h-4" 
+                  weight={isDownloaded ? 'fill' : 'regular'} 
+                />
+                {isDownloaded ? t.downloads.removeDownload : t.downloads.downloadTechnique}
+              </Button>
             )}
           </div>
           <DialogTitle className="text-2xl">{title}</DialogTitle>
@@ -64,7 +95,7 @@ export function TechniqueDialog({ technique, language, open, onOpenChange }: Tec
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(85vh-180px)] pr-4">
+        <ScrollArea className="max-h-[calc(85vh-220px)] pr-4">
           <div className="space-y-6">
             <div>
               <h3 className="font-semibold text-lg mb-3">{t.steps}</h3>

@@ -1,119 +1,142 @@
 # Planning Guide
 
-An interactive educational platform that explains how survival codexes work, teaching users essential survival knowledge through categorized guides, techniques, and practical information.
+A multi-language survival guide mobile application optimized for Google Play and App Store, providing essential wilderness survival techniques with offline access capabilities through downloadable content and intuitive bottom navigation.
 
 **Experience Qualities**: 
-1. **Educational** - Clear, structured information that teaches survival principles progressively
-2. **Trustworthy** - Authoritative presentation that instills confidence in the information provided
-3. **Accessible** - Easy navigation through complex survival topics with visual hierarchy
+1. **Educational** - Clear, structured information that teaches survival principles progressively in multiple languages
+2. **Mobile-First** - Native-feeling app experience optimized for smartphones with bottom navigation
+3. **Accessible Offline** - Download techniques for offline access in emergency situations
 
 **Complexity Level**: Light Application (multiple features with basic state)
-  - Multiple categorized survival guides with filtering, search, and bookmark functionality for users to save and organize survival knowledge
+  - Multiple categorized survival guides with filtering, search, bookmark functionality, downloads, multi-language support, and mobile-optimized navigation
 
 ## Essential Features
 
-### Browse Survival Categories
-- **Functionality**: Display organized categories of survival knowledge (shelter, water, fire, food, navigation, first aid, signaling)
-- **Purpose**: Allow users to quickly find relevant survival information by topic
-- **Trigger**: User visits the app or clicks on category filters
-- **Progression**: View categories → Select a category → Browse techniques in that category → View detailed information
-- **Success criteria**: All categories are visible, clickable, and filter content appropriately
+### Multi-Language Support
+- **Functionality**: Full app translation support for English, French, Spanish, German, and Italian
+- **Purpose**: Make survival knowledge accessible to users worldwide in their native language
+- **Trigger**: User selects language in settings tab
+- **Progression**: Open settings → Select language → App content updates → Preference persists
+- **Success criteria**: All UI elements and technique content translate correctly and persist across sessions
 
-### View Technique Details
-- **Functionality**: Display comprehensive information about each survival technique with steps, warnings, and tips
-- **Purpose**: Provide detailed, actionable guidance for survival scenarios
-- **Trigger**: User clicks on a survival technique card
-- **Progression**: Click technique → View detailed dialog with steps → Read warnings and tips → Close or navigate to another technique
-- **Success criteria**: All technique information is clearly presented and easy to read
+### Bottom Navigation Tabs
+- **Functionality**: Three main tabs - Home, Downloads, Settings - accessible via persistent bottom navigation
+- **Purpose**: Provide mobile app-style navigation optimized for thumb access
+- **Trigger**: User taps navigation items at bottom of screen
+- **Progression**: Tap tab → View transitions → Content loads → Navigation state persists
+- **Success criteria**: Navigation remains accessible, shows active state, and works seamlessly on all screen sizes
 
-### Search Functionality
-- **Functionality**: Real-time search filtering across all survival techniques
-- **Purpose**: Enable quick access to specific survival information
-- **Trigger**: User types in the search input
-- **Progression**: Type search query → See filtered results update in real-time → Clear search to return to full list
-- **Success criteria**: Search accurately filters techniques by title, category, and description
+### Home Tab
+- **Functionality**: Browse, search, and filter survival techniques with category badges
+- **Purpose**: Main discovery interface for survival knowledge
+- **Trigger**: Default tab on app launch
+- **Progression**: View categories → Search/filter → Select technique → View details
+- **Success criteria**: All techniques are browsable, searchable, and filterable with bookmarking
 
-### Bookmark Favorites
-- **Functionality**: Save important techniques for quick access later
-- **Purpose**: Allow users to create a personalized survival reference list
-- **Trigger**: User clicks bookmark icon on a technique
-- **Progression**: Click bookmark → Technique is saved → Toggle filter to view only bookmarked items → Unbookmark to remove
-- **Success criteria**: Bookmarks persist across sessions and can be toggled on/off
+### Downloads Tab
+- **Functionality**: View and manage downloaded techniques for offline access
+- **Purpose**: Enable offline access to critical survival information
+- **Trigger**: User navigates to Downloads tab
+- **Progression**: View downloads → Select technique → Read offline → Remove if needed
+- **Success criteria**: Downloaded techniques persist and are accessible without network
+
+### Settings Tab
+- **Functionality**: Manage language, view storage statistics, clear data
+- **Purpose**: User preference management and data control
+- **Trigger**: User navigates to Settings tab
+- **Progression**: View settings → Change language or clear data → Confirm → Updates apply
+- **Success criteria**: Settings persist, data clearing works correctly with confirmation dialogs
+
+### Download Techniques
+- **Functionality**: Download individual techniques for offline access from detail dialog
+- **Purpose**: Prepare critical survival information for emergency offline use
+- **Trigger**: User clicks download button in technique dialog
+- **Progression**: View technique → Click download → Confirm → Technique saved → Accessible in Downloads tab
+- **Success criteria**: Downloaded content persists in Downloads tab and remains accessible offline
 
 ## Edge Case Handling
-- **Empty Search Results**: Display helpful message suggesting to try different keywords or clear filters
+- **Empty Downloads**: Display helpful message encouraging users to download techniques
+- **Empty Search Results**: Display helpful message suggesting to try different keywords
 - **No Bookmarks Yet**: Show empty state encouraging users to bookmark useful techniques
-- **Mobile Navigation**: Ensure all cards and dialogs are fully accessible on small screens
-- **Long Content**: Implement proper scrolling in dialogs for lengthy technique descriptions
+- **Safe Area Support**: Handle iPhone notches and Android gesture bars with proper padding
+- **Data Clearing**: Confirmation dialogs prevent accidental data loss
 
 ## Design Direction
-The design should feel authoritative and grounded like a field guide, with an earthy, rugged aesthetic that communicates reliability and preparedness - a minimal interface that prioritizes readability and quick information access in potentially stressful situations.
+The design should feel like a modern mobile application with a tech-focused dark theme featuring purple gradients, optimized for one-handed use with bottom navigation and clear visual hierarchy - a minimal interface that prioritizes readability and quick information access.
 
 ## Color Selection
-Custom palette with earthy, natural tones that evoke outdoor environments and survival contexts.
+Custom palette with dark technology aesthetic featuring purple/violet gradients.
 
-- **Primary Color**: Deep forest green (oklch(0.35 0.08 155)) - represents nature, growth, and safety
-- **Secondary Colors**: Warm earth brown (oklch(0.45 0.06 65)) for grounding and natural feel; slate gray for professional structure
-- **Accent Color**: Amber orange (oklch(0.70 0.15 65)) - visibility, warmth, fire, urgent calls-to-action
+- **Primary Color**: Purple (oklch(0.65 0.25 285)) - tech-forward, modern, innovative
+- **Secondary Colors**: Dark gray/charcoal for structure and depth
+- **Accent Color**: Bright pink/magenta (oklch(0.75 0.20 320)) - attention, highlights, active states
 - **Foreground/Background Pairings**: 
-  - Background (Cream #faf8f5 / oklch(0.98 0.01 85)): Dark text oklch(0.20 0.01 85) - Ratio 12.5:1 ✓
-  - Card (White #ffffff / oklch(1 0 0)): Dark text oklch(0.20 0.01 85) - Ratio 14.2:1 ✓
-  - Primary (Forest Green oklch(0.35 0.08 155)): White text oklch(1 0 0) - Ratio 7.8:1 ✓
-  - Secondary (Earth Brown oklch(0.45 0.06 65)): White text oklch(1 0 0) - Ratio 5.2:1 ✓
-  - Accent (Amber oklch(0.70 0.15 65)): Dark text oklch(0.20 0.01 85) - Ratio 8.5:1 ✓
-  - Muted (Light Sage oklch(0.92 0.02 155)): Muted text oklch(0.50 0.02 85) - Ratio 6.1:1 ✓
+  - Background (Dark purple oklch(0.08 0.01 285)): Light text oklch(0.98 0.01 285) - Ratio 13.8:1 ✓
+  - Card (Elevated dark oklch(0.12 0.02 285)): Light text oklch(0.98 0.01 285) - Ratio 12.2:1 ✓
+  - Primary (Purple oklch(0.65 0.25 285)): White text oklch(1 0 0) - Ratio 5.8:1 ✓
+  - Secondary (Dark gray oklch(0.20 0.03 285)): Light text oklch(0.98 0.01 285) - Ratio 11.5:1 ✓
+  - Accent (Magenta oklch(0.75 0.20 320)): Dark text oklch(0.08 0.01 285) - Ratio 9.2:1 ✓
+  - Muted (Mid gray oklch(0.15 0.02 285)): Muted text oklch(0.60 0.05 285) - Ratio 4.6:1 ✓
 
 ## Font Selection
-A combination of authoritative serif for headers (evoking classic field guides) and clean sans-serif for body text ensures both character and readability.
+Clean, modern sans-serif (Inter) throughout for optimal screen readability on mobile devices with various screen sizes and resolutions.
 
 - **Typographic Hierarchy**: 
-  - H1 (App Title): Merriweather Bold / 32px / tight tracking (-0.02em)
-  - H2 (Category Headers): Merriweather Bold / 24px / tight tracking
-  - H3 (Technique Titles): Merriweather Bold / 18px / normal tracking
+  - H1 (App Title): Inter Bold / 32px / tight tracking (-0.02em)
+  - H2 (Section Headers): Inter Bold / 24px / normal tracking
+  - H3 (Technique Titles): Inter SemiBold / 18px / normal tracking
   - Body (Descriptions): Inter Regular / 15px / relaxed leading (1.6)
   - Small (Metadata): Inter Medium / 13px / normal leading
+  - Navigation Labels: Inter Medium / 12px / normal tracking
 
 ## Animations
-Subtle, purposeful animations that guide attention without distracting from the critical information - smooth transitions that feel natural and grounded, like pages turning in a field guide.
+Smooth, app-like transitions that feel native to mobile platforms - purposeful motion that guides users through content without delaying interactions.
 
-- **Purposeful Meaning**: Gentle fade-ins for content loading, smooth dialog slides that feel like opening a guidebook
-- **Hierarchy of Movement**: Card hover elevations (subtle lift on hover), dialog entrances (scale + fade), bookmark toggle (satisfying check animation)
+- **Purposeful Meaning**: Tab transitions slide content, cards lift on press, dialogs scale in smoothly
+- **Hierarchy of Movement**: Bottom nav active state (icon fill + color), download button (icon bounce on save), alert dialogs (gentle scale + fade)
 
 ## Component Selection
 - **Components**: 
-  - Card (technique display with hover states)
-  - Dialog (detailed technique view with scrollable content)
-  - Input (search with icon)
-  - Badge (category tags with color coding)
-  - Button (primary actions with icon support)
-  - Separator (visual section breaks)
-  - ScrollArea (for long technique lists and dialog content)
+  - Card (technique display with glassmorphic backdrop)
+  - Dialog (full technique details with download action)
+  - Input (search with clear button)
+  - Badge (category and difficulty tags)
+  - Button (actions optimized for mobile touch)
+  - AlertDialog (data clearing confirmations)
+  - ScrollArea (scrollable content areas)
+  - Select/Dropdown (language selector)
   
 - **Customizations**: 
-  - Custom category badge colors matching survival categories
-  - Technique cards with custom bookmark button overlay
-  - Category filter chips with active states
+  - Bottom navigation bar with safe area support
+  - Glassmorphic card backgrounds with backdrop blur
+  - Mobile-optimized touch targets (minimum 44px)
+  - Download button in technique dialogs
   
 - **States**: 
-  - Cards: default, hover (subtle elevation), active bookmark (filled icon)
-  - Buttons: default, hover (slight darkening), active (pressed), disabled (muted)
-  - Search input: empty, typing (focused border), populated
+  - Navigation tabs: inactive, active (filled icon + primary color)
+  - Cards: default, pressed (slight scale), bookmarked
+  - Buttons: default, hover, pressed, disabled
+  - Download status: not downloaded, downloading, downloaded
   
 - **Icon Selection**: 
-  - Bookmark/BookmarkSimple for favorites
+  - House for Home tab
+  - DownloadSimple for Downloads tab
+  - Gear for Settings tab
+  - BookmarkSimple for favorites
   - MagnifyingGlass for search
-  - X for clearing/closing
-  - Warning for caution sections
-  - Lightbulb for tips
-  - Category-specific icons (Fire, Drop, House, FirstAid, etc.)
+  - Globe for language
+  - Trash for data clearing
+  - Database for storage
   
 - **Spacing**: 
-  - Container padding: p-6 desktop, p-4 mobile
-  - Card gaps: gap-6 desktop, gap-4 mobile
-  - Section spacing: space-y-8 for major sections, space-y-4 for related elements
+  - Bottom nav height: 64px with safe area padding
+  - Container padding: p-4 mobile
+  - Card gaps: gap-6 for grid
+  - Bottom page padding: pb-20 to account for fixed navigation
   
 - **Mobile**: 
-  - Single column card grid on mobile, 2-3 columns on tablet/desktop
-  - Full-screen dialogs on mobile with proper scroll handling
-  - Touch-friendly button sizes (min 44px tap targets)
-  - Collapsible category filters on mobile with toggle button
+  - Bottom navigation fixed to viewport bottom with safe area support
+  - Viewport-fit=cover for edge-to-edge design
+  - Single column layout on mobile (1 column), expanding to 2-3 on larger screens
+  - Full-height dialogs with proper scroll handling
+  - Touch-optimized 44px minimum tap targets throughout
