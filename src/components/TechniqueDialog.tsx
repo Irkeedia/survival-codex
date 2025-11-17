@@ -77,7 +77,7 @@ export function TechniqueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-screen h-screen max-w-full max-h-full bg-card/95 backdrop-blur-xl border-0 p-0 rounded-none flex flex-col">
+      <DialogContent className="w-screen h-screen max-w-full max-h-full bg-card/95 backdrop-blur-xl border-0 p-0 rounded-none flex flex-col overflow-hidden">
         <div className="p-4 sm:p-6 pt-12 sm:pt-6 flex-shrink-0">
           <DialogHeader>
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-3">
@@ -135,8 +135,8 @@ export function TechniqueDialog({
           </DialogHeader>
         </div>
 
-        <ScrollArea className="flex-1 px-4 sm:px-6 pb-4 sm:pb-6">
-          <div className="space-y-5 sm:space-y-6 pr-2 sm:pr-4">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-5 sm:space-y-6">
             <div>
               <h3 className="font-semibold text-base sm:text-lg mb-3">{t.steps}</h3>
               <ol className="space-y-3 sm:space-y-4">
