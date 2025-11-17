@@ -61,6 +61,12 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
+    if (!user || user.subscriptionTier !== 'premium') {
+      toast.error(t.subscription.upgradeRequired);
+      onUpgradeClick();
+      return;
+    }
+
     if (!CREATOR_API_KEY) {
       toast.error(t.ai.apiKeyRequired, {
         description: t.ai.apiKeyDesc,
@@ -148,7 +154,11 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
         <Card className="p-6 sm:p-8 max-w-md w-full text-center space-y-4">
           <Sparkle size={48} className="mx-auto text-accent" weight="fill" />
           <h2 className="text-xl sm:text-2xl font-bold">{t.ai.title}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">{t.auth.signIn}</p>
+          <p className="text-sm sm:text-base text-muted-foreground">{t.ai.premiumOnly}</p>
+          <Button onClick={onUpgradeClick} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto touch-manipulation h-11">
+            <Crown size={18} weight="fill" />
+            {t.auth.signIn}
+          </Button>
         </Card>
       </div>
     );
