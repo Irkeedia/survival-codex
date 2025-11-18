@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,11 +7,10 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Language, languageNames } from '@/lib/translations';
-import { Globe, Trash, Database, Crown, User, SignOut, Camera } from '@phosphor-icons/react';
+import { Globe, Trash, Database, Crown, User, SignOut, Camera, Key } from '@phosphor-icons/react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { User as UserType } from '@/lib/types';
 import { toast } from 'sonner';
-import { useKV } from '@github/spark/hooks';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,11 +37,12 @@ interface SettingsTabProps {
   onUpgradeClick: () => void;
   apiKey: string;
   onApiKeyChange: (key: string) => void;
+  onAvatarChange: (url: string) => void;
 }
 
-export function SettingsTab({ 
-  language, 
-  t, 
+export function SettingsTab({
+  language,
+  t,
   bookmarksCount,
   downloadsCount,
   user,
@@ -52,9 +52,20 @@ export function SettingsTab({
   onClearAllData,
   onSignOut,
   onUpgradeClick,
+  apiKey,
+  onApiKeyChange,
+  onAvatarChange,
 }: SettingsTabProps) {
-  const [avatarUrl, setAvatarUrl] = useKV<string>('user-avatar-url', '');
-  const [avatarUrlInput, setAvatarUrlInput] = useState(avatarUrl || '');
+  const [avatarUrlInput, setAvatarUrlInput] = useState(user?.avatarUrl || '');
+  const [apiKeyInput, setApiKeyInput] = useState(apiKey || '');
+
+  useEffect(() => {
+    setAvatarUrlInput(user?.avatarUrl || '');
+  }, [user?.avatarUrl]);
+
+  useEffect(() => {
+    setApiKeyInput(apiKey || '');
+  }, [apiKey]);
 
   const handleClearBookmarks = () => {
     onClearBookmarks();
@@ -72,18 +83,22 @@ export function SettingsTab({
   };
 
   const handleSaveAvatar = () => {
-    setAvatarUrl(avatarUrlInput);
+    onAvatarChange(avatarUrlInput);
     toast.success(t.settings.avatarUpdated || 'Avatar updated successfully');
   };
 
-  const getInitials = (name: string) => {
-    return name
+  const handleSaveApiKey = () => {
+    onApiKeyChange(apiKeyInput);
+    toast.success(t.ai?.apiKeySaved || 'API key saved');
+  };
+
+  const getInitials = (name: string) =>
+    name
       .split(' ')
       .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-2xl">
@@ -104,7 +119,7 @@ export function SettingsTab({
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-primary/20 flex-shrink-0">
-                <AvatarImage src={avatarUrl || undefined} alt={user.name} />
+                <AvatarImage src={user.avatarUrl || undefined} alt={user.name} />
                 <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-lg sm:text-xl">
                   {getInitials(user.name)}
                 </AvatarFallback>
@@ -171,16 +186,38 @@ export function SettingsTab({
       <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
           <div className="flex items-center gap-2">
+            <Key className="w-5 h-5 text-primary" />
+            <CardTitle>{t.settings.openAiApiKey}</CardTitle>
+          </div>
+          <CardDescription>{t.settings.openAiApiKeyDesc}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            type="password"
+            value={apiKeyInput}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+            placeholder="sk-..."
+            className="h-11"
+          />
+          <div className="flex justify-end">
+            <Button size="sm" onClick={handleSaveApiKey}>{t.settings.save || 'Save'}</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <CardHeader>
+          <div className="flex items-center gap-2">
             <Globe className="w-5 h-5 text-primary" />
             <CardTitle>{t.settings.language}</CardTitle>
           </div>
           <CardDescription>{t.settings.languageDesc}</CardDescription>
         </CardHeader>
         <CardContent>
-          <LanguageSelector 
-            language={language} 
-            onLanguageChange={onLanguageChange} 
-          />
+          <LanguageSelector language={language} onLanguageChange={onLanguageChange} />
+          <p className="text-xs text-muted-foreground mt-2">
+            {languageNames[language]} · {t.settings.languageDesc}
+          </p>
         </CardContent>
       </Card>
 
@@ -202,9 +239,9 @@ export function SettingsTab({
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="gap-2 w-full sm:w-auto"
                   disabled={bookmarksCount === 0}
                 >
@@ -240,9 +277,9 @@ export function SettingsTab({
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="gap-2 w-full sm:w-auto"
                   disabled={downloadsCount === 0}
                 >
@@ -271,8 +308,8 @@ export function SettingsTab({
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 className="w-full gap-2"
                 disabled={bookmarksCount === 0 && downloadsCount === 0}
               >
@@ -289,10 +326,7 @@ export function SettingsTab({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={handleClearAllData}
-                  className="bg-destructive text-destructive-foreground"
-                >
+                <AlertDialogAction onClick={handleClearAllData} className="bg-destructive text-destructive-foreground">
                   Continue
                 </AlertDialogAction>
               </AlertDialogFooter>

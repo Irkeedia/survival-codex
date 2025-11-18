@@ -23,7 +23,7 @@ interface TechniqueDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isDownloaded?: boolean;
-  onToggleDownload?: (id: string) => void;
+  onToggleDownload?: (id: string) => void | Promise<void>;
   user: User | null;
   onUpgradeClick: () => void;
 }
@@ -51,7 +51,7 @@ export function TechniqueDialog({
 
   const canDownload = user?.subscriptionTier === 'premium';
 
-  const handleToggleDownload = () => {
+  const handleToggleDownload = async () => {
     if (!user) {
       toast.error(t.auth.signIn);
       return;
@@ -66,7 +66,13 @@ export function TechniqueDialog({
     }
 
     if (onToggleDownload) {
-      onToggleDownload(technique.id);
+      try {
+        await onToggleDownload(technique.id);
+      } catch (error) {
+        console.error('Download toggle failed', error);
+        toast.error(t.settings.storageDesc);
+        return;
+      }
       if (isDownloaded) {
         toast.success(t.downloads.removeDownload);
       } else {

@@ -27,6 +27,9 @@ export interface User {
   name: string;
   subscriptionTier: SubscriptionTier;
   subscriptionExpiryDate?: string;
+  avatarUrl?: string;
+  language?: string;
+  apiKey?: string;
 }
 
 export interface ChatMessage {

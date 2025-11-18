@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { User as UserType } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -9,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Gear, Crown, SignOut, User } from '@phosphor-icons/react';
-import { useKV } from '@github/spark/hooks';
 
 interface ProfileMenuProps {
   user: UserType | null;
@@ -28,8 +26,6 @@ export function ProfileMenu({
   onSignInClick,
   onSignOut,
 }: ProfileMenuProps) {
-  const [avatarUrl, setAvatarUrl] = useKV<string>('user-avatar-url', '');
-
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -38,6 +34,8 @@ export function ProfileMenu({
       .toUpperCase()
       .slice(0, 2);
   };
+
+  const avatarUrl = user?.avatarUrl || '';
 
   if (!user) {
     return (

@@ -8,59 +8,36 @@ import { ProfileMenu } from '@/components/ProfileMenu';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
 import { AuthDialog } from '@/components/AuthDialog';
 import { SettingsDialog } from '@/components/SettingsDialog';
-import { SurvivalTechnique, User } from '@/lib/types';
+import { SurvivalTechnique } from '@/lib/types';
 import { translations, Language } from '@/lib/translations';
 import { toast } from 'sonner';
+import { useSupabase } from '@/hooks/useSupabase';
+import { useBookmarks } from '@/hooks/useBookmarks';
+import { useDownloads } from '@/hooks/useDownloads';
 
 type TabType = 'home' | 'downloads' | 'ai';
 
 function App() {
-  const [bookmarkedIds, setBookmarkedIds] = useKV<string[]>('bookmarked-techniques', []);
-  const [downloadedIds, setDownloadedIds] = useKV<string[]>('downloaded-techniques', []);
-  const [language, setLanguage] = useKV<Language>('app-language', 'en');
-  const [user, setUser] = useKV<User | null>('current-user', null);
-  const [apiKey, setApiKey] = useKV<string>('openai-api-key', '');
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [selectedTechnique, setSelectedTechnique] = useState<SurvivalTechnique | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settingsDefaultTab, setSettingsDefaultTab] = useState<'settings' | 'plans'>('settings');
+  const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'en');
+  const [localApiKey, setLocalApiKey] = useKV<string>('openai-api-key', '');
 
-  const t = translations[language || 'en'];
+  const { user, updateProfile, signOut, isSupabaseReady } = useSupabase();
+  const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
+  const { downloads, toggleDownload, clearDownloads } = useDownloads(user?.id);
 
-  const toggleBookmark = (id: string) => {
-    setBookmarkedIds((current) => {
-      const currentIds = current || [];
-      if (currentIds.includes(id)) {
-        return currentIds.filter(bookmarkId => bookmarkId !== id);
-      } else {
-        return [...currentIds, id];
-      }
-    });
-  };
+  const language = (user?.language as Language) || localLanguage || 'en';
+  const apiKey = user?.apiKey || localApiKey || '';
+  const t = translations[language];
 
-  const toggleDownload = (id: string) => {
-    if (!user) {
-      toast.error(t.auth.signIn);
-      setAuthDialogOpen(true);
-      return;
-    }
-
-    if (user.subscriptionTier !== 'premium') {
-      setSettingsDefaultTab('plans');
-      setSettingsDialogOpen(true);
-      return;
-    }
-
-    setDownloadedIds((current) => {
-      const currentIds = current || [];
-      if (currentIds.includes(id)) {
-        return currentIds.filter(downloadId => downloadId !== id);
-      } else {
-        return [...currentIds, id];
-      }
-    });
+  const requireSignIn = () => {
+    toast.error(t.auth.signIn);
+    setAuthDialogOpen(true);
   };
 
   const handleTechniqueClick = (technique: SurvivalTechnique) => {
@@ -68,37 +45,89 @@ function App() {
     setDialogOpen(true);
   };
 
-  const handleClearBookmarks = () => {
-    setBookmarkedIds([]);
+  const handleBookmarkToggle = async (id: string) => {
+    if (isSupabaseReady && !user) {
+      requireSignIn();
+      return;
+    }
+
+    try {
+      await toggleBookmark(id);
+    } catch (error) {
+      console.error('Failed to update bookmark', error);
+      toast.error(t.settings.storageDesc);
+    }
   };
 
-  const handleClearDownloads = () => {
-    setDownloadedIds([]);
+  const handleDownloadToggle = async (id: string) => {
+    if (!user) {
+      requireSignIn();
+      return;
+    }
+
+    if (user.subscriptionTier !== 'premium') {
+      toast.error(t.subscription.upgradeRequired);
+      setSettingsDefaultTab('plans');
+      setSettingsDialogOpen(true);
+      return;
+    }
+
+    try {
+      await toggleDownload(id);
+    } catch (error) {
+      console.error('Failed to update download', error);
+      toast.error(t.settings.storageDesc);
+    }
   };
 
-  const handleClearAllData = () => {
-    setBookmarkedIds([]);
-    setDownloadedIds([]);
+  const handleClearBookmarks = async () => {
+    try {
+      await clearBookmarks();
+    } catch (error) {
+      console.error('Failed to clear bookmarks', error);
+      toast.error(t.settings.storageDesc);
+    }
   };
 
-  const handleSignIn = (newUser: User) => {
-    setUser(newUser);
+  const handleClearDownloads = async () => {
+    try {
+      await clearDownloads();
+    } catch (error) {
+      console.error('Failed to clear downloads', error);
+      toast.error(t.settings.storageDesc);
+    }
   };
 
-  const handleSignOut = () => {
-    setUser(null);
-    toast.success(t.auth.signOutSuccess);
+  const handleClearAllData = async () => {
+    await Promise.all([handleClearBookmarks(), handleClearDownloads()]);
   };
 
-  const handleUpgrade = () => {
-    if (user) {
-      const upgradedUser: User = {
-        ...user,
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success(t.auth.signOutSuccess);
+      setSettingsDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to sign out', error);
+      toast.error('Unable to sign out right now');
+    }
+  };
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      requireSignIn();
+      return;
+    }
+
+    try {
+      await updateProfile({
         subscriptionTier: 'premium',
         subscriptionExpiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-      };
-      setUser(upgradedUser);
+      });
       toast.success(t.subscription.paymentSuccess);
+    } catch (error) {
+      console.error('Failed to upgrade subscription', error);
+      toast.error('Unable to upgrade now');
     }
   };
 
@@ -112,9 +141,25 @@ function App() {
     setSettingsDialogOpen(true);
   };
 
-  const handlePlansClick = () => {
-    setSettingsDefaultTab('plans');
-    setSettingsDialogOpen(true);
+  const handleLanguageChange = (lang: Language) => {
+    setLocalLanguage(lang);
+    if (user) {
+      updateProfile({ language: lang }).catch((error) => console.error('Failed to update language', error));
+    }
+  };
+
+  const handleApiKeyChange = (key: string) => {
+    setLocalApiKey(key);
+    if (user) {
+      updateProfile({ apiKey: key }).catch((error) => console.error('Failed to update API key', error));
+    }
+  };
+
+  const handleAvatarChange = (avatarUrl: string) => {
+    if (!user) {
+      return;
+    }
+    updateProfile({ avatarUrl }).catch((error) => console.error('Failed to update avatar', error));
   };
 
   return (
@@ -135,7 +180,7 @@ function App() {
                 user={user || null}
                 t={t}
                 onSettingsClick={handleSettingsClick}
-                onPlansClick={handlePlansClick}
+                onPlansClick={handleUpgradeClick}
                 onSignInClick={() => setAuthDialogOpen(true)}
                 onSignOut={handleSignOut}
               />
@@ -147,22 +192,22 @@ function App() {
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {activeTab === 'home' && (
           <HomeTab
-            language={language || 'en'}
+            language={language}
             t={t}
-            bookmarkedIds={bookmarkedIds || []}
-            onToggleBookmark={toggleBookmark}
+            bookmarkedIds={bookmarks}
+            onToggleBookmark={handleBookmarkToggle}
             onTechniqueClick={handleTechniqueClick}
           />
         )}
 
         {activeTab === 'downloads' && (
           <DownloadsTab
-            language={language || 'en'}
+            language={language}
             t={t}
-            downloadedIds={downloadedIds || []}
-            bookmarkedIds={bookmarkedIds || []}
-            onToggleBookmark={toggleBookmark}
-            onToggleDownload={toggleDownload}
+            downloadedIds={downloads}
+            bookmarkedIds={bookmarks}
+            onToggleBookmark={handleBookmarkToggle}
+            onToggleDownload={handleDownloadToggle}
             onTechniqueClick={handleTechniqueClick}
           />
         )}
@@ -184,11 +229,11 @@ function App() {
 
       <TechniqueDialog
         technique={selectedTechnique}
-        language={language || 'en'}
+        language={language}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        isDownloaded={downloadedIds?.includes(selectedTechnique?.id || '') || false}
-        onToggleDownload={toggleDownload}
+        isDownloaded={downloads.includes(selectedTechnique?.id || '')}
+        onToggleDownload={handleDownloadToggle}
         user={user || null}
         onUpgradeClick={handleUpgradeClick}
       />
@@ -196,7 +241,6 @@ function App() {
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
-        onSignIn={handleSignIn}
         t={t}
       />
 
@@ -204,20 +248,21 @@ function App() {
         open={settingsDialogOpen}
         onOpenChange={setSettingsDialogOpen}
         defaultTab={settingsDefaultTab}
-        language={language || 'en'}
+        language={language}
         t={t}
-        bookmarksCount={bookmarkedIds?.length || 0}
-        downloadsCount={downloadedIds?.length || 0}
+        bookmarksCount={bookmarks.length}
+        downloadsCount={downloads.length}
         user={user || null}
-        onLanguageChange={setLanguage}
+        onLanguageChange={handleLanguageChange}
         onClearBookmarks={handleClearBookmarks}
         onClearDownloads={handleClearDownloads}
         onClearAllData={handleClearAllData}
         onSignOut={handleSignOut}
         onUpgradeToPremium={handleUpgrade}
         onSignUpClick={() => setAuthDialogOpen(true)}
-        apiKey={apiKey || ''}
-        onApiKeyChange={setApiKey}
+        apiKey={apiKey}
+        onApiKeyChange={handleApiKeyChange}
+        onAvatarChange={handleAvatarChange}
       />
     </div>
   );

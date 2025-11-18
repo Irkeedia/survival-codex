@@ -7,9 +7,11 @@ import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
 import { resolve } from 'path'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
+const isMobileTarget = process.env.APP_BUILD_TARGET === 'mobile'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: isMobileTarget ? './' : '/',
   plugins: [
     react(),
     tailwindcss(),

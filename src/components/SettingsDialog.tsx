@@ -25,6 +25,7 @@ interface SettingsDialogProps {
   onSignUpClick: () => void;
   apiKey: string;
   onApiKeyChange: (key: string) => void;
+  onAvatarChange: (url: string) => void;
 }
 
 export function SettingsDialog({
@@ -45,6 +46,7 @@ export function SettingsDialog({
   onSignUpClick,
   apiKey,
   onApiKeyChange,
+  onAvatarChange,
 }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
@@ -88,6 +90,7 @@ export function SettingsDialog({
               onUpgradeClick={() => setActiveTab('plans')}
               apiKey={apiKey}
               onApiKeyChange={onApiKeyChange}
+              onAvatarChange={onAvatarChange}
             />
           </TabsContent>
           

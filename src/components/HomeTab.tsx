@@ -14,7 +14,7 @@ interface HomeTabProps {
   language: Language;
   t: any;
   bookmarkedIds: string[];
-  onToggleBookmark: (id: string) => void;
+  onToggleBookmark: (id: string) => void | Promise<void>;
   onTechniqueClick: (technique: SurvivalTechnique) => void;
 }
 

@@ -4,25 +4,34 @@ Guide de survie multilingue avec assistant IA Charlie.
 
 ## Configuration
 
-### Clé API pour Charlie (l'IA)
+### Variables d'environnement
 
-Charlie nécessite une clé API configurée par le créateur de l'application. Les utilisateurs n'ont pas besoin de fournir leur propre clé.
-
-1. Copiez le fichier `.env.example` vers `.env`:
+1. Copiez le fichier `.env.example` vers `.env` :
    ```bash
    cp .env.example .env
    ```
 
-2. Éditez le fichier `.env` et ajoutez votre clé API:
+2. Complétez les valeurs :
+   ```bash
+   VITE_AI_API_KEY=votre-cle-openai
+   VITE_SUPABASE_URL=https://xxxx.supabase.co
+   VITE_SUPABASE_ANON_KEY=votre-cle-anon
+   VITE_APP_ID=com.votre.bundle.id
+   VITE_APP_NAME="Survival Codex"
    ```
-   VITE_AI_API_KEY=votre-clé-api-ici
-   ```
 
-3. Redémarrez l'application pour que les changements prennent effet.
+3. Relancez `npm run dev` pour prendre en compte les modifications.
 
-### Clés API supportées
+Charlie utilise la clé `VITE_AI_API_KEY` côté créateur (pas côté utilisateur final) pour invoquer le runtime Spark.
 
-Charlie est compatible avec les modèles OpenAI accessibles via l'API Spark runtime. Assurez-vous que votre clé API a accès aux modèles nécessaires (gpt-4o, gpt-4o-mini).
+### Supabase
+
+1. Créez un projet Supabase puis exécutez la migration `supabase/migrations/0001_init.sql` (via `supabase db push` ou psql).
+2. Activez les politiques RLS (déjà incluses dans la migration) et créez un bucket de stockage si vous prévoyez d'héberger des assets.
+3. Copiez l'URL et la clé `anon` dans `.env`.
+4. Les favoris, téléchargements, conversations IA et profils utilisateurs utilisent maintenant Supabase avec fallback local si les variables ne sont pas présentes.
+
+> ℹ️ Sans Supabase, l'app reste fonctionnelle en mode démo (stockage local `useKV`).
 
 ## Navigation
 
@@ -47,21 +56,45 @@ Les paramètres et les plans d'abonnement sont accessibles via le menu de profil
 3. **Nouvelles catégories (si besoin)** : si la fiche introduit une catégorie inédite, mettez à jour `SurvivalCategory` dans `src/lib/types.ts`, puis ajoutez les styles dans `categoryColors` et les libellés dans `categoryLabels` (`src/lib/data.ts`). Complétez également les traductions de catégories dans `src/lib/translations.ts`.
 4. **Tester** : lancez `npm run dev` pour vérifier l’affichage, ouvrez la fiche dans l’onglet Accueil et contrôlez les traductions via le sélecteur de langue.
 
-## Connexion à une base de données et hébergement
+## Architecture backend & hébergement
 
 ### État actuel
-- Toutes les fiches, les favoris et les comptes sont simulés côté client via `useKV` (stockage local). Il n’y a ni authentification réelle ni API.
-- L’application est prête à être buildée (`npm run build`) et produit un bundle Vite/React statique hébergeable sur Netlify, Vercel, Render, etc.
+- Authentification, profils, abonnements, favoris, téléchargements et historiques IA sont synchronisés avec Supabase.
+- En absence de configuration Supabase, l'app repasse automatiquement en mode local (stockage `useKV`) pour faciliter le prototypage.
+- Les hooks (`useBookmarks`, `useDownloads`) s'appuient sur React Query pour gérer le cache et l'invalidation.
 
-### Passer à une base de données
-1. **Choisir un backend** : API REST/GraphQL (Supabase, Firebase, NestJS, Express, etc.) pour stocker utilisateurs, abonnements et fiches.
-2. **Créer des endpoints** : `/techniques`, `/bookmarks`, `/downloads`, `/auth`… Prévoyez pagination et champs de filtrage.
-3. **Brancher l’app** : remplacez les appels `useKV` par des hooks/fonctions qui consomment l’API (`fetch`, React Query déjà installé via `@tanstack/react-query`). Stockez l’URL de l’API dans `.env` (ex. `VITE_API_BASE_URL`).
-4. **Authentification réelle** : implémentez OAuth/JWT côté backend, exposez une route de login et stockez le token (idéalement via cookies httpOnly).
-5. **Gestion Premium** : synchronisez l’état d’abonnement depuis la base (Stripe webhooks, par exemple) plutôt que de le simuler côté client.
+### Aller plus loin
+1. **Stripe / paiements** : implémentez un webhook pour mettre à jour `subscription_tier` et `subscription_expiry_date` dans `profiles`.
+2. **Fonctions Edge** : centralisez la logique d'upgrade et les quotas de téléchargements.
+3. **Observabilité** : ajoutez Sentry / LogRocket et du monitoring Supabase.
+4. **Sécurité** : stockez les clés API utilisateurs chiffrées côté serveur si vous autorisez l’IA BYOK.
 
 ### Hébergement recommandé
-1. **Front-end** : `npm run build` puis déployez le dossier `dist/` sur Vercel/Netlify (hébergement statique + previews).
-2. **Backend** : hébergez votre API et votre base (Railway, Render, Supabase, Fly.io, etc.).
-3. **CI/CD** : ajoutez un workflow (GitHub Actions) qui exécute `npm install`, `npm run build` et vos tests avant de déployer.
-4. **Variables d’environnement** : configurez `VITE_AI_API_KEY` (et plus tard `VITE_API_BASE_URL`) dans vos environnements de build/preview.
+1. **Front-end** : `npm run build` puis déployez `dist/` sur Vercel, Netlify ou Cloudflare Pages.
+2. **Mobile** : voir la section Capacitor ci-dessous pour conditionner un binaire Android/iOS à publier sur Play Store / App Store.
+3. **Backend** : Supabase couvre PostgreSQL + auth + stockage. Ajoutez un backend custom uniquement si nécessaire.
+4. **CI/CD** : une action GitHub qui lance `npm ci`, `npm run lint`, `npm run build` et (optionnel) `npm run mobile:sync` pour vérifier l'intégrité mobile.
+
+## Build mobile (Google Play / App Store)
+
+1. **Préparer le bundle web** :
+   ```bash
+   npm run mobile:sync
+   ```
+   Cela exécute `vite build` puis `npx cap sync`.
+
+2. **Ouvrir Android Studio** :
+   ```bash
+   npm run mobile:android
+   ```
+
+3. **Ouvrir Xcode** :
+   ```bash
+   npm run mobile:ios
+   ```
+
+4. **Assets & manifestes** :
+   - Remplacez les icônes dans `public/icons/` par vos visuels (192/512px minimum).
+   - Mettez à jour `VITE_APP_ID` / `VITE_APP_NAME` avant de publier.
+
+5. **Tests** : utilisez `npx cap run android --target emulator-5554` ou l’équivalent iOS pour vérifier caméra/offline/permissions avant soumission store.

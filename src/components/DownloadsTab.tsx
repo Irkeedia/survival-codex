@@ -9,8 +9,8 @@ interface DownloadsTabProps {
   t: any;
   downloadedIds: string[];
   bookmarkedIds: string[];
-  onToggleBookmark: (id: string) => void;
-  onToggleDownload: (id: string) => void;
+  onToggleBookmark: (id: string) => void | Promise<void>;
+  onToggleDownload: (id: string) => void | Promise<void>;
   onTechniqueClick: (technique: SurvivalTechnique) => void;
 }
 
