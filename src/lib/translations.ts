@@ -69,6 +69,10 @@ export interface Translations {
     completePayment: string;
     processingPayment: string;
     paymentSuccess: string;
+    restorePurchases: string;
+    restoringPurchases: string;
+    billingUnavailable: string;
+    restoreSuccess: string;
   };
   ai: {
     title: string;
@@ -213,6 +217,10 @@ export const translations: Record<Language, Translations> = {
       completePayment: 'Complete Payment',
       processingPayment: 'Processing payment...',
       paymentSuccess: 'Payment successful! Welcome to Premium',
+      restorePurchases: 'Restore purchases',
+      restoringPurchases: 'Restoring purchases...',
+      billingUnavailable: 'Google Play Billing is unavailable on this device',
+      restoreSuccess: 'Purchases restored successfully',
     },
     ai: {
       title: 'Charlie - AI Assistant',
@@ -355,6 +363,10 @@ export const translations: Record<Language, Translations> = {
       completePayment: 'Finaliser le paiement',
       processingPayment: 'Traitement du paiement...',
       paymentSuccess: 'Paiement réussi! Bienvenue à Premium',
+      restorePurchases: 'Restaurer les achats',
+      restoringPurchases: 'Restauration des achats...',
+      billingUnavailable: 'La facturation Google Play n\'est pas disponible sur cet appareil',
+      restoreSuccess: 'Achats restaurés avec succès',
     },
     ai: {
       title: 'Assistant IA de Survie',
@@ -497,6 +509,10 @@ export const translations: Record<Language, Translations> = {
       completePayment: 'Completar pago',
       processingPayment: 'Procesando pago...',
       paymentSuccess: '¡Pago exitoso! Bienvenido a Premium',
+      restorePurchases: 'Restaurar compras',
+      restoringPurchases: 'Restaurando compras...',
+      billingUnavailable: 'La facturación de Google Play no está disponible en este dispositivo',
+      restoreSuccess: 'Compras restauradas correctamente',
     },
     ai: {
       title: 'Asistente IA de Supervivencia',
@@ -639,6 +655,10 @@ export const translations: Record<Language, Translations> = {
       completePayment: 'Zahlung abschließen',
       processingPayment: 'Zahlung wird verarbeitet...',
       paymentSuccess: 'Zahlung erfolgreich! Willkommen bei Premium',
+      restorePurchases: 'Käufe wiederherstellen',
+      restoringPurchases: 'Käufe werden wiederhergestellt...',
+      billingUnavailable: 'Google Play Billing ist auf diesem Gerät nicht verfügbar',
+      restoreSuccess: 'Käufe erfolgreich wiederhergestellt',
     },
     ai: {
       title: 'KI-Überlebensassistent',
@@ -781,6 +801,10 @@ export const translations: Record<Language, Translations> = {
       completePayment: 'Completa pagamento',
       processingPayment: 'Elaborazione pagamento...',
       paymentSuccess: 'Pagamento riuscito! Benvenuto in Premium',
+      restorePurchases: 'Ripristina acquisti',
+      restoringPurchases: 'Ripristino degli acquisti...',
+      billingUnavailable: 'La fatturazione Google Play non è disponibile su questo dispositivo',
+      restoreSuccess: 'Acquisti ripristinati con successo',
     },
     ai: {
       title: 'Assistente IA di Sopravvivenza',

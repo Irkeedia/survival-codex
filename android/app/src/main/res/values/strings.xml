@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Survival Codex</string>
+    <string name="title_activity_main">Survival Codex</string>
+    <string name="package_name">com.irkeedia.survivalcodex</string>
+    <string name="custom_url_scheme">com.irkeedia.survivalcodex</string>
+</resources>

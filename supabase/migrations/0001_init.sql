@@ -38,6 +38,19 @@ create table if not exists public.ai_conversations (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.play_billing_receipts (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references public.profiles(id) on delete cascade,
+  platform text not null,
+  product_id text not null,
+  purchase_token text not null unique,
+  order_id text,
+  expiry_time timestamptz,
+  raw_payload jsonb default '{}'::jsonb,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 create or replace function public.handle_updated_at()
 returns trigger as $$
 begin
@@ -54,10 +67,15 @@ create trigger set_conversations_updated_at
 before update on public.ai_conversations
 for each row execute function public.handle_updated_at();
 
+create trigger set_play_billing_receipts_updated_at
+before update on public.play_billing_receipts
+for each row execute function public.handle_updated_at();
+
 alter table public.profiles enable row level security;
 alter table public.bookmarks enable row level security;
 alter table public.downloads enable row level security;
 alter table public.ai_conversations enable row level security;
+alter table public.play_billing_receipts enable row level security;
 
 create policy "Profiles are viewable by owner" on public.profiles
   for select
@@ -80,5 +98,9 @@ create policy "Manage own downloads" on public.downloads
   with check (auth.uid() = user_id);
 
 create policy "Manage own conversations" on public.ai_conversations
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Manage own billing receipts" on public.play_billing_receipts
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);

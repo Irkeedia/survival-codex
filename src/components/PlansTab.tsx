@@ -6,6 +6,7 @@ import { Translations } from '@/lib/translations';
 import { User } from '@/lib/types';
 import { Check, Crown, CreditCard, GoogleLogo } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { useBilling } from '@/hooks/useBilling';
 
 interface PlansTabProps {
   t: Translations;
@@ -19,6 +20,15 @@ type PaymentMethod = 'card' | 'paypal' | 'google' | null;
 export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTabProps) {
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const {
+    billingAvailable,
+    isReady,
+    isInitializing,
+    purchaseSubscription,
+    restorePurchases,
+    initializeBilling,
+    syncingPurchases,
+  } = useBilling(user);
 
   const freePlanFeatures = [
     t.subscription.basicContent,
@@ -45,12 +55,59 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
     }
 
     setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    onUpgradeToPremium();
-    toast.success(t.subscription.paymentSuccess);
-    setIsProcessing(false);
-    setSelectedPayment(null);
+    try {
+      if (selectedPayment === 'google') {
+        if (!billingAvailable) {
+          toast.error(t.subscription.billingUnavailable);
+          return;
+        }
+
+        if (!isReady && !isInitializing) {
+          const initialized = await initializeBilling();
+          if (!initialized) {
+            toast.error(t.subscription.billingUnavailable);
+            return;
+          }
+        }
+
+        await purchaseSubscription();
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        onUpgradeToPremium();
+      }
+
+      toast.success(t.subscription.paymentSuccess);
+      setSelectedPayment(null);
+    } catch (error) {
+      console.error('Premium payment failed', error);
+      toast.error(error instanceof Error ? error.message : 'Payment failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!user) {
+      toast.error(t.auth.signIn);
+      onSignUpClick();
+      return;
+    }
+
+    if (!billingAvailable) {
+      toast.error(t.subscription.billingUnavailable);
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await restorePurchases();
+      toast.success(t.subscription.restoreSuccess);
+    } catch (error) {
+      console.error('Failed to restore purchases', error);
+      toast.error(error instanceof Error ? error.message : 'Restore failed');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleFreeSignUp = () => {
@@ -195,12 +252,41 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
                     size="lg"
                     className="w-full justify-start gap-3 text-sm sm:text-base"
                     onClick={() => setSelectedPayment('google')}
+                    disabled={!billingAvailable}
+                    title={!billingAvailable ? t.subscription.billingUnavailable : undefined}
                   >
                     <GoogleLogo size={18} className="flex-shrink-0" />
                     <span className="truncate">{t.subscription.payWithGoogle}</span>
                   </Button>
                 </div>
               </div>
+
+              {selectedPayment === 'google' && (
+                <div className="space-y-2">
+                  {!billingAvailable ? (
+                    <p className="text-xs sm:text-sm text-destructive">
+                      {t.subscription.billingUnavailable}
+                    </p>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full flex items-center justify-center gap-2"
+                      onClick={handleRestore}
+                      disabled={isProcessing || syncingPurchases}
+                    >
+                      {syncingPurchases ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+                          <span className="truncate">{t.subscription.restoringPurchases}</span>
+                        </>
+                      ) : (
+                        <span className="truncate">{t.subscription.restorePurchases}</span>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              )}
 
               <Button 
                 size="lg" 

@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { useDownloads } from '@/hooks/useDownloads';
+import { useRevenueCat } from '@/hooks/useRevenueCat';
 
 type TabType = 'home' | 'downloads' | 'ai';
 
@@ -30,6 +31,7 @@ function App() {
   const { user, updateProfile, signOut, isSupabaseReady } = useSupabase();
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
   const { downloads, toggleDownload, clearDownloads } = useDownloads(user?.id);
+  useRevenueCat(user ?? null);
 
   const language = (user?.language as Language) || localLanguage || 'en';
   const apiKey = user?.apiKey || localApiKey || '';

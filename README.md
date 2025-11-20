@@ -18,6 +18,8 @@ Guide de survie multilingue avec assistant IA Charlie.
    VITE_SUPABASE_ANON_KEY=votre-cle-anon
    VITE_APP_ID=com.votre.bundle.id
    VITE_APP_NAME="Survival Codex"
+   VITE_PLAY_BILLING_SUBSCRIPTION_ID=survival_codex_premium_yearly
+   VITE_PLAY_BILLING_WEBHOOK_URL=https://your-api.com/play-billing/webhook
    ```
 
 3. Relancez `npm run dev` pour prendre en compte les modifications.
@@ -32,6 +34,19 @@ Charlie utilise la clé `VITE_AI_API_KEY` côté créateur (pas côté utilisate
 4. Les favoris, téléchargements, conversations IA et profils utilisateurs utilisent maintenant Supabase avec fallback local si les variables ne sont pas présentes.
 
 > ℹ️ Sans Supabase, l'app reste fonctionnelle en mode démo (stockage local `useKV`).
+
+### Google Play Billing (préparation)
+
+- Installez le plugin Capacitor Google Play Billing (ex. `@capacitor-community/google-play-billing`) puis exécutez `npx cap sync`.
+- Renseignez `VITE_PLAY_BILLING_SUBSCRIPTION_ID` (SKU abonnement côté Console Google Play) et, si besoin, `VITE_PLAY_BILLING_WEBHOOK_URL` pour votre backend de vérification.
+- La table `play_billing_receipts` est incluse dans `supabase/migrations/0001_init.sql` et stocke les reçus synchronisés/acknowledged via `useBilling`.
+- Sur Android avec l'ID produit configuré, l'onglet **Plans** activera automatiquement les boutons Google Play (achat et restauration).
+
+### RevenueCat (Purchases SDK)
+
+- `@revenuecat/purchases-capacitor` est initialisé par `useRevenueCat` (Android/iOS uniquement).
+- Ajoutez les clés SDK publiques dans `.env` (`VITE_REVENUECAT_ANDROID_KEY` / `VITE_REVENUECAT_IOS_KEY`).
+- Les sessions Supabase sont synchronisées avec RevenueCat via `Purchases.logIn` / `logOut`, ce qui prépare l'app pour les offres multi-plateformes (RevenueCat Play Billing + App Store Connect).
 
 ## Navigation
 
