@@ -245,10 +245,16 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const { error } = await client.auth.signInWithOAuth({
+    const { data, error } = await client.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        // C'est CETTE ligne qui manque et qui cause le bug localhost
+        redirectTo: 'com.irkeedia.survivalcodex://login-callback',
+        
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
 

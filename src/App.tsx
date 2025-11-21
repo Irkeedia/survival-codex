@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useKV } from '@github/spark/hooks';
+import { App as CapacitorApp } from '@capacitor/app';
 import { HomeTab } from '@/components/HomeTab';
 import { DownloadsTab } from '@/components/DownloadsTab';
 import { AITab } from '@/components/AITab';
@@ -32,6 +33,12 @@ function App() {
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
   const { downloads, toggleDownload, clearDownloads } = useDownloads(user?.id);
   useRevenueCat(user ?? null);
+
+  useEffect(() => {
+    CapacitorApp.addListener('appUrlOpen', (data) => {
+      console.log('App opened with URL:', data.url);
+    });
+  }, []);
 
   const language = (user?.language as Language) || localLanguage || 'en';
   const apiKey = user?.apiKey || localApiKey || '';
