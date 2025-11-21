@@ -236,6 +236,8 @@ function App() {
         onOpenChange={setDialogOpen}
         isDownloaded={downloads.includes(selectedTechnique?.id || '')}
         onToggleDownload={handleDownloadToggle}
+        isBookmarked={bookmarks.includes(selectedTechnique?.id || '')}
+        onToggleBookmark={handleBookmarkToggle}
         user={user || null}
         onUpgradeClick={handleUpgradeClick}
       />
