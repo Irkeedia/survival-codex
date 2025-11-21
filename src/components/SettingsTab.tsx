@@ -186,28 +186,6 @@ export function SettingsTab({
       <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Key className="w-5 h-5 text-primary" />
-            <CardTitle>{t.settings.openAiApiKey}</CardTitle>
-          </div>
-          <CardDescription>{t.settings.openAiApiKeyDesc}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input
-            type="password"
-            value={apiKeyInput}
-            onChange={(e) => setApiKeyInput(e.target.value)}
-            placeholder="sk-..."
-            className="h-11"
-          />
-          <div className="flex justify-end">
-            <Button size="sm" onClick={handleSaveApiKey}>{t.settings.save || 'Save'}</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-        <CardHeader>
-          <div className="flex items-center gap-2">
             <Globe className="w-5 h-5 text-primary" />
             <CardTitle>{t.settings.language}</CardTitle>
           </div>

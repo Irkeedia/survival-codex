@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SettingsTab } from '@/components/SettingsTab';
@@ -50,12 +50,19 @@ export function SettingsDialog({
 }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
+  // Sync active tab when defaultTab changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab, open]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-4xl h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 gap-0">
-        <div className="flex-shrink-0 p-4 sm:p-6 border-b border-border/50">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-4xl h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-xl border-white/10 shadow-2xl">
+        <div className="flex-shrink-0 p-4 sm:p-6 border-b border-border/50 bg-muted/20">
           <DialogHeader>
-            <DialogTitle className="text-xl sm:text-2xl font-bold">
+            <DialogTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
               {activeTab === 'settings' ? t.tabs.settings : t.subscription.choosePlan}
             </DialogTitle>
           </DialogHeader>
@@ -63,19 +70,25 @@ export function SettingsDialog({
         
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'settings' | 'plans')} className="flex flex-col flex-1 min-h-0">
           <div className="flex-shrink-0 px-4 sm:px-6 pt-4">
-            <TabsList className="grid w-full grid-cols-2 h-11">
-              <TabsTrigger value="settings" className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
-                <Gear className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{t.tabs.settings}</span>
+            <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
+              <TabsTrigger 
+                value="settings" 
+                className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all duration-300"
+              >
+                <Gear className="w-4 h-4 flex-shrink-0" weight="bold" />
+                <span className="truncate font-medium">{t.tabs.settings}</span>
               </TabsTrigger>
-              <TabsTrigger value="plans" className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
-                <Crown className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">Plans</span>
+              <TabsTrigger 
+                value="plans" 
+                className="flex items-center gap-2 text-sm sm:text-base rounded-lg data-[state=active]:bg-background data-[state=active]:text-amber-600 data-[state=active]:shadow-sm transition-all duration-300"
+              >
+                <Crown className="w-4 h-4 flex-shrink-0" weight="fill" />
+                <span className="truncate font-medium">Plans</span>
               </TabsTrigger>
             </TabsList>
           </div>
           
-          <TabsContent value="settings" className="flex-1 overflow-y-auto mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+          <TabsContent value="settings" className="flex-1 overflow-y-auto mt-2 px-4 sm:px-6 pb-4 sm:pb-6 focus-visible:outline-none">
             <SettingsTab
               language={language}
               t={t}
@@ -94,7 +107,7 @@ export function SettingsDialog({
             />
           </TabsContent>
           
-          <TabsContent value="plans" className="flex-1 overflow-y-auto mt-4 sm:mt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+          <TabsContent value="plans" className="flex-1 overflow-y-auto mt-2 px-4 sm:px-6 pb-4 sm:pb-6 focus-visible:outline-none">
             <PlansTab
               t={t}
               user={user}
