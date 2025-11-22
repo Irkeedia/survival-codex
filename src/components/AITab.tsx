@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
+const AI_MODEL = import.meta.env.VITE_AI_MODEL || 'gemini-pro';
 const FREE_QUOTA_LIMIT = 15;
 
 interface AITabProps {
@@ -151,7 +152,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
     try {
       const genAI = new GoogleGenerativeAI(effectiveApiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+      const model = genAI.getGenerativeModel({ model: AI_MODEL });
 
       const questionText = userMessage.content;
       const promptText = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
