@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useAIConversations } from '@/hooks/useAIConversations';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +8,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Progress } from '@/components/ui/progress';
 import { Translations } from '@/lib/translations';
-import { ChatMessage, ChatConversation, User } from '@/lib/types';
-import { PaperPlaneRight, Sparkle, Trash, Crown, ClockCounterClockwise, Plus, ChatCircleText, Microphone, CaretLeft } from '@phosphor-icons/react';
+import { ChatMessage, User } from '@/lib/types';
+import { PaperPlaneRight, Sparkle, Trash, Crown, ClockCounterClockwise, Plus, ChatCircleText } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -29,11 +30,21 @@ interface AIQuota {
 }
 
 export function AITab({ t, user, onUpgradeClick }: AITabProps) {
-  const [conversations, setConversations] = usePersistentState<ChatConversation[]>('ai-conversations', []);
-  const [currentConversationId, setCurrentConversationId] = usePersistentState<string | null>('current-conversation-id', null);
-  const [quota, setQuota] = usePersistentState<AIQuota>('ai-quota', { count: 0, lastReset: Date.now() });
+  // Use user-specific keys for storage to prevent data leaking between accounts
+  const storageKeySuffix = user?.id ? `-${user.id}` : '';
+  
+  const { 
+    conversations, 
+    isLoading: isHistoryLoading, 
+    createConversation, 
+    addMessageToConversation, 
+    deleteConversation: deleteRemoteConversation 
+  } = useAIConversations(user?.id);
+
+  const [currentConversationId, setCurrentConversationId] = usePersistentState<string | null>(`current-conversation-id${storageKeySuffix}`, null);
+  const [quota, setQuota] = usePersistentState<AIQuota>(`ai-quota${storageKeySuffix}`, { count: 0, lastReset: Date.now() });
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +65,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isGenerating]);
 
   const createNewConversation = () => {
     setCurrentConversationId(null);
@@ -62,17 +73,16 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     setSheetOpen(false);
   };
 
-  const deleteConversation = (id: string) => {
-    setConversations((current) => (current || []).filter(c => c.id !== id));
+  const handleDeleteConversation = async (id: string) => {
+    await deleteRemoteConversation(id);
     if (currentConversationId === id) {
       setCurrentConversationId(null);
     }
-    toast.success(t.ai.deleteConversation);
   };
 
   const sendMessage = async (text?: string) => {
     const contentToSend = text || inputValue;
-    if (!contentToSend.trim() || isLoading) return;
+    if (!contentToSend.trim() || isGenerating) return;
 
     if (!user) {
       toast.error(t.auth.signIn);
@@ -99,43 +109,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
       return;
     }
 
-    let conversationId = currentConversationId;
-    
-    if (!conversationId) {
-      const newConv: ChatConversation = {
-        id: Date.now().toString(),
-        title: contentToSend.trim().substring(0, 50),
-        messages: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      setConversations((current) => [newConv, ...(current || [])]);
-      conversationId = newConv.id;
-      setCurrentConversationId(conversationId);
-    }
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: contentToSend.trim(),
-      timestamp: Date.now(),
-    };
-
-    setConversations((current) => 
-      (current || []).map(conv => 
-        conv.id === conversationId 
-          ? { 
-              ...conv, 
-              messages: [...conv.messages, userMessage],
-              updatedAt: Date.now(),
-              title: conv.messages.length === 0 ? contentToSend.trim().substring(0, 50) : conv.title
-            }
-          : conv
-      )
-    );
-    
     setInputValue('');
-    setIsLoading(true);
+    setIsGenerating(true);
 
     // Increment quota for free users
     if (user.subscriptionTier !== 'premium') {
@@ -143,6 +118,13 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     }
 
     try {
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: contentToSend.trim(),
+        timestamp: Date.now(),
+      };
+
       const genAI = new GoogleGenerativeAI(effectiveApiKey);
       const model = genAI.getGenerativeModel({ model: AI_MODEL });
 
@@ -176,17 +158,20 @@ Réponds à ${userName} maintenant :
         timestamp: Date.now(),
       };
 
-      setConversations((current) => 
-        (current || []).map(conv => 
-          conv.id === conversationId 
-            ? { 
-                ...conv, 
-                messages: [...conv.messages, assistantMessage],
-                updatedAt: Date.now()
-              }
-            : conv
-        )
-      );
+      if (!currentConversationId) {
+        // Create new conversation with both messages
+        const newId = await createConversation(
+          contentToSend.trim().substring(0, 50),
+          userMessage,
+          assistantMessage
+        );
+        if (newId) setCurrentConversationId(newId);
+      } else {
+        // Add messages to existing conversation
+        await addMessageToConversation(currentConversationId, userMessage);
+        await addMessageToConversation(currentConversationId, assistantMessage);
+      }
+
     } catch (error: any) {
       console.error('Gemini Error:', error);
       const errorMessage = error?.message || 'Erreur inconnue';
@@ -199,13 +184,8 @@ Réponds à ${userName} maintenant :
         toast.error(`Erreur IA: ${errorMessage}`);
       }
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
-  };
-
-  const handleClearChat = () => {
-    if (!currentConversationId) return;
-    deleteConversation(currentConversationId);
   };
 
   if (!user) {
@@ -262,7 +242,11 @@ Réponds à ${userName} maintenant :
               </SheetTitle>
             </SheetHeader>
             <ScrollArea className="flex-1 -mx-6 px-6 mt-4 h-[1px]">
-              {(!conversations || conversations.length === 0) ? (
+              {isHistoryLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (!conversations || conversations.length === 0) ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
                   <ChatCircleText size={48} className="text-muted-foreground/50" weight="duotone" />
                   <div className="space-y-1">
@@ -297,7 +281,7 @@ Réponds à ${userName} maintenant :
                         className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteConversation(conv.id);
+                          handleDeleteConversation(conv.id);
                         }}
                       >
                         <Trash size={16} />
@@ -372,16 +356,11 @@ Réponds à ${userName} maintenant :
                 )}
               >
                 {message.content}
-                {message.role === 'assistant' && (
-                   <div className="mt-2 flex gap-2">
-                      {/* Optional: Add action buttons for assistant messages here later */}
-                   </div>
-                )}
               </div>
             </div>
           ))}
           
-          {isLoading && (
+          {isGenerating && (
             <div className="flex gap-3">
                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 mt-1">
                   <Sparkle size={16} className="text-white" weight="fill" />
@@ -411,13 +390,13 @@ Réponds à ${userName} maintenant :
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.ai.placeholder || "Ask Charlie..."}
-              disabled={isLoading || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)}
+              disabled={isGenerating || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)}
               className="w-full h-14 pl-6 pr-14 rounded-[2rem] bg-secondary/80 border border-primary/20 shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all text-foreground placeholder:text-muted-foreground"
             />
             <div className="absolute right-2 flex items-center gap-1">
                <Button 
                   type="submit" 
-                  disabled={isLoading || !inputValue.trim() || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)} 
+                  disabled={isGenerating || !inputValue.trim() || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)} 
                   size="icon" 
                   className={cn(
                     "h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all",

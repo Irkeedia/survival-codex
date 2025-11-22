@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactNode, createContext, useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { createClient, Session, SupabaseClient } from '@supabase/supabase-js';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { Language } from '@/lib/translations';
@@ -96,6 +96,12 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(isSupabaseReady);
   const [localUser, setLocalUser] = usePersistentState<User | null>('current-user', null);
   const [cachedProfile, setCachedProfile] = usePersistentState<User | null>('cached-profile', null);
+  
+  // Use a ref to access the latest cachedProfile inside fetchProfile without creating a dependency loop
+  const cachedProfileRef = useRef(cachedProfile);
+  useEffect(() => {
+    cachedProfileRef.current = cachedProfile;
+  }, [cachedProfile]);
 
   useEffect(() => {
     if (!client) {
@@ -155,9 +161,10 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
         console.error('Failed to load profile from Supabase', error);
         
         // Fallback to cached profile if network error
-        if (cachedProfile && cachedProfile.id === session.user.id) {
+        const currentCached = cachedProfileRef.current;
+        if (currentCached && currentCached.id === session.user.id) {
           console.log('Using cached profile due to error');
-          setProfile(cachedProfile);
+          setProfile(currentCached);
           return;
         }
 
@@ -192,13 +199,27 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
 
       if (data) {
         const user = mapRowToUser(data as ProfileRow);
-        setProfile(user);
-        setCachedProfile(user);
+        
+        // Only update if data actually changed to prevent loops
+        // We use JSON.stringify for a simple deep comparison
+        setProfile(prev => {
+          if (JSON.stringify(prev) !== JSON.stringify(user)) {
+            return user;
+          }
+          return prev;
+        });
+        
+        setCachedProfile(prev => {
+          if (JSON.stringify(prev) !== JSON.stringify(user)) {
+            return user;
+          }
+          return prev;
+        });
       }
     } finally {
       setLoading(false);
     }
-  }, [client, session, cachedProfile, setCachedProfile]);
+  }, [client, session, setCachedProfile]);
 
   useEffect(() => {
     if (!client || !session?.user) {
@@ -290,6 +311,7 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     }
 
     await client.auth.signOut();
+    setSession(null); // Explicitly clear session
     setProfile(null);
     setCachedProfile(null);
   }, [client, setLocalUser, setCachedProfile]);

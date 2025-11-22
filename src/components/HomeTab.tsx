@@ -123,7 +123,7 @@ export function HomeTab({
       {/* Header Section */}
       <div className="space-y-1 pt-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Hello, {user ? getFirstName(user.name) : 'Survivor'}!
+          Hello, <span className="bg-gradient-to-r from-purple-500 to-violet-600 bg-clip-text text-transparent">{user ? getFirstName(user.name) : 'Survivor'}</span>!
         </h1>
         <p className="text-muted-foreground text-lg">
           {t.ai?.subtitle || 'Ready for adventure?'}
@@ -197,7 +197,8 @@ export function HomeTab({
             placeholder={t.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border-0 bg-transparent h-full text-base p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
+            className="border-0 bg-transparent h-full text-base p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 shadow-none"
+            style={{ backgroundColor: 'transparent', boxShadow: 'none' }}
           />
           {searchQuery && (
             <Button

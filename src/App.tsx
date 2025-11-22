@@ -225,10 +225,20 @@ function App() {
 
   const handleSignOut = async () => {
     try {
+      const userId = user?.id;
       await signOut();
+      
       // Clear local state on sign out to prevent data leak to non-logged in user
       resetBookmarks();
       resetDownloads();
+      
+      // Clear AI data for this user
+      if (userId) {
+        localStorage.removeItem(`ai-conversations-${userId}`);
+        localStorage.removeItem(`current-conversation-id-${userId}`);
+        localStorage.removeItem(`ai-quota-${userId}`);
+      }
+
       toast.success(t.auth.signOutSuccess);
       setSettingsDialogOpen(false);
     } catch (error) {
