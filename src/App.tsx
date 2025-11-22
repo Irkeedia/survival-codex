@@ -9,6 +9,7 @@ import { ProfileMenu } from '@/components/ProfileMenu';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
 import { AuthDialog } from '@/components/AuthDialog';
 import { SettingsDialog } from '@/components/SettingsDialog';
+import { Toaster } from '@/components/ui/sonner';
 import { SurvivalTechnique } from '@/lib/types';
 import { translations, Language } from '@/lib/translations';
 import { toast } from 'sonner';
@@ -29,16 +30,54 @@ function App() {
   const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'en');
   const [localApiKey, setLocalApiKey] = useKV<string>('openai-api-key', '');
 
-  const { user, updateProfile, signOut, isSupabaseReady } = useSupabase();
+  const { user, updateProfile, signOut, isSupabaseReady, client } = useSupabase();
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
   const { downloads, toggleDownload, clearDownloads } = useDownloads(user?.id);
   useRevenueCat(user ?? null);
 
   useEffect(() => {
-    CapacitorApp.addListener('appUrlOpen', (data) => {
-      console.log('App opened with URL:', data.url);
+    CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
+      console.log('App opened with URL:', url);
+      
+      // Handle both hash (fragment) and query params
+      let accessToken, refreshToken;
+      
+      // 1. Try hash (standard Supabase redirect)
+      const hashIndex = url.indexOf('#');
+      if (hashIndex !== -1) {
+        const params = new URLSearchParams(url.substring(hashIndex + 1));
+        accessToken = params.get('access_token');
+        refreshToken = params.get('refresh_token');
+      }
+
+      // 2. If not in hash, try query params (fallback)
+      if (!accessToken) {
+        const queryIndex = url.indexOf('?');
+        if (queryIndex !== -1) {
+          const params = new URLSearchParams(url.substring(queryIndex + 1));
+          accessToken = params.get('access_token');
+          refreshToken = params.get('refresh_token');
+        }
+      }
+
+      if (accessToken && refreshToken) {
+          const { error } = await client?.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+          }) ?? {};
+          
+          if (error) {
+            console.error('Error setting session:', error);
+            toast.error('Erreur de connexion via le lien');
+          } else {
+            console.log('Session restored from Deep Link');
+            toast.success('Compte vérifié avec succès !');
+            // Close any open dialogs
+            setAuthDialogOpen(false);
+          }
+      }
     });
-  }, []);
+  }, [client]);
 
   const language = (user?.language as Language) || localLanguage || 'en';
   const apiKey = user?.apiKey || localApiKey || '';
@@ -173,6 +212,7 @@ function App() {
 
   return (
     <div className="min-h-screen pb-20 safe-area-inset-bottom">
+      <Toaster />
       <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-10 shadow-lg shadow-primary/5 safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="flex items-start justify-between gap-2 sm:gap-4">
