@@ -15,7 +15,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
 const AI_MODEL = import.meta.env.VITE_AI_MODEL || 'gemini-pro';
-const FREE_QUOTA_LIMIT = 15;
+const FREE_QUOTA_LIMIT = 25;
 
 interface AITabProps {
   t: Translations;
@@ -154,7 +154,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
       const model = genAI.getGenerativeModel({ model: AI_MODEL });
 
       const questionText = userMessage.content;
-      const promptText = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
+      const userName = user.name || 'Survivant';
+      const promptText = `Tu es Charlie, un expert en survie dans la nature. Tu t'adresses à ${userName}. Réponds à cette question de manière concise, pratique et personnalisée: ${questionText}`;
       
       const result = await model.generateContent(promptText);
       const response = result.response.text().replace(/\*\*/g, '');

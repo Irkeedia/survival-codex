@@ -19,6 +19,7 @@ interface HomeTabProps {
   onToggleBookmark: (id: string) => void | Promise<void>;
   onTechniqueClick: (technique: SurvivalTechnique) => void;
   onUpgradeClick: () => void;
+  onDownloadsClick: () => void;
 }
 
 export function HomeTab({ 
@@ -28,7 +29,8 @@ export function HomeTab({
   bookmarkedIds, 
   onToggleBookmark, 
   onTechniqueClick,
-  onUpgradeClick
+  onUpgradeClick,
+  onDownloadsClick
 }: HomeTabProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SurvivalCategory | 'all'>('all');
@@ -130,7 +132,10 @@ export function HomeTab({
       {/* Promo / Stats Card */}
       <div className="relative overflow-hidden rounded-3xl">
         {user?.subscriptionTier === 'premium' ? (
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white shadow-lg shadow-blue-500/20">
+          <div 
+            className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white shadow-lg shadow-blue-500/20 cursor-pointer transition-transform active:scale-[0.98]"
+            onClick={onDownloadsClick}
+          >
             <div className="relative z-10 flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold mb-1">{t.downloads?.title}</h3>

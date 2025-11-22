@@ -218,6 +218,7 @@ function App() {
             onToggleBookmark={handleBookmarkToggle}
             onTechniqueClick={handleTechniqueClick}
             onUpgradeClick={handleUpgradeClick}
+            onDownloadsClick={() => setActiveTab('downloads')}
           />
         )}
 

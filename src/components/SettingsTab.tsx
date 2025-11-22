@@ -111,20 +111,8 @@ export function SettingsTab({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 w-full space-y-2">
-                <Label htmlFor="avatar-url" className="text-sm font-medium flex items-center gap-2">
-                  <Camera className="w-4 h-4" />
-                  {t.settings.avatarUrl || 'Avatar URL'}
-                </Label>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    id="avatar-url"
-                    type="url"
-                    value={avatarUrlInput}
-                    onChange={(e) => setAvatarUrlInput(e.target.value)}
-                    placeholder="https://example.com/avatar.jpg"
-                    className="flex-1"
-                  />
-                  <Button onClick={handleSaveAvatar} size="sm" className="w-full sm:w-auto">
+                  <Button onClick={handleSaveAvatar} size="sm" className="w-full sm:w-auto hidden">
                     {t.settings.save || 'Save'}
                   </Button>
                 </div>
