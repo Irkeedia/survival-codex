@@ -12,6 +12,7 @@ import { ChatMessage, ChatConversation, User } from '@/lib/types';
 import { PaperPlaneRight, Sparkle, Trash, Crown, ClockCounterClockwise, Plus, ChatCircleText } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
 const FREE_QUOTA_LIMIT = 15;
@@ -96,7 +97,9 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
       }
     }
 
-    if (!CREATOR_API_KEY) {
+    const effectiveApiKey = CREATOR_API_KEY;
+
+    if (!effectiveApiKey) {
       toast.error(t.ai.apiKeyRequired, {
         description: t.ai.apiKeyDesc,
       });
@@ -147,9 +150,14 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     }
 
     try {
+      const genAI = new GoogleGenerativeAI(effectiveApiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+
       const questionText = userMessage.content;
       const promptText = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
-      const response = await window.spark.llm(promptText);
+      
+      const result = await model.generateContent(promptText);
+      const response = result.response.text();
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -169,9 +177,17 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
             : conv
         )
       );
-    } catch (error) {
-      toast.error('Impossible d\'obtenir une réponse de Charlie');
-      console.error(error);
+    } catch (error: any) {
+      console.error('Gemini Error:', error);
+      const errorMessage = error?.message || 'Erreur inconnue';
+      
+      if (errorMessage.includes('API key not valid')) {
+        toast.error('Clé API invalide. Vérifiez votre configuration.');
+      } else if (errorMessage.includes('User location is not supported')) {
+        toast.error('L\'IA n\'est pas disponible dans votre région.');
+      } else {
+        toast.error(`Erreur IA: ${errorMessage}`);
+      }
     } finally {
       setIsLoading(false);
     }

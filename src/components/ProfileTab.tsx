@@ -23,7 +23,6 @@ interface ProfileTabProps {
   language: Language;
   bookmarksCount: number;
   downloadsCount: number;
-  apiKey: string;
   onLanguageChange: (lang: Language) => void;
   onSignOut: () => void;
   onSignIn: () => void;
@@ -31,7 +30,6 @@ interface ProfileTabProps {
   onClearBookmarks: () => void;
   onClearDownloads: () => void;
   onClearAllData: () => void;
-  onApiKeyChange: (key: string) => void;
   onAvatarChange: (url: string) => void;
 }
 
@@ -41,7 +39,6 @@ export function ProfileTab({
   language,
   bookmarksCount,
   downloadsCount,
-  apiKey,
   onLanguageChange,
   onSignOut,
   onSignIn,
@@ -49,7 +46,6 @@ export function ProfileTab({
   onClearBookmarks,
   onClearDownloads,
   onClearAllData,
-  onApiKeyChange,
   onAvatarChange,
 }: ProfileTabProps) {
   const [view, setView] = useState<'menu' | 'plans' | 'settings'>('menu');
@@ -125,8 +121,6 @@ export function ProfileTab({
           onClearAllData={onClearAllData}
           onSignOut={onSignOut}
           onUpgradeClick={() => setView('plans')}
-          apiKey={apiKey}
-          onApiKeyChange={onApiKeyChange}
           onAvatarChange={onAvatarChange}
         />
       </div>

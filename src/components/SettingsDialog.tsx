@@ -23,8 +23,6 @@ interface SettingsDialogProps {
   onSignOut: () => void;
   onUpgradeToPremium: () => void;
   onSignUpClick: () => void;
-  apiKey: string;
-  onApiKeyChange: (key: string) => void;
   onAvatarChange: (url: string) => void;
 }
 
@@ -44,8 +42,6 @@ export function SettingsDialog({
   onSignOut,
   onUpgradeToPremium,
   onSignUpClick,
-  apiKey,
-  onApiKeyChange,
   onAvatarChange,
 }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -101,8 +97,6 @@ export function SettingsDialog({
               onClearAllData={onClearAllData}
               onSignOut={onSignOut}
               onUpgradeClick={() => setActiveTab('plans')}
-              apiKey={apiKey}
-              onApiKeyChange={onApiKeyChange}
               onAvatarChange={onAvatarChange}
             />
           </TabsContent>

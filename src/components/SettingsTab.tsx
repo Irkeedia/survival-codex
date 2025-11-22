@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Language, languageNames } from '@/lib/translations';
-import { Globe, Trash, Database, Crown, User, SignOut, Camera, Key } from '@phosphor-icons/react';
+import { Globe, Trash, Database, Crown, User, SignOut, Camera } from '@phosphor-icons/react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { User as UserType } from '@/lib/types';
 import { toast } from 'sonner';
@@ -35,8 +35,6 @@ interface SettingsTabProps {
   onClearAllData: () => void;
   onSignOut: () => void;
   onUpgradeClick: () => void;
-  apiKey: string;
-  onApiKeyChange: (key: string) => void;
   onAvatarChange: (url: string) => void;
 }
 
@@ -52,20 +50,13 @@ export function SettingsTab({
   onClearAllData,
   onSignOut,
   onUpgradeClick,
-  apiKey,
-  onApiKeyChange,
   onAvatarChange,
 }: SettingsTabProps) {
   const [avatarUrlInput, setAvatarUrlInput] = useState(user?.avatarUrl || '');
-  const [apiKeyInput, setApiKeyInput] = useState(apiKey || '');
 
   useEffect(() => {
     setAvatarUrlInput(user?.avatarUrl || '');
   }, [user?.avatarUrl]);
-
-  useEffect(() => {
-    setApiKeyInput(apiKey || '');
-  }, [apiKey]);
 
   const handleClearBookmarks = () => {
     onClearBookmarks();
@@ -85,11 +76,6 @@ export function SettingsTab({
   const handleSaveAvatar = () => {
     onAvatarChange(avatarUrlInput);
     toast.success(t.settings.avatarUpdated || 'Avatar updated successfully');
-  };
-
-  const handleSaveApiKey = () => {
-    onApiKeyChange(apiKeyInput);
-    toast.success(t.ai?.apiKeySaved || 'API key saved');
   };
 
   const getInitials = (name: string) =>

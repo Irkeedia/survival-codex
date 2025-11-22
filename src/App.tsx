@@ -29,7 +29,6 @@ function App() {
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settingsDefaultTab, setSettingsDefaultTab] = useState<'settings' | 'plans'>('settings');
   const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'en');
-  const [localApiKey, setLocalApiKey] = useKV<string>('openai-api-key', '');
 
   const { user, updateProfile, signOut, isSupabaseReady, client } = useSupabase();
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
@@ -81,7 +80,6 @@ function App() {
   }, [client]);
 
   const language = (user?.language as Language) || localLanguage || 'en';
-  const apiKey = user?.apiKey || localApiKey || '';
   const t = translations[language];
 
   const requireSignIn = () => {
@@ -199,13 +197,6 @@ function App() {
     }
   };
 
-  const handleApiKeyChange = (key: string) => {
-    setLocalApiKey(key);
-    if (user) {
-      updateProfile({ apiKey: key }).catch((error) => console.error('Failed to update API key', error));
-    }
-  };
-
   const handleAvatarChange = (avatarUrl: string) => {
     if (!user) {
       return;
@@ -258,7 +249,6 @@ function App() {
               user={user || null}
               bookmarksCount={bookmarks.length}
               downloadsCount={downloads.length}
-              apiKey={apiKey}
               onLanguageChange={handleLanguageChange}
               onSignOut={handleSignOut}
               onSignIn={() => setAuthDialogOpen(true)}
@@ -266,7 +256,6 @@ function App() {
               onClearBookmarks={handleClearBookmarks}
               onClearDownloads={handleClearDownloads}
               onClearAllData={handleClearAllData}
-              onApiKeyChange={handleApiKeyChange}
               onAvatarChange={handleAvatarChange}
             />
           </div>
@@ -314,8 +303,6 @@ function App() {
         onSignOut={handleSignOut}
         onUpgradeToPremium={handleUpgrade}
         onSignUpClick={() => setAuthDialogOpen(true)}
-        apiKey={apiKey}
-        onApiKeyChange={handleApiKeyChange}
         onAvatarChange={handleAvatarChange}
       />
     </div>
