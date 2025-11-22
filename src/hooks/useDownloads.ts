@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useKV } from '@github/spark/hooks';
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useSupabase } from '@/hooks/useSupabase';
 
 export function useDownloads(userId?: string | null) {
   const queryClient = useQueryClient();
   const { client, isSupabaseReady } = useSupabase();
   const supabaseEnabled = Boolean(client && isSupabaseReady && userId);
-  const [localDownloads, setLocalDownloads] = useKV<string[]>('downloaded-techniques', []);
+  const [localDownloads, setLocalDownloads] = usePersistentState<string[]>('downloaded-techniques', []);
 
   const { data, isLoading } = useQuery({
     queryKey: ['downloads', userId],
@@ -22,9 +22,17 @@ export function useDownloads(userId?: string | null) {
         throw error;
       }
 
-      return data?.map((row) => row.technique_id) ?? [];
+      const ids = data?.map((row) => row.technique_id) ?? [];
+      
+      // Sync to local storage for offline access
+      setLocalDownloads(ids);
+      
+      return ids;
     },
   });
+
+  // Use local downloads as fallback when offline or loading
+  const effectiveDownloads = data ?? localDownloads ?? [];
 
   const toggleLocal = useCallback((id: string) => {
     setLocalDownloads((current = []) => {
@@ -88,7 +96,7 @@ export function useDownloads(userId?: string | null) {
   }, [client, queryClient, supabaseEnabled, setLocalDownloads, userId]);
 
   return {
-    downloads: supabaseEnabled ? (data ?? []) : (localDownloads ?? []),
+    downloads: effectiveDownloads,
     downloadsLoading: supabaseEnabled ? isLoading : false,
     toggleDownload,
     clearDownloads,

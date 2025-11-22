@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { createClient, Session, SupabaseClient } from '@supabase/supabase-js';
-import { useKV } from '@github/spark/hooks';
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import { Language } from '@/lib/translations';
 import { SubscriptionTier, User } from '@/lib/types';
 
@@ -94,7 +94,8 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(isSupabaseReady);
-  const [localUser, setLocalUser] = useKV<User | null>('current-user', null);
+  const [localUser, setLocalUser] = usePersistentState<User | null>('current-user', null);
+  const [cachedProfile, setCachedProfile] = usePersistentState<User | null>('cached-profile', null);
 
   useEffect(() => {
     if (!client) {
@@ -105,9 +106,14 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     setLoading(true);
 
+    // Try to restore session from local storage first (fast)
     client.auth.getSession().then(({ data }) => {
       if (!cancelled) {
         setSession(data.session);
+        // If we have a session but no profile yet, try to use cached profile temporarily
+        if (data.session && cachedProfile && cachedProfile.id === data.session.user.id) {
+          setProfile(cachedProfile);
+        }
       }
     }).finally(() => {
       if (!cancelled) {
@@ -115,10 +121,11 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data } = client.auth.onAuthStateChange((_event, newSession) => {
+    const { data } = client.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
-      if (!newSession) {
+      if (event === 'SIGNED_OUT') {
         setProfile(null);
+        setCachedProfile(null);
       }
     });
 
@@ -134,7 +141,9 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    setLoading(true);
+    // Don't set loading to true here to avoid UI flickering if we already have data
+    // setLoading(true); 
+    
     try {
       const { data, error } = await client
         .from('profiles')
@@ -143,6 +152,15 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
+        console.error('Failed to load profile from Supabase', error);
+        
+        // Fallback to cached profile if network error
+        if (cachedProfile && cachedProfile.id === session.user.id) {
+          console.log('Using cached profile due to error');
+          setProfile(cachedProfile);
+          return;
+        }
+
         if (error.code === 'PGRST116') {
           const { data: inserted, error: insertError } = await client
             .from('profiles')
@@ -164,21 +182,23 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          setProfile(mapRowToUser(inserted as ProfileRow));
+          const newUser = mapRowToUser(inserted as ProfileRow);
+          setProfile(newUser);
+          setCachedProfile(newUser);
           return;
         }
-
-        console.error('Failed to load profile', error);
         return;
       }
 
       if (data) {
-        setProfile(mapRowToUser(data as ProfileRow));
+        const user = mapRowToUser(data as ProfileRow);
+        setProfile(user);
+        setCachedProfile(user);
       }
     } finally {
       setLoading(false);
     }
-  }, [client, session]);
+  }, [client, session, cachedProfile, setCachedProfile]);
 
   useEffect(() => {
     if (!client || !session?.user) {
@@ -271,7 +291,8 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
 
     await client.auth.signOut();
     setProfile(null);
-  }, [client, setLocalUser]);
+    setCachedProfile(null);
+  }, [client, setLocalUser, setCachedProfile]);
 
   const updateProfile = useCallback(async (updates: ProfileUpdate) => {
     if (!updates || Object.keys(updates).length === 0) {
@@ -279,7 +300,14 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     }
 
     if (!client || !session?.user) {
-      setLocalUser((current) => current ? { ...current, ...updates } : current);
+      setCachedProfile((current) => {
+        if (!current) return null;
+        return { ...current, ...updates };
+      });
+      setLocalUser((current) => {
+        if (!current) return null;
+        return { ...current, ...updates };
+      });
       return;
     }
 
@@ -314,7 +342,7 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     await fetchProfile();
   }, [client, session, fetchProfile]);
 
-  const currentUser = isSupabaseReady ? profile : (localUser ?? null);
+  const currentUser = isSupabaseReady ? (profile ?? cachedProfile ?? null) : (localUser ?? null);
   const value = useMemo<SupabaseContextValue>(() => ({
     client,
     session,

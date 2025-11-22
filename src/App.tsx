@@ -167,6 +167,8 @@ function App() {
       return;
     }
 
+    // TODO: Implement real payment flow with RevenueCat
+    // For now, we simulate a successful payment
     try {
       await updateProfile({
         subscriptionTier: 'premium',
