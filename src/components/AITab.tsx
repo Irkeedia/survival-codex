@@ -327,7 +327,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
           </div>
         )}
 
-        <div className="space-y-6 pb-48 pt-2">
+        <div className="space-y-6 pb-4 pt-2">
           {messages?.map((message) => (
             <div
               key={message.id}
@@ -374,8 +374,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
         </div>
       </ScrollArea>
 
-      <div className="fixed bottom-24 left-0 right-0 px-4 z-40 pointer-events-none">
-        <div className="max-w-screen-xl mx-auto pointer-events-auto">
+      <div className="flex-none w-full bg-background/80 backdrop-blur-md border-t border-border/5 px-4 pt-2 pb-32 z-20">
+        <div className="max-w-screen-xl mx-auto flex flex-col gap-2">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -388,30 +388,25 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.ai.placeholder || "Ask Charlie..."}
               disabled={isLoading || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)}
-              className="w-full h-14 pl-6 pr-14 rounded-[2rem] bg-background/80 backdrop-blur-md border border-border/10 shadow-lg focus-visible:ring-1 focus-visible:ring-primary/30 transition-all"
+              className="w-full h-14 pl-6 pr-14 rounded-[2rem] bg-background/50 border border-border/10 shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all"
             />
             <div className="absolute right-2 flex items-center gap-1">
-               {inputValue.trim() ? (
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)} 
-                    size="icon" 
-                    className="h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all"
-                  >
-                    <PaperPlaneRight size={20} weight="fill" />
-                  </Button>
-               ) : (
-                  <Button 
-                    type="button"
-                    variant="ghost"
-                    size="icon" 
-                    className="h-10 w-10 rounded-full text-muted-foreground hover:bg-muted/50"
-                  >
-                    <Microphone size={20} weight="fill" />
-                  </Button>
-               )}
+               <Button 
+                  type="submit" 
+                  disabled={isLoading || !inputValue.trim() || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)} 
+                  size="icon" 
+                  className={cn(
+                    "h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all",
+                    (!inputValue.trim()) && "opacity-0 scale-75 pointer-events-none"
+                  )}
+                >
+                  <PaperPlaneRight size={20} weight="fill" />
+                </Button>
             </div>
           </form>
+          <p className="text-[10px] text-center text-muted-foreground/70 px-4">
+            Charlie peut faire des erreurs. Vérifiez les informations importantes.
+          </p>
         </div>
       </div>
     </div>
