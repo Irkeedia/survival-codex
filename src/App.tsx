@@ -256,10 +256,18 @@ function App() {
               language={language}
               t={t}
               user={user || null}
+              bookmarksCount={bookmarks.length}
+              downloadsCount={downloads.length}
+              apiKey={apiKey}
               onLanguageChange={handleLanguageChange}
               onSignOut={handleSignOut}
               onSignIn={() => setAuthDialogOpen(true)}
               onUpgradeToPremium={handleUpgrade}
+              onClearBookmarks={handleClearBookmarks}
+              onClearDownloads={handleClearDownloads}
+              onClearAllData={handleClearAllData}
+              onApiKeyChange={handleApiKeyChange}
+              onAvatarChange={handleAvatarChange}
             />
           </div>
         )}
