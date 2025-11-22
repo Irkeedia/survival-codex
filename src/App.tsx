@@ -30,16 +30,52 @@ function App() {
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settingsDefaultTab, setSettingsDefaultTab] = useState<'settings' | 'plans'>('settings');
   const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'en');
+  
+  // Swipe navigation state
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Next tab
+      if (activeTab === 'home') setActiveTab('downloads');
+      else if (activeTab === 'downloads') setActiveTab('ai');
+      else if (activeTab === 'ai') setActiveTab('profile');
+    }
+    
+    if (isRightSwipe) {
+      // Previous tab
+      if (activeTab === 'profile') setActiveTab('ai');
+      else if (activeTab === 'ai') setActiveTab('downloads');
+      else if (activeTab === 'downloads') setActiveTab('home');
+    }
+  };
 
   const { user, updateProfile, signOut, isSupabaseReady, client } = useSupabase();
-  const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
-  const { downloads, offlineContent, toggleDownload, clearDownloads } = useDownloads(user?.id);
+  const { bookmarks, toggleBookmark, clearBookmarks, resetLocalState: resetBookmarks } = useBookmarks(user?.id);
+  const { downloads, offlineContent, toggleDownload, clearDownloads, resetLocalState: resetDownloads } = useDownloads(user?.id);
   useRevenueCat(user ?? null);
 
   const language = (user?.language as Language) || localLanguage || 'en';
   const t = translations[language];
   
-  const { techniques, isLoading: techniquesLoading } = useTechniques(language);
+  const { techniques, isLoading: techniquesLoading } = useTechniques(language, downloads);
 
   useEffect(() => {
     CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
@@ -155,6 +191,9 @@ function App() {
   const handleSignOut = async () => {
     try {
       await signOut();
+      // Clear local state on sign out to prevent data leak to non-logged in user
+      resetBookmarks();
+      resetDownloads();
       toast.success(t.auth.signOutSuccess);
       setSettingsDialogOpen(false);
     } catch (error) {
@@ -208,7 +247,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen pb-20 safe-area-inset-bottom">
+    <div 
+      className="min-h-screen pb-20 safe-area-inset-bottom"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       <Toaster />
       
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">

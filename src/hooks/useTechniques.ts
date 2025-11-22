@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
 import { SurvivalTechnique, SurvivalCategory } from '@/lib/types';
 import { Language } from '@/lib/translations';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 
-export function useTechniques(language: Language) {
-  const { client, isSupabaseReady } = useSupabase();
+export function useTechniques(language: Language, downloadedIds: string[] = []) {
+  const { client, isSupabaseReady, user } = useSupabase();
   // Cache the full techniques list locally for offline usage of the LIST
   const [cachedTechniques, setCachedTechniques] = usePersistentState<SurvivalTechnique[]>('cached-techniques', []);
 
@@ -43,8 +44,21 @@ export function useTechniques(language: Language) {
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
-  // If we have data from Supabase, use it. Otherwise fallback to cache (offline mode).
-  const effectiveTechniques = data || cachedTechniques || [];
+  // Logic to handle offline access based on subscription
+  const effectiveTechniques = useMemo(() => {
+    // 1. If we have fresh data from online fetch, use it
+    if (data) return data;
+
+    // 2. If we are offline (or fetch failed), check subscription
+    // Only Premium users can access offline content, AND ONLY what they have downloaded
+    if (user?.subscriptionTier === 'premium') {
+      // Filter cached techniques to only show downloaded ones
+      return (cachedTechniques || []).filter(t => downloadedIds.includes(t.id));
+    }
+
+    // 3. Free users get no access when offline
+    return [];
+  }, [data, cachedTechniques, user, downloadedIds]);
 
   return {
     techniques: effectiveTechniques,

@@ -6,7 +6,7 @@ import { SurvivalTechnique } from '@/lib/types';
 
 export function useDownloads(userId?: string | null) {
   const queryClient = useQueryClient();
-  const { client, isSupabaseReady } = useSupabase();
+  const { client, isSupabaseReady, user } = useSupabase();
   const supabaseEnabled = Boolean(client && isSupabaseReady && userId);
   const [localDownloads, setLocalDownloads] = usePersistentState<string[]>('downloaded-techniques', []);
   const [offlineContent, setOfflineContent] = usePersistentState<Record<string, SurvivalTechnique>>('offline-content', {});
@@ -55,6 +55,11 @@ export function useDownloads(userId?: string | null) {
 
   const toggleDownload = useCallback(async (technique: SurvivalTechnique) => {
     const techniqueId = technique.id;
+    
+    // Block free users from downloading
+    if (user && user.subscriptionTier !== 'premium') {
+      throw new Error('Upgrade required');
+    }
     
     if (!supabaseEnabled) {
       toggleLocal(technique);
@@ -119,12 +124,18 @@ export function useDownloads(userId?: string | null) {
     queryClient.invalidateQueries({ queryKey: ['downloads', userId] });
   }, [client, queryClient, supabaseEnabled, setLocalDownloads, userId, setOfflineContent]);
 
+  const resetLocalState = useCallback(() => {
+    setLocalDownloads([]);
+    setOfflineContent({});
+  }, [setLocalDownloads, setOfflineContent]);
+
   return {
     downloads: effectiveDownloads,
     offlineContent,
     downloadsLoading: supabaseEnabled ? isLoading : false,
     toggleDownload,
     clearDownloads,
+    resetLocalState,
     usingSupabase: supabaseEnabled,
   } as const;
 }

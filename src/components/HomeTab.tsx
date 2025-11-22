@@ -188,37 +188,6 @@ export function HomeTab({
         )}
       </div>
 
-      {/* Categories Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">{t.allCategories}</h2>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={cn(
-                  "flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 border border-transparent",
-                  "bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-purple-500/20 hover:shadow-xl hover:scale-[1.02] active:scale-95",
-                )}
-              >
-                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-3 bg-white/20 backdrop-blur-sm", cat.color)}>
-                  <Icon weight="fill" className="w-6 h-6" />
-                </div>
-                <span className="font-medium text-sm text-center text-white">
-                  {t.categories[cat.id]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Search Bar */}
       <div className="relative group">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-500"></div>
@@ -279,6 +248,38 @@ export function HomeTab({
           )}
         </div>
       )}
+
+      {/* Categories Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">{t.allCategories}</h2>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={cn(
+                  "flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 border border-transparent",
+                  "bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-purple-500/20 hover:shadow-xl hover:scale-[1.02] active:scale-95",
+                )}
+              >
+                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-3 bg-white/20 backdrop-blur-sm", cat.color)}>
+                  <Icon weight="fill" className="w-6 h-6" />
+                </div>
+                <span className="font-medium text-sm text-center text-white">
+                  {t.categories[cat.id]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
     </div>
   );
 }

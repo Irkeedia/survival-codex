@@ -87,11 +87,16 @@ export function useBookmarks(userId?: string | null) {
     queryClient.invalidateQueries({ queryKey: ['bookmarks', userId] });
   }, [client, queryClient, supabaseEnabled, setLocalBookmarks, userId]);
 
+  const resetLocalState = useCallback(() => {
+    setLocalBookmarks([]);
+  }, [setLocalBookmarks]);
+
   return {
     bookmarks: supabaseEnabled ? (data ?? []) : (localBookmarks ?? []),
     bookmarksLoading: supabaseEnabled ? isLoading : false,
     toggleBookmark,
     clearBookmarks,
+    resetLocalState,
     usingSupabase: supabaseEnabled,
   } as const;
 }

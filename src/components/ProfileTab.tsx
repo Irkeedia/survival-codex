@@ -168,7 +168,12 @@ export function ProfileTab({
               )}
             </Badge>
           ) : (
-            <p className="text-muted-foreground text-sm">{t.auth.signIn}</p>
+            <button 
+              onClick={() => setView('plans')} 
+              className="text-primary text-sm hover:underline font-medium"
+            >
+              {t.auth.signIn}
+            </button>
           )}
         </div>
       </div>

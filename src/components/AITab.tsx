@@ -261,7 +261,7 @@ Réponds à ${userName} maintenant :
                 </Button>
               </SheetTitle>
             </SheetHeader>
-            <ScrollArea className="flex-1 -mx-6 px-6 mt-4">
+            <ScrollArea className="flex-1 -mx-6 px-6 mt-4 h-[1px]">
               {(!conversations || conversations.length === 0) ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
                   <ChatCircleText size={48} className="text-muted-foreground/50" weight="duotone" />
@@ -412,7 +412,7 @@ Réponds à ${userName} maintenant :
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.ai.placeholder || "Ask Charlie..."}
               disabled={isLoading || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)}
-              className="w-full h-14 pl-6 pr-14 rounded-[2rem] bg-background/50 border border-border/10 shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all"
+              className="w-full h-14 pl-6 pr-14 rounded-[2rem] bg-secondary/80 border border-primary/20 shadow-sm focus-visible:ring-1 focus-visible:ring-primary/30 transition-all text-foreground placeholder:text-muted-foreground"
             />
             <div className="absolute right-2 flex items-center gap-1">
                <Button 
