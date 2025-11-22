@@ -18,6 +18,7 @@ import { useSupabase } from '@/hooks/useSupabase';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { useDownloads } from '@/hooks/useDownloads';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
+import { useTechniques } from '@/hooks/useTechniques';
 
 type TabType = 'home' | 'downloads' | 'ai' | 'profile';
 
@@ -32,8 +33,13 @@ function App() {
 
   const { user, updateProfile, signOut, isSupabaseReady, client } = useSupabase();
   const { bookmarks, toggleBookmark, clearBookmarks } = useBookmarks(user?.id);
-  const { downloads, toggleDownload, clearDownloads } = useDownloads(user?.id);
+  const { downloads, offlineContent, toggleDownload, clearDownloads } = useDownloads(user?.id);
   useRevenueCat(user ?? null);
+
+  const language = (user?.language as Language) || localLanguage || 'en';
+  const t = translations[language];
+  
+  const { techniques, isLoading: techniquesLoading } = useTechniques(language);
 
   useEffect(() => {
     CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
@@ -79,9 +85,6 @@ function App() {
     });
   }, [client]);
 
-  const language = (user?.language as Language) || localLanguage || 'en';
-  const t = translations[language];
-
   const requireSignIn = () => {
     toast.error(t.auth.signIn);
     setAuthDialogOpen(true);
@@ -106,7 +109,7 @@ function App() {
     }
   };
 
-  const handleDownloadToggle = async (id: string) => {
+  const handleDownloadToggle = async (technique: SurvivalTechnique) => {
     if (!user) {
       requireSignIn();
       return;
@@ -120,7 +123,7 @@ function App() {
     }
 
     try {
-      await toggleDownload(id);
+      await toggleDownload(technique);
     } catch (error) {
       console.error('Failed to update download', error);
       toast.error(t.settings.storageDesc);
@@ -219,6 +222,7 @@ function App() {
             onTechniqueClick={handleTechniqueClick}
             onUpgradeClick={handleUpgradeClick}
             onDownloadsClick={() => setActiveTab('downloads')}
+            techniques={techniques}
           />
         )}
 
@@ -231,6 +235,8 @@ function App() {
             onToggleBookmark={handleBookmarkToggle}
             onToggleDownload={handleDownloadToggle}
             onTechniqueClick={handleTechniqueClick}
+            techniques={techniques}
+            offlineContent={offlineContent}
           />
         )}
 

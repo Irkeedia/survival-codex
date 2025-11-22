@@ -143,6 +143,13 @@ export interface Translations {
     navigation: string;
     'first-aid': string;
     signaling: string;
+    'santé_urgence'?: string;
+    'santé_soins'?: string;
+    'santé_chirurgie'?: string;
+    'nucléaire_protection'?: string;
+    'nucléaire_décontamination'?: string;
+    'ingénierie_lowtech'?: string;
+    'défense_tactique'?: string;
   };
   difficulty: {
     beginner: string;
@@ -445,6 +452,13 @@ export const translations: Record<Language, Translations> = {
       navigation: 'Navigation',
       'first-aid': 'Premiers soins',
       signaling: 'Signalisation',
+      'santé_urgence': 'Santé Urgence',
+      'santé_soins': 'Santé Soins',
+      'santé_chirurgie': 'Santé Chirurgie',
+      'nucléaire_protection': 'Nucléaire Protection',
+      'nucléaire_décontamination': 'Nucléaire Décontamination',
+      'ingénierie_lowtech': 'Ingénierie Low-tech',
+      'défense_tactique': 'Défense Tactique',
     },
     difficulty: {
       beginner: 'Débutant',

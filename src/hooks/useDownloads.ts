@@ -2,12 +2,14 @@ import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useSupabase } from '@/hooks/useSupabase';
+import { SurvivalTechnique } from '@/lib/types';
 
 export function useDownloads(userId?: string | null) {
   const queryClient = useQueryClient();
   const { client, isSupabaseReady } = useSupabase();
   const supabaseEnabled = Boolean(client && isSupabaseReady && userId);
   const [localDownloads, setLocalDownloads] = usePersistentState<string[]>('downloaded-techniques', []);
+  const [offlineContent, setOfflineContent] = usePersistentState<Record<string, SurvivalTechnique>>('offline-content', {});
 
   const { data, isLoading } = useQuery({
     queryKey: ['downloads', userId],
@@ -34,24 +36,41 @@ export function useDownloads(userId?: string | null) {
   // Use local downloads as fallback when offline or loading
   const effectiveDownloads = data ?? localDownloads ?? [];
 
-  const toggleLocal = useCallback((id: string) => {
+  const toggleLocal = useCallback((technique: SurvivalTechnique) => {
+    const id = technique.id;
     setLocalDownloads((current = []) => {
       if (current.includes(id)) {
+        setOfflineContent(prev => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
         return current.filter((techniqueId) => techniqueId !== id);
       }
+      
+      setOfflineContent(prev => ({ ...prev, [id]: technique }));
       return [...current, id];
     });
-  }, [setLocalDownloads]);
+  }, [setLocalDownloads, setOfflineContent]);
 
-  const toggleDownload = useCallback(async (techniqueId: string) => {
+  const toggleDownload = useCallback(async (technique: SurvivalTechnique) => {
+    const techniqueId = technique.id;
+    
     if (!supabaseEnabled) {
-      toggleLocal(techniqueId);
+      toggleLocal(technique);
       return;
     }
 
     const alreadyDownloaded = (data ?? []).includes(techniqueId);
 
     if (alreadyDownloaded) {
+      // Remove from offline content
+      setOfflineContent(prev => {
+        const next = { ...prev };
+        delete next[techniqueId];
+        return next;
+      });
+
       const { error } = await client!
         .from('downloads')
         .delete()
@@ -62,6 +81,9 @@ export function useDownloads(userId?: string | null) {
         throw error;
       }
     } else {
+      // Save to offline content
+      setOfflineContent(prev => ({ ...prev, [techniqueId]: technique }));
+
       const { error } = await client!
         .from('downloads')
         .insert({
@@ -75,9 +97,11 @@ export function useDownloads(userId?: string | null) {
     }
 
     queryClient.invalidateQueries({ queryKey: ['downloads', userId] });
-  }, [client, data, queryClient, supabaseEnabled, toggleLocal, userId]);
+  }, [client, data, queryClient, supabaseEnabled, toggleLocal, userId, setOfflineContent]);
 
   const clearDownloads = useCallback(async () => {
+    setOfflineContent({});
+    
     if (!supabaseEnabled) {
       setLocalDownloads([]);
       return;
@@ -93,10 +117,11 @@ export function useDownloads(userId?: string | null) {
     }
 
     queryClient.invalidateQueries({ queryKey: ['downloads', userId] });
-  }, [client, queryClient, supabaseEnabled, setLocalDownloads, userId]);
+  }, [client, queryClient, supabaseEnabled, setLocalDownloads, userId, setOfflineContent]);
 
   return {
     downloads: effectiveDownloads,
+    offlineContent,
     downloadsLoading: supabaseEnabled ? isLoading : false,
     toggleDownload,
     clearDownloads,

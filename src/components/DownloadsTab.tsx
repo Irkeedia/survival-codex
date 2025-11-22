@@ -1,6 +1,6 @@
+import { useMemo } from 'react';
 import { DownloadSimple, House, Drop, Fire, ForkKnife, Compass, FirstAid, Megaphone, Trash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { survivalTechniques } from '@/lib/data';
 import { SurvivalTechnique } from '@/lib/types';
 import { Language } from '@/lib/translations';
 import { techniqueTranslations } from '@/lib/techniqueTranslations';
@@ -11,8 +11,10 @@ interface DownloadsTabProps {
   downloadedIds: string[];
   bookmarkedIds: string[];
   onToggleBookmark: (id: string) => void | Promise<void>;
-  onToggleDownload: (id: string) => void | Promise<void>;
+  onToggleDownload: (technique: SurvivalTechnique) => void | Promise<void>;
   onTechniqueClick: (technique: SurvivalTechnique) => void;
+  techniques: SurvivalTechnique[];
+  offlineContent: Record<string, SurvivalTechnique>;
 }
 
 export function DownloadsTab({ 
@@ -22,11 +24,15 @@ export function DownloadsTab({
   bookmarkedIds,
   onToggleBookmark,
   onToggleDownload,
-  onTechniqueClick 
+  onTechniqueClick,
+  techniques,
+  offlineContent
 }: DownloadsTabProps) {
-  const downloadedTechniques = survivalTechniques.filter(technique => 
-    downloadedIds.includes(technique.id)
-  );
+  const downloadedTechniques = useMemo(() => {
+    return downloadedIds.map(id => {
+      return offlineContent[id] || techniques.find(t => t.id === id);
+    }).filter((t): t is SurvivalTechnique => !!t);
+  }, [downloadedIds, offlineContent, techniques]);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -89,7 +95,7 @@ export function DownloadsTab({
                   className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onToggleDownload(technique.id);
+                    onToggleDownload(technique);
                   }}
                 >
                   <Trash className="w-5 h-5" />

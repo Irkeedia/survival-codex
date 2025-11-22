@@ -3,9 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { MagnifyingGlass, BookmarkSimple, X, Crown, DownloadSimple, Fire, Drop, House, FirstAid, Compass, Megaphone, ForkKnife, ArrowLeft } from '@phosphor-icons/react';
+import { MagnifyingGlass, BookmarkSimple, X, Crown, DownloadSimple, Fire, Drop, House, FirstAid, Compass, Megaphone, ForkKnife, ArrowLeft, Heartbeat, Syringe, ShieldWarning, Radioactive, Wrench, Target } from '@phosphor-icons/react';
 import { TechniqueCard } from '@/components/TechniqueCard';
-import { survivalTechniques } from '@/lib/data';
 import { SurvivalTechnique, SurvivalCategory, User } from '@/lib/types';
 import { Language } from '@/lib/translations';
 import { techniqueTranslations } from '@/lib/techniqueTranslations';
@@ -20,6 +19,7 @@ interface HomeTabProps {
   onTechniqueClick: (technique: SurvivalTechnique) => void;
   onUpgradeClick: () => void;
   onDownloadsClick: () => void;
+  techniques: SurvivalTechnique[];
 }
 
 export function HomeTab({ 
@@ -30,14 +30,15 @@ export function HomeTab({
   onToggleBookmark, 
   onTechniqueClick,
   onUpgradeClick,
-  onDownloadsClick
+  onDownloadsClick,
+  techniques
 }: HomeTabProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SurvivalCategory | 'all'>('all');
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
 
   const filteredTechniques = useMemo(() => {
-    let filtered = survivalTechniques;
+    let filtered = techniques;
 
     if (showBookmarksOnly) {
       filtered = filtered.filter(t => bookmarkedIds.includes(t.id));
@@ -70,13 +71,13 @@ export function HomeTab({
   }, [searchQuery, selectedCategory, showBookmarksOnly, bookmarkedIds, language, t.categories]);
 
   const categories: Array<{ id: SurvivalCategory; icon: any; color: string }> = [
-    { id: 'shelter', icon: House, color: 'text-white' },
-    { id: 'water', icon: Drop, color: 'text-white' },
-    { id: 'fire', icon: Fire, color: 'text-white' },
-    { id: 'food', icon: ForkKnife, color: 'text-white' },
-    { id: 'navigation', icon: Compass, color: 'text-white' },
-    { id: 'first-aid', icon: FirstAid, color: 'text-white' },
-    { id: 'signaling', icon: Megaphone, color: 'text-white' },
+    { id: 'santé_urgence', icon: Heartbeat, color: 'text-white' },
+    { id: 'santé_soins', icon: FirstAid, color: 'text-white' },
+    { id: 'santé_chirurgie', icon: Syringe, color: 'text-white' },
+    { id: 'nucléaire_protection', icon: ShieldWarning, color: 'text-white' },
+    { id: 'nucléaire_décontamination', icon: Radioactive, color: 'text-white' },
+    { id: 'ingénierie_lowtech', icon: Wrench, color: 'text-white' },
+    { id: 'défense_tactique', icon: Target, color: 'text-white' },
   ];
 
   const getFirstName = (name: string) => name.split(' ')[0];

@@ -19,7 +19,7 @@ interface TechniqueDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isDownloaded?: boolean;
-  onToggleDownload?: (id: string) => void | Promise<void>;
+  onToggleDownload?: (technique: SurvivalTechnique) => void | Promise<void>;
   isBookmarked?: boolean;
   onToggleBookmark?: (id: string) => void | Promise<void>;
   user: User | null;
@@ -67,7 +67,7 @@ export function TechniqueDialog({
 
     if (onToggleDownload) {
       try {
-        await onToggleDownload(technique.id);
+        await onToggleDownload(technique);
       } catch (error) {
         console.error('Download toggle failed', error);
         toast.error(t.settings.storageDesc);
