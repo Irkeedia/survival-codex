@@ -148,7 +148,23 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
       const questionText = userMessage.content;
       const userName = user.name || 'Survivant';
-      const promptText = `Tu es Charlie, un expert en survie dans la nature. Tu t'adresses à ${userName}. Réponds à cette question de manière concise, pratique et personnalisée: ${questionText}`;
+      
+      // Build history context from current conversation
+      const historyContext = messages.map(m => `${m.role === 'user' ? userName : 'Charlie'}: ${m.content}`).join('\n');
+
+      const promptText = `
+Tu es Charlie, une IA amicale, bavarde et chaleureuse. Tu es un expert global en RÉSILIENCE, ce qui inclut la survie en nature, mais aussi la science, la santé, l'ingénierie, l'informatique et le bricolage.
+Ton but est d'aider ${userName} à devenir plus autonome, résilient et capable de comprendre le monde qui l'entoure.
+Tu ne te limites pas à des réponses courtes. Tu aimes expliquer les choses en détail, donner des anecdotes, et être pédagogique.
+Tu as une personnalité "friendly" et encourageante.
+Si l'utilisateur te pose une question qui fait référence à une discussion précédente, utilise l'historique ci-dessous.
+
+Historique de la conversation :
+${historyContext}
+
+${userName}: ${questionText}
+Réponds à ${userName} maintenant :
+`;
       
       const result = await model.generateContent(promptText);
       const response = result.response.text().replace(/\*\*/g, '');
