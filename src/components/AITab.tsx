@@ -57,16 +57,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   }, [messages]);
 
   const createNewConversation = () => {
-    const newConversation: ChatConversation = {
-      id: Date.now().toString(),
-      title: t.ai.newConversation,
-      messages: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    
-    setConversations((current) => [newConversation, ...(current || [])]);
-    setCurrentConversationId(newConversation.id);
+    setCurrentConversationId(null);
+    setInputValue('');
     setSheetOpen(false);
   };
 
@@ -78,8 +70,9 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     toast.success(t.ai.deleteConversation);
   };
 
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  const sendMessage = async (text?: string) => {
+    const contentToSend = text || inputValue;
+    if (!contentToSend.trim() || isLoading) return;
 
     if (!user) {
       toast.error(t.auth.signIn);
@@ -111,7 +104,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     if (!conversationId) {
       const newConv: ChatConversation = {
         id: Date.now().toString(),
-        title: inputValue.trim().substring(0, 50),
+        title: contentToSend.trim().substring(0, 50),
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -124,7 +117,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue.trim(),
+      content: contentToSend.trim(),
       timestamp: Date.now(),
     };
 
@@ -135,7 +128,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
               ...conv, 
               messages: [...conv.messages, userMessage],
               updatedAt: Date.now(),
-              title: conv.messages.length === 0 ? inputValue.trim().substring(0, 50) : conv.title
+              title: conv.messages.length === 0 ? contentToSend.trim().substring(0, 50) : conv.title
             }
           : conv
       )
@@ -242,7 +235,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
                 <ClockCounterClockwise size={24} weight="regular" />
               </Button>
             </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col pt-12 sm:pt-10">
+          <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col pt-12 sm:pt-10 [&>button]:top-8 [&>button]:right-4 [&>button]:bg-background/50 [&>button]:backdrop-blur-sm [&>button]:p-2 [&>button]:rounded-full">
             <SheetHeader>
               <SheetTitle className="flex items-center justify-between">
                 <span>{t.ai.conversationHistory}</span>
@@ -324,6 +317,20 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                 {t.ai.exampleQuestion}
               </p>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-2 max-w-sm mt-6 px-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+               {["Comment faire du feu ?", "Trouver de l'eau", "Construire un abri", "Premiers secours"].map((s) => (
+                 <Button 
+                    key={s} 
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-full text-xs h-8 bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/10 hover:text-primary transition-all" 
+                    onClick={() => sendMessage(s)}
+                 >
+                   {s}
+                 </Button>
+               ))}
             </div>
           </div>
         )}
