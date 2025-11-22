@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useKV } from '@github/spark/hooks';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Progress } from '@/components/ui/progress';
 import { Translations } from '@/lib/translations';
 import { ChatMessage, ChatConversation, User } from '@/lib/types';
 import { PaperPlaneRight, Sparkle, Trash, Crown, ClockCounterClockwise, Plus, ChatCircleText } from '@phosphor-icons/react';
@@ -12,6 +14,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 const CREATOR_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
+const FREE_QUOTA_LIMIT = 15;
 
 interface AITabProps {
   t: Translations;
@@ -19,9 +22,15 @@ interface AITabProps {
   onUpgradeClick: () => void;
 }
 
+interface AIQuota {
+  count: number;
+  lastReset: number;
+}
+
 export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   const [conversations, setConversations] = useKV<ChatConversation[]>('ai-conversations', []);
   const [currentConversationId, setCurrentConversationId] = useKV<string | null>('current-conversation-id', null);
+  const [quota, setQuota] = usePersistentState<AIQuota>('ai-quota', { count: 0, lastReset: Date.now() });
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -29,6 +38,16 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
   const currentConversation = conversations?.find(c => c.id === currentConversationId);
   const messages = currentConversation?.messages || [];
+
+  // Check and reset quota if new month
+  useEffect(() => {
+    const now = new Date();
+    const lastResetDate = new Date(quota.lastReset);
+    
+    if (now.getMonth() !== lastResetDate.getMonth() || now.getFullYear() !== lastResetDate.getFullYear()) {
+      setQuota({ count: 0, lastReset: Date.now() });
+    }
+  }, [quota.lastReset, setQuota]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -61,10 +80,20 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    if (!user || user.subscriptionTier !== 'premium') {
-      toast.error(t.subscription.upgradeRequired);
-      onUpgradeClick();
+    if (!user) {
+      toast.error(t.auth.signIn);
       return;
+    }
+
+    // Check quota for free users
+    if (user.subscriptionTier !== 'premium') {
+      if (quota.count >= FREE_QUOTA_LIMIT) {
+        toast.error(t.subscription.upgradeRequired, {
+          description: t.ai.upgradeForUnlimited || 'Upgrade for unlimited requests',
+        });
+        onUpgradeClick();
+        return;
+      }
     }
 
     if (!CREATOR_API_KEY) {
@@ -112,6 +141,11 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     setInputValue('');
     setIsLoading(true);
 
+    // Increment quota for free users
+    if (user.subscriptionTier !== 'premium') {
+      setQuota(prev => ({ ...prev, count: prev.count + 1 }));
+    }
+
     try {
       const questionText = userMessage.content;
       const promptText = `Tu es Charlie, un expert en survie dans la nature. Réponds à cette question de manière concise et pratique: ${questionText}`;
@@ -150,7 +184,7 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 pt-12 pb-24">
         <Card className="p-6 sm:p-8 max-w-md w-full text-center space-y-4">
           <Sparkle size={48} className="mx-auto text-accent" weight="fill" />
           <h2 className="text-xl sm:text-2xl font-bold">{t.ai.title}</h2>
@@ -164,24 +198,8 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     );
   }
 
-  if (user.subscriptionTier !== 'premium') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <Card className="p-6 sm:p-8 max-w-md w-full text-center space-y-4">
-          <Crown size={48} className="mx-auto text-accent" weight="fill" />
-          <h2 className="text-xl sm:text-2xl font-bold">{t.subscription.upgradeRequired}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">{t.ai.premiumOnly}</p>
-          <Button onClick={onUpgradeClick} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90 w-full sm:w-auto touch-manipulation h-11">
-            <Crown size={18} weight="fill" />
-            {t.subscription.upgradeToPremium}
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col h-[calc(100vh-14rem)] sm:h-[calc(100vh-12rem)]">
+    <div className="flex flex-col h-[calc(100vh-6rem)] pt-12 pb-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 sm:gap-4">
         <div className="min-w-0 flex-1">
           <h2 className="text-xl sm:text-2xl font-bold truncate">{t.ai.title}</h2>
@@ -266,65 +284,97 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
         </div>
       </div>
 
-      <Card className="flex-1 flex flex-col overflow-hidden">
+      {user.subscriptionTier !== 'premium' && (
+        <div className="mb-4 px-1">
+          <div className="flex justify-between text-xs mb-1.5">
+            <span className="text-muted-foreground">{t.ai.quotaRemaining || 'Requests remaining'}</span>
+            <span className="font-medium">{Math.max(0, FREE_QUOTA_LIMIT - quota.count)} / {FREE_QUOTA_LIMIT}</span>
+          </div>
+          <Progress value={(quota.count / FREE_QUOTA_LIMIT) * 100} className="h-2" />
+          {quota.count >= FREE_QUOTA_LIMIT && (
+            <Button 
+              variant="link" 
+              size="sm" 
+              onClick={onUpgradeClick} 
+              className="w-full mt-1 h-auto p-0 text-xs text-accent"
+            >
+              {t.ai.upgradeForUnlimited || 'Upgrade for unlimited'}
+            </Button>
+          )}
+        </div>
+      )}
+
+      <Card className="flex-1 flex flex-col overflow-hidden border-0 sm:border bg-background/50 backdrop-blur-sm shadow-none sm:shadow-sm">
         <ScrollArea className="flex-1 p-3 sm:p-4" ref={scrollRef}>
           {(!messages || messages.length === 0) && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-8 px-4">
-              <Sparkle size={56} className="sm:w-16 sm:h-16 text-accent/50" weight="duotone" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
+                <Sparkle size={32} className="text-primary" weight="fill" />
+              </div>
               <div className="space-y-2">
-                <h3 className="text-base sm:text-lg font-semibold">{t.ai.askAnything}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground max-w-md">
+                <h3 className="text-lg font-semibold">{t.ai.askAnything}</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                   {t.ai.exampleQuestion}
                 </p>
               </div>
             </div>
           )}
 
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4 pb-4">
             {messages?.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 ${
+                  className={cn(
+                    "max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 shadow-sm",
                     message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
-                  }`}
+                      ? "bg-primary text-primary-foreground rounded-tr-none"
+                      : "bg-card border border-border/50 rounded-tl-none"
+                  )}
                 >
-                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
                 </div>
               </div>
             ))}
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 bg-muted">
-                  <p className="text-sm text-muted-foreground">{t.ai.thinking}</p>
+                <div className="max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 bg-card border border-border/50 rounded-tl-none">
+                  <div className="flex gap-1.5 items-center h-5">
+                    <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" />
+                  </div>
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
 
-        <div className="p-3 sm:p-4 border-t border-border">
+        <div className="p-3 sm:p-4 bg-background/80 backdrop-blur-md border-t border-border/50">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               sendMessage();
             }}
-            className="flex gap-2"
+            className="flex gap-2 relative"
           >
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.ai.placeholder}
-              disabled={isLoading}
-              className="flex-1 h-11 text-base"
+              disabled={isLoading || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)}
+              className="flex-1 h-12 pl-4 pr-12 rounded-full bg-muted/50 border-transparent focus:bg-background focus:border-primary/20 transition-all"
             />
-            <Button type="submit" disabled={isLoading || !inputValue.trim()} size="icon" className="h-11 w-11 flex-shrink-0 touch-manipulation">
-              <PaperPlaneRight size={20} weight="fill" />
+            <Button 
+              type="submit" 
+              disabled={isLoading || !inputValue.trim() || (user.subscriptionTier !== 'premium' && quota.count >= FREE_QUOTA_LIMIT)} 
+              size="icon" 
+              className="absolute right-1 top-1 h-10 w-10 rounded-full shadow-sm"
+            >
+              <PaperPlaneRight size={18} weight="fill" />
             </Button>
           </form>
         </div>
@@ -332,3 +382,4 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
     </div>
   );
 }
+

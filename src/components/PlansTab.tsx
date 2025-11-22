@@ -34,6 +34,7 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
   const freePlanFeatures = [
     t.subscription.basicContent,
     t.subscription.limitedDownloads,
+    t.subscription.limitedAI,
     t.subscription.communitySupport,
   ];
 
@@ -120,7 +121,7 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-8">
+    <div className="max-w-5xl mx-auto space-y-8 pb-32">
       <div className="text-center space-y-3">
         <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary via-amber-500 to-primary bg-clip-text text-transparent animate-gradient-x">
           {t.subscription.choosePlan}
@@ -130,9 +131,9 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start relative">
         {/* Free Plan Card */}
-        <Card className="relative p-6 sm:p-8 space-y-6 bg-card/30 backdrop-blur-xl border-white/5 hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+        <Card className="relative p-6 sm:p-8 space-y-6 bg-card/30 backdrop-blur-xl border-white/5 hover:border-white/10 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:z-10">
           <div className="space-y-2">
             <h3 className="text-xl sm:text-2xl font-bold text-foreground/80">{t.subscription.freePlan}</h3>
             <div className="flex items-baseline gap-1">
@@ -178,7 +179,7 @@ export function PlansTab({ t, user, onSignUpClick, onUpgradeToPremium }: PlansTa
         </Card>
 
         {/* Premium Plan Card */}
-        <Card className="relative p-6 sm:p-8 space-y-6 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-900/90 backdrop-blur-xl border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 shadow-2xl shadow-amber-500/10 hover:-translate-y-1 overflow-hidden">
+        <Card className="relative z-10 p-6 sm:p-8 space-y-6 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-900/90 backdrop-blur-xl border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 shadow-2xl shadow-amber-500/10 hover:-translate-y-1 hover:z-20 overflow-hidden">
           {/* Decorative background effects */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />

@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MagnifyingGlass, BookmarkSimple, X } from '@phosphor-icons/react';
+import { Card } from '@/components/ui/card';
+import { MagnifyingGlass, BookmarkSimple, X, Crown, DownloadSimple, Fire, Drop, House, FirstAid, Compass, Megaphone, ForkKnife, ArrowLeft } from '@phosphor-icons/react';
 import { TechniqueCard } from '@/components/TechniqueCard';
 import { survivalTechniques } from '@/lib/data';
-import { SurvivalTechnique, SurvivalCategory } from '@/lib/types';
+import { SurvivalTechnique, SurvivalCategory, User } from '@/lib/types';
 import { Language } from '@/lib/translations';
 import { techniqueTranslations } from '@/lib/techniqueTranslations';
 import { cn } from '@/lib/utils';
@@ -13,17 +14,21 @@ import { cn } from '@/lib/utils';
 interface HomeTabProps {
   language: Language;
   t: any;
+  user: User | null;
   bookmarkedIds: string[];
   onToggleBookmark: (id: string) => void | Promise<void>;
   onTechniqueClick: (technique: SurvivalTechnique) => void;
+  onUpgradeClick: () => void;
 }
 
 export function HomeTab({ 
   language, 
   t, 
+  user,
   bookmarkedIds, 
   onToggleBookmark, 
-  onTechniqueClick 
+  onTechniqueClick,
+  onUpgradeClick
 }: HomeTabProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SurvivalCategory | 'all'>('all');
@@ -62,75 +67,38 @@ export function HomeTab({
     return filtered;
   }, [searchQuery, selectedCategory, showBookmarksOnly, bookmarkedIds, language, t.categories]);
 
-  const categories: Array<SurvivalCategory | 'all'> = ['all', 'shelter', 'water', 'fire', 'food', 'navigation', 'first-aid', 'signaling'];
+  const categories: Array<{ id: SurvivalCategory; icon: any; color: string }> = [
+    { id: 'shelter', icon: House, color: 'text-white' },
+    { id: 'water', icon: Drop, color: 'text-white' },
+    { id: 'fire', icon: Fire, color: 'text-white' },
+    { id: 'food', icon: ForkKnife, color: 'text-white' },
+    { id: 'navigation', icon: Compass, color: 'text-white' },
+    { id: 'first-aid', icon: FirstAid, color: 'text-white' },
+    { id: 'signaling', icon: Megaphone, color: 'text-white' },
+  ];
 
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <div className="relative flex-1">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-          <Input
-            placeholder={t.searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-10 bg-card/50 backdrop-blur-sm border-border/50 h-11 text-base"
-          />
-          {searchQuery && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-              onClick={() => setSearchQuery('')}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-        
-        <Button
-          variant={showBookmarksOnly ? 'default' : 'outline'}
-          onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
-          className="gap-2 bg-card/50 backdrop-blur-sm border-border/50 h-11 px-4 flex-shrink-0"
-        >
-          <BookmarkSimple weight={showBookmarksOnly ? 'fill' : 'regular'} className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="whitespace-nowrap text-sm sm:text-base">{t.bookmarks} {bookmarkedIds.length > 0 && `(${bookmarkedIds.length})`}</span>
-        </Button>
-      </div>
+  const getFirstName = (name: string) => name.split(' ')[0];
 
-      <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Badge
-            key={category}
-            variant={selectedCategory === category ? 'default' : 'outline'}
-            className={cn(
-              "cursor-pointer transition-all active:scale-95 hover:scale-105 capitalize backdrop-blur-sm text-xs sm:text-sm px-3 py-1.5 touch-manipulation",
-              selectedCategory === category && "shadow-lg shadow-primary/20"
-            )}
-            onClick={() => setSelectedCategory(category)}
+  // Category Detail View
+  if (selectedCategory !== 'all') {
+    return (
+      <div className="space-y-6 pb-24 pt-12 animate-in slide-in-from-right duration-300">
+        {/* Simple Navbar for Category View */}
+        <div className="flex items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md py-4 z-20 -mx-4 px-4">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setSelectedCategory('all')}
+            className="rounded-full hover:bg-accent/10"
           >
-            {category === 'all' ? t.allCategories : t.categories[category]}
-          </Badge>
-        ))}
-      </div>
-
-      {filteredTechniques.length === 0 ? (
-        <div className="text-center py-12 sm:py-16 px-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-muted/50 backdrop-blur-sm mb-3 sm:mb-4 border border-border/50">
-            {showBookmarksOnly ? (
-              <BookmarkSimple className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground" />
-            ) : (
-              <MagnifyingGlass className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground" />
-            )}
-          </div>
-          <h3 className="text-base sm:text-lg font-semibold mb-2">
-            {showBookmarksOnly ? t.noBookmarksTitle : t.noResultsTitle}
-          </h3>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            {showBookmarksOnly ? t.noBookmarksDesc : t.noResultsDesc}
-          </p>
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <h2 className="text-2xl font-bold capitalize">
+            {t.categories[selectedCategory]}
+          </h2>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+        <div className="grid grid-cols-1 gap-4">
           {filteredTechniques.map((technique) => (
             <TechniqueCard
               key={technique.id}
@@ -141,6 +109,168 @@ export function HomeTab({
               onClick={() => onTechniqueClick(technique)}
             />
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Main Home View
+  return (
+    <div className="space-y-8 pb-24 pt-12">
+      {/* Header Section */}
+      <div className="space-y-1 pt-2">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Hello, {user ? getFirstName(user.name) : 'Survivor'}!
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          {t.ai?.subtitle || 'Ready for adventure?'}
+        </p>
+      </div>
+
+      {/* Promo / Stats Card */}
+      <div className="relative overflow-hidden rounded-3xl">
+        {user?.subscriptionTier === 'premium' ? (
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white shadow-lg shadow-blue-500/20">
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-1">{t.downloads?.title}</h3>
+                <p className="text-blue-100 text-sm mb-4 max-w-[200px]">
+                  {t.subscription?.offlineAccess}
+                </p>
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-md"
+                >
+                  <DownloadSimple className="w-4 h-4 mr-2" />
+                  {t.downloads?.downloaded}
+                </Button>
+              </div>
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
+                <DownloadSimple weight="fill" className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            {/* Decorative circles */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-xl" />
+          </div>
+        ) : (
+          <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-6 text-white shadow-lg shadow-orange-500/20 cursor-pointer transition-transform active:scale-[0.98]" onClick={onUpgradeClick}>
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-1">{t.subscription?.upgradeToPremium}</h3>
+                <p className="text-orange-50 text-sm mb-4 max-w-[200px]">
+                  {t.subscription?.upgradeMessage}
+                </p>
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  className="bg-white text-orange-600 hover:bg-white/90 border-0 shadow-sm"
+                >
+                  <Crown weight="fill" className="w-4 h-4 mr-2" />
+                  {t.subscription?.premium}
+                </Button>
+              </div>
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
+                <Crown weight="fill" className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            {/* Decorative circles */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-xl" />
+          </div>
+        )}
+      </div>
+
+      {/* Categories Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">{t.allCategories}</h2>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={cn(
+                  "flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 border border-transparent",
+                  "bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-purple-500/20 hover:shadow-xl hover:scale-[1.02] active:scale-95",
+                )}
+              >
+                <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-3 bg-white/20 backdrop-blur-sm", cat.color)}>
+                  <Icon weight="fill" className="w-6 h-6" />
+                </div>
+                <span className="font-medium text-sm text-center text-white">
+                  {t.categories[cat.id]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative group">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-accent/20 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-500"></div>
+        <div className="relative flex items-center bg-white border border-gray-100 rounded-2xl shadow-sm h-14 px-4 transition-all focus-within:shadow-md">
+          <MagnifyingGlass className="w-5 h-5 text-gray-400 mr-3" />
+          <Input
+            placeholder={t.searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border-0 bg-transparent h-full text-base p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
+          />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-gray-100 rounded-full"
+              onClick={() => setSearchQuery('')}
+            >
+              <X className="w-4 h-4 text-gray-500" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Search Results (only if searching) */}
+      {searchQuery && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold">
+              Search Results
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {filteredTechniques.length} results
+            </span>
+          </div>
+
+          {filteredTechniques.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <MagnifyingGlass className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">{t.noResultsTitle}</h3>
+              <p className="text-gray-500">{t.noResultsDesc}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredTechniques.map((technique) => (
+                <TechniqueCard
+                  key={technique.id}
+                  technique={technique}
+                  language={language}
+                  isBookmarked={bookmarkedIds.includes(technique.id)}
+                  onToggleBookmark={() => onToggleBookmark(technique.id)}
+                  onClick={() => onTechniqueClick(technique)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

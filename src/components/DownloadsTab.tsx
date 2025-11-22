@@ -28,7 +28,7 @@ export function DownloadsTab({
   );
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 pt-12 pb-24">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">{t.downloads.title}</h2>
         <p className="text-sm sm:text-base text-muted-foreground">{t.downloads.subtitle}</p>

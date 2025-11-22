@@ -5,11 +5,12 @@ import { HomeTab } from '@/components/HomeTab';
 import { DownloadsTab } from '@/components/DownloadsTab';
 import { AITab } from '@/components/AITab';
 import { BottomNav } from '@/components/BottomNav';
-import { ProfileMenu } from '@/components/ProfileMenu';
 import { TechniqueDialog } from '@/components/TechniqueDialog';
 import { AuthDialog } from '@/components/AuthDialog';
 import { SettingsDialog } from '@/components/SettingsDialog';
+import { ProfileTab } from '@/components/ProfileTab';
 import { Toaster } from '@/components/ui/sonner';
+// ...existing code...
 import { SurvivalTechnique } from '@/lib/types';
 import { translations, Language } from '@/lib/translations';
 import { toast } from 'sonner';
@@ -18,7 +19,7 @@ import { useBookmarks } from '@/hooks/useBookmarks';
 import { useDownloads } from '@/hooks/useDownloads';
 import { useRevenueCat } from '@/hooks/useRevenueCat';
 
-type TabType = 'home' | 'downloads' | 'ai';
+type TabType = 'home' | 'downloads' | 'ai' | 'profile';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
@@ -215,39 +216,17 @@ function App() {
   return (
     <div className="min-h-screen pb-20 safe-area-inset-bottom">
       <Toaster />
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-xl sticky top-0 z-10 shadow-lg shadow-primary/5 safe-area-inset-top">
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <div className="flex items-start justify-between gap-2 sm:gap-4">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent truncate">
-                {t.appTitle}
-              </h1>
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base">
-                {t.appSubtitle}
-              </p>
-            </div>
-            <div className="flex-shrink-0">
-              <ProfileMenu
-                user={user || null}
-                t={t}
-                onSettingsClick={handleSettingsClick}
-                onPlansClick={handleUpgradeClick}
-                onSignInClick={() => setAuthDialogOpen(true)}
-                onSignOut={handleSignOut}
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-
+      
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {activeTab === 'home' && (
           <HomeTab
             language={language}
             t={t}
+            user={user || null}
             bookmarkedIds={bookmarks}
             onToggleBookmark={handleBookmarkToggle}
             onTechniqueClick={handleTechniqueClick}
+            onUpgradeClick={handleUpgradeClick}
           />
         )}
 
@@ -269,6 +248,20 @@ function App() {
             user={user || null}
             onUpgradeClick={handleUpgradeClick}
           />
+        )}
+
+        {activeTab === 'profile' && (
+          <div className="flex justify-center">
+            <ProfileTab
+              language={language}
+              t={t}
+              user={user || null}
+              onLanguageChange={handleLanguageChange}
+              onSignOut={handleSignOut}
+              onSignIn={() => setAuthDialogOpen(true)}
+              onUpgradeToPremium={handleUpgrade}
+            />
+          </div>
         )}
       </main>
 

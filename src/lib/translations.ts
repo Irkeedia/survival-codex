@@ -18,6 +18,7 @@ export interface Translations {
     downloads: string;
     ai: string;
     settings: string;
+    profile: string;
   };
   auth: {
     signIn: string;
@@ -60,6 +61,7 @@ export interface Translations {
     popularPlan: string;
     freePlanFeatures: string;
     limitedDownloads: string;
+    limitedAI: string;
     basicContent: string;
     communitySupport: string;
     paymentMethod: string;
@@ -94,6 +96,8 @@ export interface Translations {
     noConversations: string;
     noConversationsDesc: string;
     conversation: string;
+    quotaRemaining: string;
+    upgradeForUnlimited: string;
   };
   settings: {
     title: string;
@@ -162,10 +166,11 @@ export const translations: Record<Language, Translations> = {
     warnings: 'Warnings',
     tips: 'Tips',
     tabs: {
-      home: 'Accueil',
-      downloads: 'Téléchargements',
+      home: 'Home',
+      downloads: 'Downloads',
       ai: 'Charlie',
-      settings: 'Paramètres',
+      settings: 'Settings',
+      profile: 'Profile',
     },
     auth: {
       signIn: 'Sign In',
@@ -208,6 +213,7 @@ export const translations: Record<Language, Translations> = {
       popularPlan: 'Most Popular',
       freePlanFeatures: 'Free Plan Features',
       limitedDownloads: 'Limited downloads (5/month)',
+      limitedAI: '15 AI requests / month',
       basicContent: 'Access to basic survival techniques',
       communitySupport: 'Community support',
       paymentMethod: 'Payment Method',
@@ -242,6 +248,8 @@ export const translations: Record<Language, Translations> = {
       noConversations: 'No conversations',
       noConversationsDesc: 'Start a new conversation',
       conversation: 'Conversation',
+      quotaRemaining: 'Requests remaining this month',
+      upgradeForUnlimited: 'Upgrade for unlimited requests',
     },
     settings: {
       title: 'Settings',
@@ -312,6 +320,7 @@ export const translations: Record<Language, Translations> = {
       downloads: 'Téléchargements',
       ai: 'Assistant IA',
       settings: 'Paramètres',
+      profile: 'Profil',
     },
     auth: {
       signIn: 'Se connecter',
@@ -354,6 +363,7 @@ export const translations: Record<Language, Translations> = {
       popularPlan: 'Le plus populaire',
       freePlanFeatures: 'Fonctionnalités gratuites',
       limitedDownloads: 'Téléchargements limités (5/mois)',
+      limitedAI: '15 requêtes IA / mois',
       basicContent: 'Accès aux techniques de base',
       communitySupport: 'Support communautaire',
       paymentMethod: 'Méthode de paiement',
@@ -388,6 +398,8 @@ export const translations: Record<Language, Translations> = {
       noConversations: 'Aucune conversation',
       noConversationsDesc: 'Commencez une nouvelle conversation',
       conversation: 'Conversation',
+      quotaRemaining: 'Requêtes restantes ce mois-ci',
+      upgradeForUnlimited: 'Passez Premium pour l\'illimité',
     },
     settings: {
       title: 'Paramètres',
@@ -458,6 +470,7 @@ export const translations: Record<Language, Translations> = {
       downloads: 'Descargas',
       ai: 'Asistente IA',
       settings: 'Ajustes',
+      profile: 'Perfil',
     },
     auth: {
       signIn: 'Iniciar sesión',
@@ -500,6 +513,7 @@ export const translations: Record<Language, Translations> = {
       popularPlan: 'Más popular',
       freePlanFeatures: 'Características gratuitas',
       limitedDownloads: 'Descargas limitadas (5/mes)',
+      limitedAI: '15 solicitudes de IA / mes',
       basicContent: 'Acceso a técnicas básicas',
       communitySupport: 'Soporte comunitario',
       paymentMethod: 'Método de pago',
@@ -534,6 +548,8 @@ export const translations: Record<Language, Translations> = {
       noConversations: 'Sin conversaciones',
       noConversationsDesc: 'Inicia una nueva conversación',
       conversation: 'Conversación',
+      quotaRemaining: 'Solicitudes restantes este mes',
+      upgradeForUnlimited: 'Actualiza para solicitudes ilimitadas',
     },
     settings: {
       title: 'Ajustes',
@@ -604,6 +620,7 @@ export const translations: Record<Language, Translations> = {
       downloads: 'Downloads',
       ai: 'KI-Assistent',
       settings: 'Einstellungen',
+      profile: 'Profil',
     },
     auth: {
       signIn: 'Anmelden',
@@ -646,6 +663,7 @@ export const translations: Record<Language, Translations> = {
       popularPlan: 'Am beliebtesten',
       freePlanFeatures: 'Kostenlose Funktionen',
       limitedDownloads: 'Begrenzte Downloads (5/Monat)',
+      limitedAI: '15 KI-Anfragen / Monat',
       basicContent: 'Zugriff auf Basistechniken',
       communitySupport: 'Community-Support',
       paymentMethod: 'Zahlungsmethode',
@@ -680,6 +698,8 @@ export const translations: Record<Language, Translations> = {
       noConversations: 'Keine Gespräche',
       noConversationsDesc: 'Starten Sie ein neues Gespräch',
       conversation: 'Gespräch',
+      quotaRemaining: 'Verbleibende Anfragen diesen Monat',
+      upgradeForUnlimited: 'Upgrade für unbegrenzte Anfragen',
     },
     settings: {
       title: 'Einstellungen',
@@ -750,6 +770,7 @@ export const translations: Record<Language, Translations> = {
       downloads: 'Download',
       ai: 'Assistente IA',
       settings: 'Impostazioni',
+      profile: 'Profilo',
     },
     auth: {
       signIn: 'Accedi',
@@ -792,6 +813,7 @@ export const translations: Record<Language, Translations> = {
       popularPlan: 'Più popolare',
       freePlanFeatures: 'Funzionalità gratuite',
       limitedDownloads: 'Download limitati (5/mese)',
+      limitedAI: '15 richieste IA / mese',
       basicContent: 'Accesso alle tecniche di base',
       communitySupport: 'Supporto della community',
       paymentMethod: 'Metodo di pagamento',
@@ -826,6 +848,8 @@ export const translations: Record<Language, Translations> = {
       noConversations: 'Nessuna conversazione',
       noConversationsDesc: 'Inizia una nuova conversazione',
       conversation: 'Conversazione',
+      quotaRemaining: 'Richieste rimanenti questo mese',
+      upgradeForUnlimited: 'Passa a Premium per richieste illimitate',
     },
     settings: {
       title: 'Impostazioni',
