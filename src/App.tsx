@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useKV } from '@github/spark/hooks';
 import { App as CapacitorApp } from '@capacitor/app';
+import { AnimatePresence, motion } from 'framer-motion';
 import { HomeTab } from '@/components/HomeTab';
 import { DownloadsTab } from '@/components/DownloadsTab';
 import { AITab } from '@/components/AITab';
@@ -22,19 +23,49 @@ import { useTechniques } from '@/hooks/useTechniques';
 
 type TabType = 'home' | 'downloads' | 'ai' | 'profile';
 
+const tabOrder: TabType[] = ['ai', 'home', 'downloads', 'profile'];
+
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute' as const,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    position: 'relative' as const,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute' as const,
+  })
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [direction, setDirection] = useState(0);
   const [selectedTechnique, setSelectedTechnique] = useState<SurvivalTechnique | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [settingsDefaultTab, setSettingsDefaultTab] = useState<'settings' | 'plans'>('settings');
-  const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'en');
+  const [localLanguage, setLocalLanguage] = useKV<Language>('app-language', 'fr');
   
   // Swipe navigation state
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const minSwipeDistance = 50;
+
+  const handleTabChange = (newTab: TabType) => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const newIndex = tabOrder.indexOf(newTab);
+    setDirection(newIndex > currentIndex ? 1 : -1);
+    setActiveTab(newTab);
+  };
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -53,17 +84,21 @@ function App() {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      // Next tab
-      if (activeTab === 'home') setActiveTab('downloads');
-      else if (activeTab === 'downloads') setActiveTab('ai');
-      else if (activeTab === 'ai') setActiveTab('profile');
+      // Next tab (Swipe Left -> Move to Right Tab)
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex < tabOrder.length - 1) {
+        setDirection(1);
+        setActiveTab(tabOrder[currentIndex + 1]);
+      }
     }
     
     if (isRightSwipe) {
-      // Previous tab
-      if (activeTab === 'profile') setActiveTab('ai');
-      else if (activeTab === 'ai') setActiveTab('downloads');
-      else if (activeTab === 'downloads') setActiveTab('home');
+      // Previous tab (Swipe Right -> Move to Left Tab)
+      const currentIndex = tabOrder.indexOf(activeTab);
+      if (currentIndex > 0) {
+        setDirection(-1);
+        setActiveTab(tabOrder[currentIndex - 1]);
+      }
     }
   };
 
@@ -255,67 +290,83 @@ function App() {
     >
       <Toaster />
       
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-        {activeTab === 'home' && (
-          <HomeTab
-            language={language}
-            t={t}
-            user={user || null}
-            bookmarkedIds={bookmarks}
-            onToggleBookmark={handleBookmarkToggle}
-            onTechniqueClick={handleTechniqueClick}
-            onUpgradeClick={handleUpgradeClick}
-            onDownloadsClick={() => setActiveTab('downloads')}
-            techniques={techniques}
-          />
-        )}
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 overflow-x-hidden relative min-h-[80vh]">
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <motion.div
+            key={activeTab}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "tween", ease: "easeInOut", duration: 0.3 },
+              opacity: { duration: 0.2 }
+            }}
+            className="w-full"
+          >
+            {activeTab === 'home' && (
+              <HomeTab
+                language={language}
+                t={t}
+                user={user || null}
+                bookmarkedIds={bookmarks}
+                onToggleBookmark={handleBookmarkToggle}
+                onTechniqueClick={handleTechniqueClick}
+                onUpgradeClick={handleUpgradeClick}
+                onDownloadsClick={() => handleTabChange('downloads')}
+                techniques={techniques}
+              />
+            )}
 
-        {activeTab === 'downloads' && (
-          <DownloadsTab
-            language={language}
-            t={t}
-            downloadedIds={downloads}
-            bookmarkedIds={bookmarks}
-            onToggleBookmark={handleBookmarkToggle}
-            onToggleDownload={handleDownloadToggle}
-            onTechniqueClick={handleTechniqueClick}
-            techniques={techniques}
-            offlineContent={offlineContent}
-          />
-        )}
+            {activeTab === 'downloads' && (
+              <DownloadsTab
+                language={language}
+                t={t}
+                downloadedIds={downloads}
+                bookmarkedIds={bookmarks}
+                onToggleBookmark={handleBookmarkToggle}
+                onToggleDownload={handleDownloadToggle}
+                onTechniqueClick={handleTechniqueClick}
+                techniques={techniques}
+                offlineContent={offlineContent}
+              />
+            )}
 
-        {activeTab === 'ai' && (
-          <AITab
-            t={t}
-            user={user || null}
-            onUpgradeClick={handleUpgradeClick}
-          />
-        )}
+            {activeTab === 'ai' && (
+              <AITab
+                t={t}
+                user={user || null}
+                onUpgradeClick={handleUpgradeClick}
+              />
+            )}
 
-        {activeTab === 'profile' && (
-          <div className="flex justify-center">
-            <ProfileTab
-              language={language}
-              t={t}
-              user={user || null}
-              bookmarksCount={bookmarks.length}
-              downloadsCount={downloads.length}
-              onLanguageChange={handleLanguageChange}
-              onSignOut={handleSignOut}
-              onSignIn={() => setAuthDialogOpen(true)}
-              onUpgradeToPremium={handleUpgrade}
-              onClearBookmarks={handleClearBookmarks}
-              onClearDownloads={handleClearDownloads}
-              onClearAllData={handleClearAllData}
-              onAvatarChange={handleAvatarChange}
-            />
-          </div>
-        )}
+            {activeTab === 'profile' && (
+              <div className="flex justify-center">
+                <ProfileTab
+                  language={language}
+                  t={t}
+                  user={user || null}
+                  bookmarksCount={bookmarks.length}
+                  downloadsCount={downloads.length}
+                  onLanguageChange={handleLanguageChange}
+                  onSignOut={handleSignOut}
+                  onSignIn={() => setAuthDialogOpen(true)}
+                  onUpgradeToPremium={handleUpgrade}
+                  onClearBookmarks={handleClearBookmarks}
+                  onClearDownloads={handleClearDownloads}
+                  onClearAllData={handleClearAllData}
+                  onAvatarChange={handleAvatarChange}
+                />
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <BottomNav 
         activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+        onTabChange={handleTabChange} 
         t={t} 
       />
 
