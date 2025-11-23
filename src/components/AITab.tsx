@@ -62,8 +62,10 @@ export function AITab({ t, user, onUpgradeClick }: AITabProps) {
   }, [quota.lastReset, setQuota]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    // Find the viewport element inside the ScrollArea
+    const viewport = scrollRef.current?.querySelector('[data-slot="scroll-area-viewport"]');
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
     }
   }, [messages, isGenerating]);
 

@@ -28,6 +28,7 @@ export interface SurvivalTechnique {
   charlie_tip?: string; // New field
   technical_data?: any; // New field
   slug?: string; // New field
+  content?: string; // New field for Markdown content
 }
 
 export type SubscriptionTier = 'free' | 'premium';

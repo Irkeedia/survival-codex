@@ -13,6 +13,8 @@ import { categoryColors } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+import ReactMarkdown from 'react-markdown';
+
 interface TechniqueDialogProps {
   technique: SurvivalTechnique | null;
   language: Language;
@@ -48,6 +50,7 @@ export function TechniqueDialog({
   const steps = translation?.steps || technique.steps;
   const warnings = translation?.warnings || technique.warnings;
   const tips = translation?.tips || technique.tips;
+  const content = technique.content; // Markdown content
 
   const canDownload = user?.subscriptionTier === 'premium';
 
@@ -166,66 +169,77 @@ export function TechniqueDialog({
                 {title}
               </h1>
               
-              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                {description}
-              </p>
+              {description && !content && (
+                <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
+                  {description}
+                </p>
+              )}
             </div>
 
             <Separator className="bg-border/50" />
 
-            {/* Steps Section */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                {t.steps}
-              </h3>
-              <div className="space-y-6">
-                {steps.map((step, index) => (
-                  <div key={index} className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mt-0.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                      {index + 1}
-                    </div>
-                    <p className="text-base sm:text-lg leading-relaxed text-foreground/90 pt-0.5">
-                      {step}
-                    </p>
+            {/* Content Section (Markdown or Legacy Steps) */}
+            {content ? (
+              <div className="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-p:text-base prose-p:leading-relaxed prose-li:text-base prose-strong:text-primary">
+                <ReactMarkdown>{content}</ReactMarkdown>
+              </div>
+            ) : (
+              <>
+                {/* Steps Section */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold flex items-center gap-2">
+                    {t.steps}
+                  </h3>
+                  <div className="space-y-6">
+                    {steps.map((step, index) => (
+                      <div key={index} className="flex gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center mt-0.5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                          {index + 1}
+                        </div>
+                        <p className="text-base sm:text-lg leading-relaxed text-foreground/90 pt-0.5">
+                          {step}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Warnings Section */}
-            {warnings && warnings.length > 0 && (
-              <div className="rounded-2xl bg-red-500/5 border border-red-500/10 p-6 space-y-4">
-                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                  <Warning className="w-6 h-6" weight="fill" />
-                  <h3 className="font-bold text-lg">{t.warnings}</h3>
                 </div>
-                <ul className="space-y-3">
-                  {warnings.map((warning, index) => (
-                    <li key={index} className="flex gap-3 text-red-900/80 dark:text-red-200/80">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
-                      <span className="text-base leading-relaxed">{warning}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
-            {/* Tips Section */}
-            {tips && tips.length > 0 && (
-              <div className="rounded-2xl bg-amber-500/5 border border-amber-500/10 p-6 space-y-4">
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                  <Lightbulb className="w-6 h-6" weight="fill" />
-                  <h3 className="font-bold text-lg">{t.tips}</h3>
-                </div>
-                <ul className="space-y-3">
-                  {tips.map((tip, index) => (
-                    <li key={index} className="flex gap-3 text-amber-900/80 dark:text-amber-200/80">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-                      <span className="text-base leading-relaxed">{tip}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Warnings Section */}
+                {warnings && warnings.length > 0 && (
+                  <div className="rounded-2xl bg-red-500/5 border border-red-500/10 p-6 space-y-4">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                      <Warning className="w-6 h-6" weight="fill" />
+                      <h3 className="font-bold text-lg">{t.warnings}</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      {warnings.map((warning, index) => (
+                        <li key={index} className="flex gap-3 text-red-900/80 dark:text-red-200/80">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
+                          <span className="text-base leading-relaxed">{warning}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Tips Section */}
+                {tips && tips.length > 0 && (
+                  <div className="rounded-2xl bg-amber-500/5 border border-amber-500/10 p-6 space-y-4">
+                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                      <Lightbulb className="w-6 h-6" weight="fill" />
+                      <h3 className="font-bold text-lg">{t.tips}</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      {tips.map((tip, index) => (
+                        <li key={index} className="flex gap-3 text-amber-900/80 dark:text-amber-200/80">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
+                          <span className="text-base leading-relaxed">{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -233,3 +247,4 @@ export function TechniqueDialog({
     </Dialog>
   );
 }
+
